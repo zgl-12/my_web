@@ -14,7 +14,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: repeating-linear-gradient(45deg, #f0f0f0, #f0f0f0 10px, transparent 10px, transparent 20px);
+            background-color: #f0f0f0;
             position: relative;
         }
 
@@ -40,29 +40,35 @@
             margin-top: 20px;
         }
 
-        /* 全屏滚动效果 */
-        body::before {
-            content: '哈哈哈';
+        /* 实现哈哈哈全屏滚动 */
+        #rolling-text {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
-            color: rgba(0, 0, 0, 0.1);
-            font-size: 5em;
-            background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.1) 10px, rgba(0, 0, 0, 0.1) 20px);
-            background-size: 100px 100px;
-            animation: scroll 10s linear infinite;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-content: space-around;
+            pointer-events: none;
+            display: none;
         }
 
-        @keyframes scroll {
+        #rolling-text span {
+            font-size: 3em;
+            color: rgba(0, 0, 0, 0.1);
+            animation: roll 10s linear infinite;
+        }
+
+        @keyframes roll {
             0% {
-                background-position: 0 0;
+                transform: translateY(0);
             }
 
             100% {
-                background-position: 100px 100px;
+                transform: translateY(100vh);
             }
         }
     </style>
@@ -76,14 +82,25 @@
     <button onclick="checkAnswer('门佳璐')">门佳璐</button>
     <button onclick="checkAnswer('王丽阳')">王丽阳</button>
     <div id="result"></div>
+    <div id="rolling-text">
+        <span>哈哈哈</span>
+        <span>哈哈哈</span>
+        <span>哈哈哈</span>
+        <span>哈哈哈</span>
+        <span>哈哈哈</span>
+        <span>哈哈哈</span>
+    </div>
 
     <script>
         function checkAnswer(choice) {
             const resultElement = document.getElementById('result');
+            const rollingText = document.getElementById('rolling-text');
             if (choice === '周广丽') {
                 resultElement.textContent = '说的没错';
+                rollingText.style.display = 'none';
             } else {
                 resultElement.textContent = '滚吧你';
+                rollingText.style.display = 'flex';
             }
         }
     </script>
