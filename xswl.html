@@ -11,6 +11,7 @@
             margin: 0;
             padding: 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -33,6 +34,7 @@
             color: white;
             margin: 4px 2px;
             cursor: pointer;
+            margin-top: 20px;
         }
 
         #result {
@@ -76,11 +78,13 @@
 
 <body>
     <h1>谁是世界上最好的人？</h1>
-    <button onclick="checkAnswer('任芸琪')">任芸琪</button>
-    <button onclick="checkAnswer('周广丽')">周广丽</button>
-    <button onclick="checkAnswer('李蕊甜')">李蕊甜</button>
-    <button onclick="checkAnswer('门佳璐')">门佳璐</button>
-    <button onclick="checkAnswer('王丽阳')">王丽阳</button>
+    <div style="display: flex; justify-content: center;">
+        <button onclick="checkAnswer('任芸琪')">任芸琪</button>
+        <button onclick="checkAnswer('周广丽')">周广丽</button>
+        <button onclick="checkAnswer('李蕊甜')">李蕊甜</button>
+        <button onclick="checkAnswer('门佳璐')">门佳璐</button>
+        <button onclick="checkAnswer('王丽阳')">王丽阳</button>
+    </div>
     <div id="result"></div>
     <div id="rolling-text">
         <span>哈哈哈</span>
