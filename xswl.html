@@ -4,32 +4,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>感恩挚友诗</title>
+    <title>谁是最好的人</title>
     <style>
         body {
-            font-family: '宋体', sans-serif;
-            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
+            background: repeating-linear-gradient(45deg, #f0f0f0, #f0f0f0 10px, transparent 10px, transparent 20px);
+            position: relative;
         }
 
-     .poetry-content {
+        h1 {
             text-align: center;
+        }
+
+        button {
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+        #result {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* 全屏滚动效果 */
+        body::before {
+            content: '哈哈哈';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            color: rgba(0, 0, 0, 0.1);
+            font-size: 5em;
+            background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.1) 10px, rgba(0, 0, 0, 0.1) 20px);
+            background-size: 100px 100px;
+            animation: scroll 10s linear infinite;
+        }
+
+        @keyframes scroll {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 100px 100px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="poetry-content">
-        <p>《谢友任芸琪》</p>
-        <p>岁月友情长，芸琪映暖光。</p>
-        <p>欢言同逸趣，愁绪共分尝。</p>
-        <p>雨里撑花伞，风前递热汤。</p>
-        <p>今生逢此友，心底永留香。</p>
-    </div>
+    <h1>谁是世界上最好的人？</h1>
+    <button onclick="checkAnswer('任芸琪')">任芸琪</button>
+    <button onclick="checkAnswer('周广丽')">周广丽</button>
+    <button onclick="checkAnswer('李蕊甜')">李蕊甜</button>
+    <button onclick="checkAnswer('门佳璐')">门佳璐</button>
+    <button onclick="checkAnswer('王丽阳')">王丽阳</button>
+    <div id="result"></div>
+
+    <script>
+        function checkAnswer(choice) {
+            const resultElement = document.getElementById('result');
+            if (choice === '周广丽') {
+                resultElement.textContent = '说的没错';
+            } else {
+                resultElement.textContent = '滚吧你';
+            }
+        }
+    </script>
 </body>
 
 </html>
