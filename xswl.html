@@ -42,8 +42,8 @@
             margin-top: 20px;
         }
 
-        /* 实现哈哈哈全屏滚动 */
-        #rolling-text {
+        /* 实现图片全屏滚动 */
+        #rolling-image {
             position: fixed;
             top: 0;
             left: 0;
@@ -58,9 +58,9 @@
             display: none;
         }
 
-        #rolling-text span {
-            font-size: 3em;
-            color: rgba(0, 0, 0, 0.1);
+        #rolling-image img {
+            width: 100px;
+            height: 100px;
             animation: roll 10s linear infinite;
         }
 
@@ -79,32 +79,29 @@
 <body>
     <h1>谁是世界上最好的人？</h1>
     <div style="display: flex; justify-content: center;">
-        <button onclick="checkAnswer('任芸琪')">任芸琪</button>
-        <button onclick="checkAnswer('周广丽')">周广丽</button>
-        <button onclick="checkAnswer('李蕊甜')">李蕊甜</button>
-        <button onclick="checkAnswer('门佳璐')">门佳璐</button>
-        <button onclick="checkAnswer('王丽阳')">王丽阳</button>
+        <button onclick="checkAnswer('任芸琪', 'renyunqi.jpg')">任芸琪</button>
+        <button onclick="checkAnswer('周广丽', 'zhouguangli.jpg')">周广丽</button>
+        <button onclick="checkAnswer('李蕊甜', 'liruitian.jpg')">李蕊甜</button>
+        <button onclick="checkAnswer('门佳璐','menjialu.jpg')">门佳璐</button>
+        <button onclick="checkAnswer('王丽阳', 'wangliyang.jpg')">王丽阳</button>
     </div>
     <div id="result"></div>
-    <div id="rolling-text">
-        <span>哈哈哈</span>
-        <span>哈哈哈</span>
-        <span>哈哈哈</span>
-        <span>哈哈哈</span>
-        <span>哈哈哈</span>
-        <span>哈哈哈</span>
+    <div id="rolling-image">
+        <img id="rolling-img" src="" alt="滚动图片">
     </div>
 
     <script>
-        function checkAnswer(choice) {
+        function checkAnswer(choice, imgPath) {
             const resultElement = document.getElementById('result');
-            const rollingText = document.getElementById('rolling-text');
+            const rollingImage = document.getElementById('rolling-img');
             if (choice === '周广丽') {
                 resultElement.textContent = '说的没错';
-                rollingText.style.display = 'none';
+                rollingImage.src = "";
+                document.getElementById('rolling-image').style.display = 'none';
             } else {
                 resultElement.textContent = '滚吧你';
-                rollingText.style.display = 'flex';
+                rollingImage.src = imgPath;
+                document.getElementById('rolling-image').style.display = 'flex';
             }
         }
     </script>
