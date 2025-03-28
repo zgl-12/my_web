@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>张小可个人简历</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff5f9;
+            padding: 20px;
+        }
+        .resume-header {
+            border-bottom: 1px dotted #ccc;
+            margin-bottom: 20px;
+        }
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-text {
+            flex: 1;
+        }
+        .header-text h1 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+        .header-text p {
+            font-size: 1.1em;
+            margin: 8px 0;
+        }
+        .section {
+            margin: 20px 0;
+        }
+        .section h3 {
+            color: white;
+            background-color: #fca5f1;
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .experience-item, .education-item {
+            margin: 10px 0;
+        }
+        .skill-list, .自我评价 {
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="resume-header">
+        <div class="header-info">
+            <div class="header-text">
+                <h1>PERSONAL RESUME</h1>
+                <h2>张小可 求职意向：平面设计师/随时入职</h2>
+                <p>年龄：24 手机号码：13066668888</p>
+                <p>邮箱：cnsupport@canva.com</p>
+                <p>兴趣爱好：阅读、旅游、摄影</p>
+            </div>
+            <img src="https://example.com/avatar.jpg" alt="张小可" style="width: 120px; height: auto;">
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>教育背景</h3>
+        <div class="education-item">
+            20XX年XX月-20XX年XX月
+            <span>可瓦美术学院</span>
+            <span>设计学 硕士</span>
+        </div>
+        <div class="education-item">
+            20XX年XX月-20XX年XX月
+            <span>可瓦大学</span>
+            <span>视觉传达专业学士</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>工作经历</h3>
+        <div class="experience-item">
+            20XX年XX月-至今
+            <span>可瓦设计公司</span>
+            <span>平面设计师</span>
+            <ul>
+                <li>独立完成公司对外宣传海报、图册等线下物料；</li>
+                <li>根据客户需求独立完成品牌海报；</li>
+                <li>帮助建立与完善公司的Logo及VI系统。</li>
+            </ul>
+        </div>
+        <div class="experience-item">
+            20XX年XX月-20XX年XX月
+            <span>可瓦设计公司</span>
+            <span>设计助理</span>
+            <ul>
+                <li>协助主设计师完成公司对外宣传海报、图册等线下物料；</li>
+                <li>根据客户需求协助设计师完成品牌海报；</li>
+                <li>协助主设计师完成设计提案。</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>个人技能</h3>
+        <div class="skill-list">
+            熟练掌握作图、排版等工具；基本掌握3D建模系列软件；能够独立完成海报及插画创作；有团队协作精神和较强的抗压能力。
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>自我评价</h3>
+        <div class="自我评价">
+            性格乐观、开朗，有责任心。工作认真负责，积极主动。熟悉各自媒体平台的运营，具备良好的创新能力，绘画基本功扎实。同时，我也注重自我学习和提升，不断拓宽知识面和提高设计能力，以更好地适应不断变化的市场环境。
+        </div>
+    </div>
+</body>
+</html>
