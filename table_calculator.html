@@ -38,6 +38,21 @@
         button:hover {
             background-color: #d0d0d0;
         }
+
+        /* 将清除按钮背景色设置为黄色 */
+        button[onclick="clearDisplay()"] {
+            background-color: yellow;
+        }
+
+        /* 将加减乘除、=、. 按钮字体颜色设置为红色 */
+        button[onclick="appendToDisplay('+')"],
+        button[onclick="appendToDisplay('-')"],
+        button[onclick="appendToDisplay('*')"],
+        button[onclick="appendToDisplay('/')"],
+        button[onclick="appendToDisplay('.')"],
+        button[onclick="calculate()"] {
+            color: red;
+        }
     </style>
 </head>
 
