@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator with Fireworks</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+
+        #calculator {
+            background-color: #e9ecef;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            z-index: 1;
+            width: 300px;
+        }
+
+        #display {
+            width: 100%;
+            height: 60px;
+            font-size: 32px;
+            text-align: right;
+            margin-bottom: 15px;
+            border: none;
+            background-color: #dee2e6;
+            border-radius: 8px;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 15px;
+            font-size: 20px;
+            border: none;
+            background-color: #adb5bd;
+            color: #212529;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #ced4da;
+        }
+
+        #clear-button {
+            grid-column: 1 / -1;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        #clear-button:hover {
+            background-color: #f5c6cb;
+        }
+
+        #equals-button {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        #equals-button:hover {
+            background-color: #c3e6cb;
+        }
+
+        #fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* 新增哪吒图片样式 */
+        #nezha-img {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 100px;
+            height: auto;
+            opacity: 0;
+            transform: scale(0);
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+        }
+
+        #nezha-img.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="calculator">
+        <input type="text" id="display" readonly>
+        <div class="buttons">
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button onclick="appendToDisplay('/')">/</button>
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button onclick="appendToDisplay('*')">*</button>
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button onclick="appendToDisplay('-')">-</button>
+            <button onclick="appendToDisplay('0')">0</button>
+            <button onclick="appendToDisplay('.')">.</button>
+            <button id="equals-button" onclick="calculate()">=</button>
+            <button onclick="appendToDisplay('+')">+</button>
+            <button id="clear-button" onclick="clearDisplay()">C</button>
+        </div>
+    </div>
+    <canvas id="fireworks"></canvas>
+    <img src="https://img.zcool.cn/community/01e07d5d53469ba80121c3d68a024c.jpg@2o.jpg" alt="哪吒" id="nezha-img">
+    <script>
+        const display = document.getElementById('display');
+        const canvas = document.getElementById('fireworks');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        function appendToDisplay(value) {
+            clearFireworks();
+            display.value += value;
+        }
+
+        function clearDisplay() {
+            clearFireworks();
+            display.value = '';
+            showNezhaImage(); // 新增图片显示
+        }
+
+        function calculate() {
+            try {
+                const result = eval(display.value);
+                display.value = result;
+                startFireworks();
+            } catch (error) {
+                display.value = 'Error';
+            }
+        }
+
+        // 新增图片显示函数
+        function showNezhaImage() {
+            const img = document.getElementById('nezha-img');
+            img.classList.add('show');
+            setTimeout(() => {
+                img.classList.remove('show');
+            }, 2000); // 显示2秒后自动隐藏
+        }
+
+        // 烟花特效代码保持不变
+        class Firework {
+            constructor(x, y, targetX, targetY, color) {
+                this.x = x;
+                this.y = y;
+                this.targetX = targetX;
+                this.targetY = targetY;
+                this.color = color;
+                this.speed = Math.random() * 3 + 2;
+                this.distanceToTarget = Math.sqrt((targetX - x) ** 2 + (targetY - y) ** 2);
+                this.distanceTraveled = 0;
+                this.exploded = false;
+                this.particles = [];
+            }
+
+            update() {
+                if (!this.exploded) {
+                    const dx = this.targetX - this.x;
+                    const dy = this.targetY - this.y;
+                    const angle = Math.atan2(dy, dx);
+                    this.x += Math.cos(angle) * this.speed;
+                    this.y += Math.sin(angle) * this.speed;
+                    this.distanceTraveled += this.speed;
+
+                    if (this.distanceTraveled >= this.distanceToTarget) {
+                        this.exploded = true;
+                        for (let i = 0; i < 50; i++) {
+                            this.particles.push(new Particle(this.x, this.y, this.color));
+                        }
+                    }
+                } else {
+                    for (let i = this.particles.length - 1; i >= 0; i--) {
+                        this.particles[i].update();
+                        if (this.particles[i].opacity <= 0) {
+                            this.particles.splice(i, 1);
+                        }
+                    }
+                }
+            }
+
+            draw() {
+                if (!this.exploded) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                } else {
+                    for (let particle of this.particles) {
+                        particle.draw();
+                    }
+                }
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 6;
+                this.speedY = (Math.random() - 0.5) * 6;
+                this.opacity = 1;
+                this.fadeRate = Math.random() * 0.02 + 0.01;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.opacity -= this.fadeRate;
+            }
+
+            draw() {
+                ctx.globalAlpha = this.opacity;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        const fireworks = [];
+        let fireworksInterval;
+
+        function createFirework() {
+            const startX = Math.random() * canvas.width;
+            const startY = canvas.height;
+            const targetX = Math.random() * canvas.width;
+            const targetY = Math.random() * canvas.height * 0.7;
+            const colors = ['#FF5733', '#FFC300', '#DAF7A6', '#C70039', '#900C3F', '#581845'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            fireworks.push(new Firework(startX, startY, targetX, targetY, color));
+        }
+
+        function startFireworks() {
+            fireworksInterval = setInterval(createFirework, 1000);
+            animateFireworks();
+            setTimeout(() => {
+                clearInterval(fireworksInterval);
+            }, 5000);
+        }
+
+        function animateFireworks() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                fireworks[i].update();
+                fireworks[i].draw();
+                if (fireworks[i].exploded && fireworks[i].particles.length === 0) {
+                    fireworks.splice(i, 1);
+                }
+            }
+            requestAnimationFrame(animateFireworks);
+        }
+
+        function clearFireworks() {
+            clearInterval(fireworksInterval);
+            fireworks.length = 0;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    </script>
+</body>
+
+</html>
