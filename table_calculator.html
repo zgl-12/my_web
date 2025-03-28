@@ -1,114 +1,262 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>表格计算器</title>
+    <title>Calculator with Fireworks</title>
     <style>
-        table {
-            border-collapse: collapse;
-            margin: 0 auto;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
         }
 
-        td {
-            border: 1px solid #ccc;
-            padding: 10px;
+        #calculator {
+            background-color: #e9ecef;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            z-index: 1;
+            width: 300px;
         }
 
-        input[type="text"] {
+        #display {
             width: 100%;
-            height: 50px;
-            font-size: 24px;
+            height: 60px;
+            font-size: 32px;
             text-align: right;
+            margin-bottom: 15px;
             border: none;
-            outline: none;
+            background-color: #dee2e6;
+            border-radius: 8px;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
         }
 
         button {
-            width: 100%;
-            padding: 10px;
-            font-size: 18px;
+            padding: 15px;
+            font-size: 20px;
             border: none;
-            background-color: #e0e0e0;
+            background-color: #adb5bd;
+            color: #212529;
             cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
         }
 
         button:hover {
-            background-color: #d0d0d0;
+            background-color: #ced4da;
         }
 
-        /* 将清除按钮背景色设置为黄色 */
-        button[onclick="clearDisplay()"] {
-            background-color: yellow;
+        #clear-button {
+            grid-column: 1 / -1;
+            background-color: #f8d7da;
+            color: #721c24;
         }
 
-        /* 将加减乘除、=、. 按钮字体颜色设置为红色 */
-        button[onclick="appendToDisplay('+')"],
-        button[onclick="appendToDisplay('-')"],
-        button[onclick="appendToDisplay('*')"],
-        button[onclick="appendToDisplay('/')"],
-        button[onclick="appendToDisplay('.')"],
-        button[onclick="calculate()"] {
-            color: red;
+        #clear-button:hover {
+            background-color: #f5c6cb;
+        }
+
+        #equals-button {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        #equals-button:hover {
+            background-color: #c3e6cb;
+        }
+
+        #fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
         }
     </style>
 </head>
 
 <body>
-    <table>
-        <tr>
-            <td colspan="4">
-                <input type="text" id="display" readonly>
-            </td>
-        </tr>
-        <tr>
-            <td><button onclick="appendToDisplay('7')">7</button></td>
-            <td><button onclick="appendToDisplay('8')">8</button></td>
-            <td><button onclick="appendToDisplay('9')">9</button></td>
-            <td><button onclick="appendToDisplay('/')">/</button></td>
-        </tr>
-        <tr>
-            <td><button onclick="appendToDisplay('4')">4</button></td>
-            <td><button onclick="appendToDisplay('5')">5</button></td>
-            <td><button onclick="appendToDisplay('6')">6</button></td>
-            <td><button onclick="appendToDisplay('*')">*</button></td>
-        </tr>
-        <tr>
-            <td><button onclick="appendToDisplay('1')">1</button></td>
-            <td><button onclick="appendToDisplay('2')">2</button></td>
-            <td><button onclick="appendToDisplay('3')">3</button></td>
-            <td><button onclick="appendToDisplay('-')">-</button></td>
-        </tr>
-        <tr>
-            <td><button onclick="appendToDisplay('0')">0</button></td>
-            <td><button onclick="appendToDisplay('.')">.</button></td>
-            <td><button onclick="calculate()">=</button></td>
-            <td><button onclick="appendToDisplay('+')">+</button></td>
-        </tr>
-        <tr>
-            <td colspan="4">
-                <button onclick="clearDisplay()">清除</button>
-            </td>
-        </tr>
-    </table>
-
+    <div id="calculator">
+        <input type="text" id="display" readonly>
+        <div class="buttons">
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button onclick="appendToDisplay('/')">/</button>
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button onclick="appendToDisplay('*')">*</button>
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button onclick="appendToDisplay('-')">-</button>
+            <button onclick="appendToDisplay('0')">0</button>
+            <button onclick="appendToDisplay('.')">.</button>
+            <button id="equals-button" onclick="calculate()">=</button>
+            <button onclick="appendToDisplay('+')">+</button>
+            <button id="clear-button" onclick="clearDisplay()">C</button>
+        </div>
+    </div>
+    <canvas id="fireworks"></canvas>
     <script>
+        const display = document.getElementById('display');
+        const canvas = document.getElementById('fireworks');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
         function appendToDisplay(value) {
-            document.getElementById('display').value += value;
+            clearFireworks();
+            display.value += value;
         }
 
         function clearDisplay() {
-            document.getElementById('display').value = '';
+            clearFireworks();
+            display.value = '';
         }
 
         function calculate() {
             try {
-                document.getElementById('display').value = eval(document.getElementById('display').value);
+                const result = eval(display.value);
+                display.value = result;
+                startFireworks();
             } catch (error) {
-                document.getElementById('display').value = '错误';
+                display.value = 'Error';
             }
+        }
+
+        class Firework {
+            constructor(x, y, targetX, targetY, color) {
+                this.x = x;
+                this.y = y;
+                this.targetX = targetX;
+                this.targetY = targetY;
+                this.color = color;
+                this.speed = Math.random() * 3 + 2;
+                this.distanceToTarget = Math.sqrt((targetX - x) ** 2 + (targetY - y) ** 2);
+                this.distanceTraveled = 0;
+                this.exploded = false;
+                this.particles = [];
+            }
+
+            update() {
+                if (!this.exploded) {
+                    const dx = this.targetX - this.x;
+                    const dy = this.targetY - this.y;
+                    const angle = Math.atan2(dy, dx);
+                    this.x += Math.cos(angle) * this.speed;
+                    this.y += Math.sin(angle) * this.speed;
+                    this.distanceTraveled += this.speed;
+
+                    if (this.distanceTraveled >= this.distanceToTarget) {
+                        this.exploded = true;
+                        for (let i = 0; i < 50; i++) {
+                            this.particles.push(new Particle(this.x, this.y, this.color));
+                        }
+                    }
+                } else {
+                    for (let i = this.particles.length - 1; i >= 0; i--) {
+                        this.particles[i].update();
+                        if (this.particles[i].opacity <= 0) {
+                            this.particles.splice(i, 1);
+                        }
+                    }
+                }
+            }
+
+            draw() {
+                if (!this.exploded) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                } else {
+                    for (let particle of this.particles) {
+                        particle.draw();
+                    }
+                }
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 6;
+                this.speedY = (Math.random() - 0.5) * 6;
+                this.opacity = 1;
+                this.fadeRate = Math.random() * 0.02 + 0.01;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.opacity -= this.fadeRate;
+            }
+
+            draw() {
+                ctx.globalAlpha = this.opacity;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        const fireworks = [];
+        let fireworksInterval;
+
+        function createFirework() {
+            const startX = Math.random() * canvas.width;
+            const startY = canvas.height;
+            const targetX = Math.random() * canvas.width;
+            const targetY = Math.random() * canvas.height * 0.7;
+            const colors = ['#FF5733', '#FFC300', '#DAF7A6', '#C70039', '#900C3F', '#581845'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            fireworks.push(new Firework(startX, startY, targetX, targetY, color));
+        }
+
+        function startFireworks() {
+            fireworksInterval = setInterval(createFirework, 1000);
+            animateFireworks();
+            setTimeout(() => {
+                clearInterval(fireworksInterval);
+            }, 5000);
+        }
+
+        function animateFireworks() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                fireworks[i].update();
+                fireworks[i].draw();
+                if (fireworks[i].exploded && fireworks[i].particles.length === 0) {
+                    fireworks.splice(i, 1);
+                }
+            }
+            requestAnimationFrame(animateFireworks);
+        }
+
+        function clearFireworks() {
+            clearInterval(fireworksInterval);
+            fireworks.length = 0;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
     </script>
 </body>
