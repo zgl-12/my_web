@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>甜蜜 CD 机</title>
+    <style>
+        body {
+            background-color: #ffe4e1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        .cd-player {
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            text-align: center;
+        }
+
+        .cd {
+            width: 200px;
+            height: 200px;
+            background-image: url('C:\Users\周广丽\Desktop\t013a745d98446eac25.jpg');
+            background-size: cover;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            animation: rotate 5s linear infinite paused;
+            position: relative;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .lyrics {
+            height: 50px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .lyrics p {
+            margin: 0;
+            line-height: 50px;
+            animation: scroll 10s linear infinite paused;
+        }
+
+        @keyframes scroll {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-100%);
+            }
+        }
+
+        button {
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #ff1493;
+        }
+
+        .bubbles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: bubble 5s linear infinite;
+        }
+
+        @keyframes bubble {
+            0% {
+                transform: translateY(100vh) scale(0);
+            }
+
+            100% {
+                transform: translateY(-10vh) scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cd-player">
+        <div class="cd"></div>
+        <div class="lyrics">
+            <p>这是一段甜蜜的歌词~</p>
+        </div>
+        <button id="play-pause">播放</button>
+        <div class="bubbles"></div>
+    </div>
+
+    <script>
+        const cd = document.querySelector('.cd');
+        const lyrics = document.querySelector('.lyrics p');
+        const playPauseButton = document.getElementById('play-pause');
+        const bubbles = document.querySelector('.bubbles');
+        let isPlaying = false;
+
+        playPauseButton.addEventListener('click', () => {
+            if (isPlaying) {
+                cd.style.animationPlayState = 'paused';
+                lyrics.style.animationPlayState = 'paused';
+                playPauseButton.textContent = '播放';
+                clearInterval(bubbleInterval);
+            } else {
+                cd.style.animationPlayState = 'running';
+                lyrics.style.animationPlayState = 'running';
+                playPauseButton.textContent = '暂停';
+                bubbleInterval = setInterval(createBubble, 500);
+            }
+            isPlaying = !isPlaying;
+        });
+
+        function createBubble() {
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+            const size = Math.random() * 50 + 20;
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            bubble.style.left = `${Math.random() * 100}vw`;
+            bubbles.appendChild(bubble);
+            setTimeout(() => {
+                bubble.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+
+</html>
+    
