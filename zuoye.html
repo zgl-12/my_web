@@ -8,6 +8,18 @@
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
     <style>
+        body {
+            background-image: url("5.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
         @keyframes spin {
             from {
                 transform: rotate(0deg);
@@ -64,6 +76,7 @@
             border-radius: 4px;
             margin-top: 20px;
             overflow: hidden;
+            position: relative;
         }
 
         #progress {
@@ -72,11 +85,31 @@
             width: 0%;
             border-radius: 4px;
         }
+
+        /* 小人样式 */
+        #runner {
+            position: absolute;
+            top: -12px;
+            left: 0;
+            font-size: 20px;
+            color: #3498db;
+            transform: translateX(-50%);
+        }
+
+        /* CD 机容器样式 */
+        .cd-player-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
     </style>
 </head>
 
-<body class="bg-gray-100 flex justify-center items-center h-screen">
-    <div class="bg-white p-8 rounded-lg shadow-lg">
+<body>
+    <div class="cd-player-container">
         <div class="flex justify-center mb-6">
             <img id="cd-cover" src="https://picsum.photos/200/200" alt="CD Cover" class="rounded-full w-48 h-48">
         </div>
@@ -87,6 +120,7 @@
         </div>
         <div id="progress-bar">
             <div id="progress"></div>
+            <i id="runner" class="fa-solid fa-person-running"></i>
         </div>
         <audio id="audio" src="untitled.mp3"></audio>
     </div>
@@ -95,7 +129,14 @@
         const playPauseButton = document.getElementById('play-pause');
         const audio = document.getElementById('audio');
         const progress = document.getElementById('progress');
+        const runner = document.getElementById('runner');
         let isPlaying = false;
+
+        function updateProgress() {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progress.style.width = percent + '%';
+            runner.style.left = percent + '%';
+        }
 
         playPauseButton.addEventListener('click', () => {
             if (isPlaying) {
@@ -110,10 +151,13 @@
             isPlaying = !isPlaying;
         });
 
-        audio.addEventListener('timeupdate', () => {
-            const percent = (audio.currentTime / audio.duration) * 100;
-            progress.style.width = percent + '%';
-        });
+        audio.addEventListener('timeupdate', updateProgress);
+
+        // 页面加载完成后初始化进度
+        window.addEventListener('load', updateProgress);
+
+        // 音频加载完成时更新进度
+        audio.addEventListener('loadedmetadata', updateProgress);
     </script>
 </body>
 
