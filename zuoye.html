@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CD Player</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <style>
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spin {
+            animation: spin 5s linear infinite;
+        }
+
+        /* 美化播放/暂停按钮 */
+        #play-pause {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        #play-pause:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        #play-pause:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 flex justify-center items-center h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg">
+        <div class="flex justify-center mb-6">
+            <img id="cd-cover" src="https://picsum.photos/200/200" alt="CD Cover" class="rounded-full w-48 h-48">
+        </div>
+        <div class="flex justify-center">
+            <button id="play-pause">
+                <i class="fa-solid fa-play"></i>
+            </button>
+        </div>
+        <audio id="audio" src="untitled.mp3"></audio>
+    </div>
+    <script>
+        const cdCover = document.getElementById('cd-cover');
+        const playPauseButton = document.getElementById('play-pause');
+        const audio = document.getElementById('audio');
+        let isPlaying = false;
+
+        playPauseButton.addEventListener('click', () => {
+            if (isPlaying) {
+                cdCover.classList.remove('spin');
+                playPauseButton.innerHTML = '<i class="fa-solid fa-play"></i>';
+                audio.pause();
+            } else {
+                cdCover.classList.add('spin');
+                playPauseButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                audio.play();
+            }
+            isPlaying = !isPlaying;
+        });
+    </script>
+</body>
+
+</html>
+    
