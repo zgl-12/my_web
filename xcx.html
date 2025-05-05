@@ -53,6 +53,7 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             padding: 2rem;
             text-align: center;
+            position: relative;
         }
 
        .tombstone {
@@ -85,6 +86,68 @@
             color: #fff;
             text-align: center;
             width: 160px;
+        }
+
+        /* 新增的花束样式 */
+       .flower-bouquet {
+            width: 80px;
+            height: 80px;
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+       .flower-bouquet::before {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-bottom: 60px solid #FF69B4;
+            border-radius: 50%;
+            top: 0;
+        }
+
+       .flower-bouquet::after {
+            content: "";
+            position: absolute;
+            width: 10px;
+            height: 40px;
+            background-color: #006400;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* 新增的蜡烛样式 */
+       .candle {
+            width: 30px;
+            height: 80px;
+            background-color: #fff;
+            border-radius: 15px;
+            position: absolute;
+            bottom: 60px;
+            left: 30%;
+            transform: translateX(-50%);
+        }
+
+       .candle::before {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-bottom: 10px solid #FFD700;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+       .candle:nth-of-type(2) {
+            left: 70%;
         }
 
        .pet-raising-scene {
@@ -149,8 +212,7 @@
     </header>
 
     <div class="page-container active" id="home-page">
-        <!-- 这里使用示例图片链接，你可以替换为你搜索到的图片链接 -->
-        <img class="pet-image" src="1.jpg">
+        <img class="pet-image" src="https://picsum.photos/600/400?random=1" alt="可爱宠物">
         <p class="text-gray-700 text-lg text-center">欢迎来到宠忆无界，在这里开启与宠物的美好回忆之旅！</p>
     </div>
 
@@ -158,6 +220,9 @@
         <div class="funeral-scene">
             <h2 class="text-2xl font-bold mb-4">虚拟葬礼场景</h2>
             <div class="tombstone"></div>
+            <div class="flower-bouquet"></div>
+            <div class="candle"></div>
+            <div class="candle"></div>
         </div>
     </div>
 
@@ -272,4 +337,4 @@
     </script>
 </body>
 
-</html>    
+</html>
