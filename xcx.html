@@ -48,24 +48,27 @@
         }
 
         .funeral-scene {
-            background-color: rgba(255, 255, 255, 0.8);
+            background: url('https://picsum.photos/800/600?random=2') no-repeat center center/cover;
             border-radius: 1rem;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             padding: 2rem;
             text-align: center;
             position: relative;
+            overflow: hidden;
         }
 
-       .tombstone {
+        .tombstone {
             width: 200px;
             height: 300px;
             background-color: #333;
             border-radius: 10px 10px 0 0;
             position: relative;
             margin: 2rem auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1;
         }
 
-       .tombstone::before {
+        .tombstone::before {
             content: "";
             position: absolute;
             top: 10px;
@@ -77,8 +80,8 @@
             border-radius: 50%;
         }
 
-       .tombstone::after {
-            content: "爱宠安息于此";
+        .tombstone::after {
+            content: "爱宠【小可爱】安息于此";
             position: absolute;
             bottom: 20px;
             left: 50%;
@@ -88,69 +91,97 @@
             width: 160px;
         }
 
-        /* 新增的花束样式 */
-       .flower-bouquet {
-            width: 80px;
-            height: 80px;
-            position: absolute;
-            bottom: 50px;
-            left: 50%;
-            transform: translateX(-50%);
+        .tombstone:hover::after {
+            color: #FF69B4;
         }
 
-       .flower-bouquet::before {
-            content: "";
-            position: absolute;
-            width: 0;
-            height: 0;
-            border-left: 40px solid transparent;
-            border-right: 40px solid transparent;
-            border-bottom: 60px solid #FF69B4;
-            border-radius: 50%;
-            top: 0;
-        }
-
-       .flower-bouquet::after {
-            content: "";
-            position: absolute;
-            width: 10px;
-            height: 40px;
-            background-color: #006400;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        /* 新增的蜡烛样式 */
-       .candle {
-            width: 30px;
-            height: 80px;
-            background-color: #fff;
-            border-radius: 15px;
+        .flower-bouquet {
+            width: 120px;
+            height: 120px;
             position: absolute;
             bottom: 60px;
-            left: 30%;
+            left: 50%;
             transform: translateX(-50%);
+            z-index: 1;
         }
 
-       .candle::before {
+        .flower-bouquet img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .candle {
+            width: 40px;
+            height: 100px;
+            background-color: #fff;
+            border-radius: 20px;
+            position: absolute;
+            bottom: 70px;
+            left: 30%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            z-index: 1;
+            animation: candle-flicker 3s infinite alternate;
+        }
+
+        .candle::before {
             content: "";
             position: absolute;
             width: 0;
             height: 0;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-bottom: 10px solid #FFD700;
-            top: -10px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 15px solid #FFD700;
+            top: -15px;
             left: 50%;
             transform: translateX(-50%);
         }
 
-       .candle:nth-of-type(2) {
+        .candle:nth-of-type(2) {
             left: 70%;
         }
 
-       .pet-raising-scene {
+        @keyframes candle-flicker {
+            0% {
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            }
+
+            100% {
+                box-shadow: 0 0 25px rgba(255, 255, 255, 0.8);
+            }
+        }
+
+        .candle:hover {
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+        }
+
+        .falling-leaf {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: url('https://example.com/leaf.png') no-repeat center center/cover;
+            animation: fall 10s linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                top: -20px;
+            }
+
+            100% {
+                top: 100vh;
+            }
+        }
+
+        .emotional-text {
+            color: #fff;
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .pet-raising-scene {
             background-color: rgba(255, 255, 255, 0.8);
             border-radius: 1rem;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -158,7 +189,7 @@
             text-align: center;
         }
 
-       .community-scene {
+        .community-scene {
             background-color: rgba(255, 255, 255, 0.8);
             border-radius: 1rem;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -166,7 +197,7 @@
             text-align: center;
         }
 
-       .store-scene {
+        .store-scene {
             background-color: rgba(255, 255, 255, 0.8);
             border-radius: 1rem;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -174,7 +205,7 @@
             text-align: center;
         }
 
-       .my-scene {
+        .my-scene {
             background-color: rgba(255, 255, 255, 0.8);
             border-radius: 1rem;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -194,7 +225,7 @@
             padding: 0.5rem 0;
         }
 
-       .pet-image {
+        .pet-image {
             width: 100%;
             max-width: 600px;
             height: auto;
@@ -202,6 +233,16 @@
             display: block;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 声音样式 */
+        audio {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            overflow: hidden;
         }
     </style>
 </head>
@@ -218,11 +259,20 @@
 
     <div class="page-container" id="funeral-page">
         <div class="funeral-scene">
-            <h2 class="text-2xl font-bold mb-4">虚拟葬礼场景</h2>
+            <h2 class="text-2xl font-bold mb-4 text-white">虚拟葬礼场景</h2>
             <div class="tombstone"></div>
-            <div class="flower-bouquet"></div>
+            <div class="flower-bouquet">
+                <img src="https://picsum.photos/120/120?random=3" alt="花束">
+            </div>
             <div class="candle"></div>
             <div class="candle"></div>
+            <div class="falling-leaf" style="left: 20%; animation-delay: 2s;"></div>
+            <div class="falling-leaf" style="left: 50%; animation-delay: 5s;"></div>
+            <div class="falling-leaf" style="left: 80%; animation-delay: 8s;"></div>
+            <p class="emotional-text">你曾是我生命中最温暖的陪伴，如今虽已远去，但回忆永不凋零。</p>
+            <audio autoplay loop>
+                <source src="https://example.com/soft-music.mp3" type="audio/mpeg">
+            </audio>
         </div>
     </div>
 
