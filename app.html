@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <title>宠忆无界</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #FFE5F1 0%, #D6F9FF 100%);
+        }
+
+        header {
+            background: linear-gradient(135deg, #FF86B3 0%, #73A6FF 100%);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            transform: scale(1.1);
+            color: #FF69B4;
+        }
+
+        .main-content {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .pet-icon {
+            width: 64px;
+            height: 64px;
+            margin: 1rem auto;
+            background-image: url('https://img.freepik.com/free-icon/paw-print_318-305217.jpg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        /* 各板块页面样式 */
+       .funeral-scene {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin: 2rem auto;
+            width: 80%;
+        }
+
+       .tombstone {
+            width: 200px;
+            height: 300px;
+            background-color: #333;
+            border-radius: 10px 10px 0 0;
+            position: relative;
+        }
+
+       .tombstone::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            background-color: #fff;
+            border-radius: 50%;
+        }
+
+       .tombstone::after {
+            content: "爱宠安息于此";
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            text-align: center;
+            width: 160px;
+        }
+
+       .pet-raising-scene {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin: 2rem auto;
+            width: 80%;
+        }
+
+       .community-scene {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin: 2rem auto;
+            width: 80%;
+        }
+
+       .store-scene {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin: 2rem auto;
+            width: 80%;
+        }
+
+       .my-scene {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin: 2rem auto;
+            width: 80%;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <!-- 头部 -->
+    <header class="text-white p-4 text-center">
+        <h1 class="text-3xl font-bold tracking-wide">宠忆无界</h1>
+    </header>
+
+    <!-- 主体内容 -->
+    <main class="p-4 min-h-screen flex flex-col items-center">
+        <div class="main-content w-full md:w-3/4 lg:w-1/2">
+            <div class="pet-icon"></div>
+            <p class="text-gray-700 text-lg text-center">欢迎来到宠忆无界，在这里开启与宠物的美好回忆之旅！</p>
+        </div>
+    </main>
+
+    <!-- 底部导航 -->
+    <footer class="bg-white border-t border-gray-300 fixed bottom-0 left-0 right-0">
+        <div class="flex justify-around p-2">
+            <a href="#" id="funeral-btn" class="nav-item text-center">
+                <i class="fa-solid fa-paw text-2xl"></i>
+                <p class="text-sm">数字殡葬</p>
+            </a>
+            <a href="#" id="pet-raising-btn" class="nav-item text-center">
+                <i class="fa-solid fa-paw text-2xl"></i>
+                <p class="text-sm">云养宠物</p>
+            </a>
+            <a href="#" id="community-btn" class="nav-item text-center">
+                <i class="fa-solid fa-users text-2xl"></i>
+                <p class="text-sm">社群互动</p>
+            </a>
+            <a href="#" id="store-btn" class="nav-item text-center">
+                <i class="fa-solid fa-store text-2xl"></i>
+                <p class="text-sm">商城</p>
+            </a>
+            <a href="#" id="my-btn" class="nav-item text-center">
+                <i class="fa-solid fa-user text-2xl"></i>
+                <p class="text-sm">我的</p>
+            </a>
+        </div>
+    </footer>
+
+    <!-- 各板块页面 -->
+    <div class="funeral-scene" id="funeral-scene">
+        <h2 class="text-2xl font-bold mb-4">虚拟葬礼场景</h2>
+        <div class="tombstone"></div>
+    </div>
+
+    <div class="pet-raising-scene" id="pet-raising-scene">
+        <h2 class="text-2xl font-bold mb-4">云养宠物页面</h2>
+        <p>在这里你可以体验云养宠物的乐趣。</p>
+    </div>
+
+    <div class="community-scene" id="community-scene">
+        <h2 class="text-2xl font-bold mb-4">社群互动页面</h2>
+        <p>和其他宠物爱好者交流互动吧。</p>
+    </div>
+
+    <div class="store-scene" id="store-btn">
+        <h2 class="text-2xl font-bold mb-4">商城页面</h2>
+        <p>选购各种宠物用品。</p>
+    </div>
+
+    <div class="my-scene" id="my-scene">
+        <h2 class="text-2xl font-bold mb-4">我的页面</h2>
+        <p>查看和管理你的个人信息和设置。</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const funeralBtn = document.getElementById('funeral-btn');
+            const funeralScene = document.getElementById('funeral-scene');
+            const petRaisingBtn = document.getElementById('pet-raising-btn');
+            const petRaisingScene = document.getElementById('pet-raising-scene');
+            const communityBtn = document.getElementById('community-btn');
+            const communityScene = document.getElementById('community-scene');
+            const storeBtn = document.getElementById('store-btn');
+            const storeScene = document.getElementById('store-scene');
+            const myBtn = document.getElementById('my-btn');
+            const myScene = document.getElementById('my-scene');
+
+            funeralBtn.addEventListener('click', function () {
+                hideAllScenes();
+                funeralScene.style.display = 'flex';
+            });
+
+            petRaisingBtn.addEventListener('click', function () {
+                hideAllScenes();
+                petRaisingScene.style.display = 'flex';
+            });
+
+            communityBtn.addEventListener('click', function () {
+                hideAllScenes();
+                communityScene.style.display = 'flex';
+            });
+
+            storeBtn.addEventListener('click', function () {
+                hideAllScenes();
+                storeScene.style.display = 'flex';
+            });
+
+            myBtn.addEventListener('click', function () {
+                hideAllScenes();
+                myScene.style.display = 'flex';
+            });
+
+            function hideAllScenes() {
+                const scenes = document.querySelectorAll('.funeral-scene, .pet-raising-scene, .community-scene, .store-scene, .my-scene');
+                scenes.forEach(function (scene) {
+                    scene.style.display = 'none';
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
