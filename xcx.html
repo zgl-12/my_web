@@ -12,7 +12,7 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #FFE5F1 0%, #D6F9FF 100%);
+            overflow: hidden;
         }
 
         header {
@@ -20,6 +20,7 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             text-align: center;
             padding: 1rem;
+            z-index: 10;
         }
 
         h1 {
@@ -39,8 +40,13 @@
 
         .page-container {
             display: none;
-            min-height: calc(100vh - 56px);
+            min-height: 100vh;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
             padding: 1rem;
+            box-sizing: border-box;
         }
 
         .active {
@@ -49,8 +55,8 @@
 
         .funeral-scene {
             background: url('https://picsum.photos/800/600?random=2') no-repeat center center/cover;
-            border-radius: 1rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 0;
+            box-shadow: none;
             padding: 2rem;
             text-align: center;
             position: relative;
@@ -66,6 +72,7 @@
             margin: 2rem auto;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             z-index: 1;
+            cursor: pointer;
         }
 
         .tombstone::before {
@@ -103,6 +110,8 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 1;
+            cursor: move;
+            user-select: none;
         }
 
         .flower-bouquet img {
@@ -123,6 +132,7 @@
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
             z-index: 1;
             animation: candle-flicker 3s infinite alternate;
+            cursor: pointer;
         }
 
         .candle::before {
@@ -181,34 +191,85 @@
             text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
         }
 
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
         .pet-raising-scene {
             background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 1rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 0;
+            box-shadow: none;
             padding: 2rem;
             text-align: center;
         }
 
         .community-scene {
             background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 1rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 0;
+            box-shadow: none;
             padding: 2rem;
             text-align: center;
         }
 
         .store-scene {
             background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 1rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 0;
+            box-shadow: none;
             padding: 2rem;
             text-align: center;
         }
 
         .my-scene {
             background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 1rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 0;
+            box-shadow: none;
             padding: 2rem;
             text-align: center;
         }
@@ -223,6 +284,7 @@
             display: flex;
             justify-content: space-around;
             padding: 0.5rem 0;
+            z-index: 10;
         }
 
         .pet-image {
@@ -235,7 +297,6 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* 声音样式 */
         audio {
             position: absolute;
             top: 0;
@@ -260,12 +321,12 @@
     <div class="page-container" id="funeral-page">
         <div class="funeral-scene">
             <h2 class="text-2xl font-bold mb-4 text-white">虚拟葬礼场景</h2>
-            <div class="tombstone"></div>
-            <div class="flower-bouquet">
+            <div class="tombstone" id="tombstone"></div>
+            <div class="flower-bouquet" id="flower-bouquet">
                 <img src="https://picsum.photos/120/120?random=3" alt="花束">
             </div>
-            <div class="candle"></div>
-            <div class="candle"></div>
+            <div class="candle" id="candle1"></div>
+            <div class="candle" id="candle2"></div>
             <div class="falling-leaf" style="left: 20%; animation-delay: 2s;"></div>
             <div class="falling-leaf" style="left: 50%; animation-delay: 5s;"></div>
             <div class="falling-leaf" style="left: 80%; animation-delay: 8s;"></div>
@@ -331,6 +392,16 @@
         </a>
     </footer>
 
+    <!-- 宠物生平介绍模态框 -->
+    <div id="pet-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close-modal">&times;</span>
+            <h2>爱宠【小可爱】生平介绍</h2>
+            <img src="https://picsum.photos/200/200?random=4" alt="小可爱照片" class="mb-4 rounded-md">
+            <p>小可爱是一只活泼可爱的猫咪，它有着柔软的毛发和灵动的眼睛。自它来到我们家后，就成为了家庭中不可或缺的一员。它喜欢在阳光下慵懒地打盹，也喜欢追逐逗弄各种小玩具。在与我们相伴的时光里，它带来了无尽的欢乐和温暖。</p>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const homeBtn = document.getElementById('home-btn');
@@ -346,6 +417,10 @@
             const communityPage = document.getElementById('community-page');
             const storePage = document.getElementById('store-page');
             const myPage = document.getElementById('my-page');
+
+            const tombstone = document.getElementById('tombstone');
+            const petModal = document.getElementById('pet-modal');
+            const closeModal = document.getElementById('close-modal');
 
             homeBtn.addEventListener('click', function () {
                 hideAllPages();
@@ -383,8 +458,25 @@
                     page.classList.remove('active');
                 });
             }
+
+            // 点击墓碑打开模态框
+            tombstone.addEventListener('click', function () {
+                petModal.style.display = 'block';
+            });
+
+            // 点击关闭按钮关闭模态框
+            closeModal.addEventListener('click', function () {
+                petModal.style.display = 'none';
+            });
+
+            // 点击模态框外部关闭模态框
+            window.addEventListener('click', function (event) {
+                if (event.target === petModal) {
+                    petModal.style.display = 'none';
+                }
+            });
         });
     </script>
 </body>
 
-</html>
+</html>    
