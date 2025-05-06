@@ -12,7 +12,7 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            background: linear-gradient(135deg, #FFE5F1 0%, #D6F9FF 100%);
         }
 
         header {
@@ -20,59 +20,49 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             text-align: center;
             padding: 1rem;
-            z-index: 10;
         }
 
         h1 {
             margin: 0;
             color: white;
-            font-size: 1.5rem; /* 使用相对单位或根据媒体查询调整，这里先设为1.5rem */
+            font-size: 2rem;
         }
 
-       .nav-item {
+        .nav-item {
             transition: all 0.3s ease;
         }
 
-       .nav-item:hover {
+        .nav-item:hover {
             transform: scale(1.1);
             color: #FF69B4;
         }
 
-       .page-container {
+        .page-container {
             display: none;
-            min-height: 100vh;
-            width: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
+            min-height: calc(100vh - 56px);
             padding: 1rem;
-            box-sizing: border-box;
         }
 
-       .active {
+        .active {
             display: block;
         }
 
-       .funeral-scene {
-            background: url('https://picsum.photos/800/600?random=2') no-repeat center center/cover;
-            border-radius: 0;
-            box-shadow: none;
+        .funeral-scene {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             padding: 2rem;
             text-align: center;
             position: relative;
-            overflow: hidden;
         }
 
        .tombstone {
-            width: 150px; /* 适当缩小，以便在小屏幕上也能合理显示 */
-            height: 250px;
+            width: 200px;
+            height: 300px;
             background-color: #333;
             border-radius: 10px 10px 0 0;
             position: relative;
             margin: 2rem auto;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            z-index: 1;
-            cursor: pointer;
         }
 
        .tombstone::before {
@@ -81,59 +71,66 @@
             top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             background-color: #fff;
             border-radius: 50%;
         }
 
        .tombstone::after {
-            content: "爱宠【小可爱】安息于此";
+            content: "爱宠安息于此";
             position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             color: #fff;
             text-align: center;
-            width: 120px;
-            font-size: 0.9rem; /* 调整文字大小 */
+            width: 160px;
         }
 
-       .tombstone:hover::after {
-            color: #FF69B4;
-        }
-
+        /* 新增的花束样式 */
        .flower-bouquet {
-            width: 100px; /* 适当缩小 */
-            height: 100px;
+            width: 80px;
+            height: 80px;
             position: absolute;
-            bottom: 60px;
+            bottom: 50px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 1;
-            cursor: move;
-            user-select: none;
         }
 
-       .flower-bouquet img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+       .flower-bouquet::before {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-bottom: 60px solid #FF69B4;
+            border-radius: 50%;
+            top: 0;
         }
 
+       .flower-bouquet::after {
+            content: "";
+            position: absolute;
+            width: 10px;
+            height: 40px;
+            background-color: #006400;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* 新增的蜡烛样式 */
        .candle {
-            width: 30px; /* 适当缩小 */
+            width: 30px;
             height: 80px;
             background-color: #fff;
             border-radius: 15px;
             position: absolute;
-            bottom: 70px;
+            bottom: 60px;
             left: 30%;
             transform: translateX(-50%);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-            z-index: 1;
-            animation: candle-flicker 3s infinite alternate;
-            cursor: pointer;
         }
 
        .candle::before {
@@ -141,10 +138,10 @@
             position: absolute;
             width: 0;
             height: 0;
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-bottom: 12px solid #FFD700;
-            top: -12px;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-bottom: 10px solid #FFD700;
+            top: -10px;
             left: 50%;
             transform: translateX(-50%);
         }
@@ -153,124 +150,34 @@
             left: 70%;
         }
 
-        @keyframes candle-flicker {
-            0% {
-                box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-            }
-
-            100% {
-                box-shadow: 0 0 25px rgba(255, 255, 255, 0.8);
-            }
-        }
-
-       .candle:hover {
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
-        }
-
-       .falling-leaf {
-            position: absolute;
-            width: 15px; /* 适当缩小 */
-            height: 15px;
-            background: url('https://example.com/leaf.png') no-repeat center center/cover;
-            animation: fall 10s linear infinite;
-        }
-
-        @keyframes fall {
-            0% {
-                top: -20px;
-            }
-
-            100% {
-                top: 100vh;
-            }
-        }
-
-       .emotional-text {
-            color: #fff;
-            font-size: 1rem; /* 调整文字大小 */
-            margin-top: 1rem;
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-        }
-
-        /* 模态框样式 */
-       .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
-       .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 600px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            position: relative;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-       .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-       .close:hover,
-       .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
        .pet-raising-scene {
             background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 0;
-            box-shadow: none;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             padding: 2rem;
             text-align: center;
         }
 
        .community-scene {
             background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 0;
-            box-shadow: none;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             padding: 2rem;
             text-align: center;
         }
 
        .store-scene {
             background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 0;
-            box-shadow: none;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             padding: 2rem;
             text-align: center;
         }
 
        .my-scene {
             background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 0;
-            box-shadow: none;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             padding: 2rem;
             text-align: center;
         }
@@ -285,70 +192,16 @@
             display: flex;
             justify-content: space-around;
             padding: 0.5rem 0;
-            z-index: 10;
         }
 
        .pet-image {
             width: 100%;
-            height: 100%;
-            object-fit: cover; /* 让图片适应容器并覆盖整个容器 */
-        }
-
-        audio {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 0;
-            height: 0;
-            overflow: hidden;
-        }
-
-        /* 媒体查询，根据不同屏幕宽度调整样式 */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.2rem;
-            }
-
-           .tombstone {
-                width: 120px;
-                height: 200px;
-            }
-
-           .tombstone::before {
-                width: 50px;
-                height: 50px;
-            }
-
-           .tombstone::after {
-                width: 100px;
-                font-size: 0.8rem;
-            }
-
-           .flower-bouquet {
-                width: 80px;
-                height: 80px;
-            }
-
-           .candle {
-                width: 25px;
-                height: 70px;
-            }
-
-           .candle::before {
-                border-left: 5px solid transparent;
-                border-right: 5px solid transparent;
-                border-bottom: 10px solid #FFD700;
-                top: -10px;
-            }
-
-           .falling-leaf {
-                width: 12px;
-                height: 12px;
-            }
-
-           .emotional-text {
-                font-size: 0.9rem;
-            }
+            max-width: 600px;
+            height: auto;
+            margin: 1rem auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -365,20 +218,11 @@
 
     <div class="page-container" id="funeral-page">
         <div class="funeral-scene">
-            <h2 class="text-2xl font-bold mb-4 text-white">虚拟葬礼场景</h2>
-            <div class="tombstone" id="tombstone"></div>
-            <div class="flower-bouquet" id="flower-bouquet">
-                <img src="https://picsum.photos/120/120?random=3" alt="花束">
-            </div>
-            <div class="candle" id="candle1"></div>
-            <div class="candle" id="candle2"></div>
-            <div class="falling-leaf" style="left: 20%; animation-delay: 2s;"></div>
-            <div class="falling-leaf" style="left: 50%; animation-delay: 5s;"></div>
-            <div class="falling-leaf" style="left: 80%; animation-delay: 8s;"></div>
-            <p class="emotional-text">你曾是我生命中最温暖的陪伴，如今虽已远去，但回忆永不凋零。</p>
-            <audio autoplay loop>
-                <source src="https://example.com/soft-music.mp3" type="audio/mpeg">
-            </audio>
+            <h2 class="text-2xl font-bold mb-4">虚拟葬礼场景</h2>
+            <div class="tombstone"></div>
+            <div class="flower-bouquet"></div>
+            <div class="candle"></div>
+            <div class="candle"></div>
         </div>
     </div>
 
@@ -437,15 +281,60 @@
         </a>
     </footer>
 
-    <!-- 宠物生平介绍模态框 -->
-    <div id="pet-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" id="close-modal">&times;</span>
-            <h2>爱宠【小可爱】生平介绍</h2>
-            <img src="https://picsum.photos/200/200?random=4" alt="小可爱照片" class="mb-4 rounded-md">
-            <p>小可爱是一只活泼可爱的猫咪，它有着柔软的毛发和灵动的眼睛。自它来到我们家后，就成为了家庭中不可或缺的一员。它喜欢在阳光下慵懒地打盹，也喜欢追逐逗弄各种小玩具。在与我们相伴的时光里，它带来了无尽的欢乐和温暖。</p>
-        </div>
-    </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const homeBtn = document.getElementById('home-btn');
+            const funeralBtn = document.getElementById('funeral-btn');
+            const petRaisingBtn = document.getElementById('pet-raising-btn');
+            const communityBtn = document.getElementById('community-btn');
+            const storeBtn = document.getElementById('store-btn');
+            const myBtn = document.getElementById('my-btn');
+
+            const homePage = document.getElementById('home-page');
+            const funeralPage = document.getElementById('funeral-page');
+            const petRaisingPage = document.getElementById('pet-raising-page');
+            const communityPage = document.getElementById('community-page');
+            const storePage = document.getElementById('store-page');
+            const myPage = document.getElementById('my-page');
+
+            homeBtn.addEventListener('click', function () {
+                hideAllPages();
+                homePage.classList.add('active');
+            });
+
+            funeralBtn.addEventListener('click', function () {
+                hideAllPages();
+                funeralPage.classList.add('active');
+            });
+
+            petRaisingBtn.addEventListener('click', function () {
+                hideAllPages();
+                petRaisingPage.classList.add('active');
+            });
+
+            communityBtn.addEventListener('click', function () {
+                hideAllPages();
+                communityPage.classList.add('active');
+            });
+
+            storeBtn.addEventListener('click', function () {
+                hideAllPages();
+                storePage.classList.add('active');
+            });
+
+            myBtn.addEventListener('click', function () {
+                hideAllPages();
+                myPage.classList.add('active');
+            });
+
+            function hideAllPages() {
+                const pages = document.querySelectorAll('.page-container');
+                pages.forEach(function (page) {
+                    page.classList.remove('active');
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
