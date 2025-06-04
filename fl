@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>评论数据可视化页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        iframe {
+            width: 80%;
+            /* 可以根据需要调整宽度 */
+            height: 600px;
+            /* 可以根据需要调整高度 */
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>评论点赞与回复数量可视化</h1>
+    <iframe src="like_reply_visualization_updated.html" title="评论数据可视化图表"></iframe>
+</body>
+
+</html>
