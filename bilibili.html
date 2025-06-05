@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>“蔡徐坤音乐节”数据可视化展示</title>
+    <title>数据可视化展示</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -34,13 +34,16 @@
             .text-balance {
                 text-wrap: balance;
             }
+            .modal-backdrop {
+                backdrop-filter: blur(4px);
+            }
         }
     </style>
 </head>
 <body class="bg-gray-50 font-inter text-gray-800">
     <header class="bg-gradient-to-r from-primary to-primary/80 text-white py-8 px-4 md:px-8">
         <div class="container mx-auto">
-            <h1 class="text-[clamp(1.8rem,4vw,2.8rem)] font-bold mb-2">数据可视化分析报告</h1>
+            <h1 class="text-[clamp(1.8rem,4vw,2.8rem)] font-bold mb-2">“蔡徐坤”数据可视化分析报告</h1>
             <p class="text-lg md:text-xl opacity-90">用户互动数据与内容分析概览</p>
         </div>
     </header>
@@ -48,26 +51,26 @@
     <main class="container mx-auto px-4 py-8 md:py-12">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <!-- 评论数前5的用户 -->
-            <div class="bg-white rounded-xl overflow-hidden card-shadow transform transition-all hover:scale-[1.02] hover:shadow-xl">
-                <img src="image1.png" alt="评论数前5的用户" class="w-full h-64 object-cover">
+            <div class="bg-white rounded-xl overflow-hidden card-shadow transform transition-all hover:scale-[1.02] hover:shadow-xl cursor-pointer group" onclick="openModal('image1.png', '评论数前5的用户')">
+                <img src="image1.png" alt="评论数前5的用户" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
                 <div class="p-6">
                     <h2 class="text-xl font-semibold mb-3 text-primary">评论活跃度分析</h2>
-                    <p class="text-balance text-gray-600">展示了bilibil上评论数排名前5的用户，反映了用户参与内容讨论的积极性。这有助于识别核心互动用户群体。</p>
+                    <p class="text-balance text-gray-600">展示了bilibili平台上评论数排名前5的用户，反映了用户参与内容讨论的积极性。这有助于识别核心互动用户群体。</p>
                 </div>
             </div>
 
             <!-- 点赞数前5的用户 -->
-            <div class="bg-white rounded-xl overflow-hidden card-shadow transform transition-all hover:scale-[1.02] hover:shadow-xl">
-                <img src="image2.png" alt="点赞数前5的用户" class="w-full h-64 object-cover">
+            <div class="bg-white rounded-xl overflow-hidden card-shadow transform transition-all hover:scale-[1.02] hover:shadow-xl cursor-pointer group" onclick="openModal('image2.png', '点赞数前5的用户')">
+                <img src="image2.png" alt="点赞数前5的用户" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
                 <div class="p-6">
                     <h2 class="text-xl font-semibold mb-3 text-primary">内容喜好度分析</h2>
-                    <p class="text-balance text-gray-600">显示了点赞数最多的5位用户，体现了他们对bilibili以及创作者内容的喜爱程度。高点赞用户通常是内容质量的忠实反馈者。</p>
+                    <p class="text-balance text-gray-600">显示了点赞数最多的5位用户，体现了他们对bilibili平台用户内容的喜爱程度。高点赞用户通常是内容质量的忠实反馈者。</p>
                 </div>
             </div>
 
             <!-- 播放量前5的用户 -->
-            <div class="bg-white rounded-xl overflow-hidden card-shadow transform transition-all hover:scale-[1.02] hover:shadow-xl">
-                <img src="image3.png" alt="播放量前5的用户" class="w-full h-64 object-cover">
+            <div class="bg-white rounded-xl overflow-hidden card-shadow transform transition-all hover:scale-[1.02] hover:shadow-xl cursor-pointer group" onclick="openModal('image3.png', '播放量前5的用户')">
+                <img src="image3.png" alt="播放量前5的用户" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
                 <div class="p-6">
                     <h2 class="text-xl font-semibold mb-3 text-primary">内容传播度分析</h2>
                     <p class="text-balance text-gray-600">呈现了播放量最高的5位用户内容，反映了内容的传播能力和受众覆盖面。播放量高的内容通常具有更广泛的吸引力。</p>
@@ -75,8 +78,8 @@
             </div>
 
             <!-- 词云1 -->
-            <div class="bg-white rounded-xl overflow-hidden card-shadow transform transition-all hover:scale-[1.02] hover:shadow-xl">
-                <img src="image4.png" alt="词云1" class="w-full h-64 object-cover">
+            <div class="bg-white rounded-xl overflow-hidden card-shadow transform transition-all hover:scale-[1.02] hover:shadow-xl cursor-pointer group" onclick="openModal('image4.png', '词云1')">
+                <img src="image4.png" alt="词云1" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
                 <div class="p-6">
                     <h2 class="text-xl font-semibold mb-3 text-primary">内容主题分析</h2>
                     <p class="text-balance text-gray-600">基于用户生成内容生成的词云，展示了关键词分布。较大的字体表示出现频率更高的主题。</p>
@@ -84,8 +87,8 @@
             </div>
 
             <!-- 高频词图 -->
-            <div class="bg-white rounded-xl overflow-hidden card-shadow transform transition-all hover:scale-[1.02] hover:shadow-xl">
-                <img src="image5.png" alt="高频词图" class="w-full h-64 object-cover">
+            <div class="bg-white rounded-xl overflow-hidden card-shadow transform transition-all hover:scale-[1.02] hover:shadow-xl cursor-pointer group" onclick="openModal('image5.png', '高频词图')">
+                <img src="image5.png" alt="高频词图" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
                 <div class="p-6">
                     <h2 class="text-xl font-semibold mb-3 text-primary">关键词频率分析</h2>
                     <p class="text-balance text-gray-600">详细展示了内容中出现频率最高的词汇及其出现次数。这有助于挖掘用户关注的重点内容和趋势。</p>
@@ -93,16 +96,40 @@
             </div>
 
             <!-- 词云2 -->
-            <div class="bg-white rounded-xl overflow-hidden card-shadow transform transition-all hover:scale-[1.02] hover:shadow-xl">
-                <img src="image6.png" alt="词云2" class="w-full h-64 object-cover">
+            <div class="bg-white rounded-xl overflow-hidden card-shadow transform transition-all hover:scale-[1.02] hover:shadow-xl cursor-pointer group" onclick="openModal('image6.png', '词云2')">
+                <img src="image6.png" alt="词云2" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
                 <div class="p-6">
                     <h2 class="text-xl font-semibold mb-3 text-primary">用户情感分析</h2>
                     <p class="text-balance text-gray-600">通过文本分析生成的情感词云，展示了用户讨论中的情感倾向。</p>
                 </div>
             </div>
         </div>
+    </main>
 
-       
+    <!-- 图片查看模态框 -->
+    <div id="imageModal" class="fixed inset-0 bg-black/80 modal-backdrop z-50 hidden flex items-center justify-center p-4">
+        <div class="relative w-full max-w-5xl">
+            <button id="closeModal" class="absolute -top-12 right-0 text-white text-3xl hover:text-gray-300 transition-colors">
+                <i class="fa fa-times"></i>
+            </button>
+            <div class="bg-white rounded-lg overflow-hidden shadow-2xl">
+                <div class="p-4 bg-gray-100">
+                    <h3 id="modalTitle" class="text-xl font-bold text-gray-800"></h3>
+                </div>
+                <div class="relative">
+                    <img id="modalImage" src="" alt="放大的图片" class="w-full max-h-[80vh] object-contain">
+                </div>
+                <div class="p-4 bg-gray-100 flex justify-between">
+                    <button id="prevImage" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 transition-colors flex items-center">
+                        <i class="fa fa-chevron-left mr-2"></i> 上一张
+                    </button>
+                    <button id="nextImage" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 transition-colors flex items-center">
+                        下一张 <i class="fa fa-chevron-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer class="bg-gray-800 text-white py-8 mt-12">
         <div class="container mx-auto px-4">
@@ -130,18 +157,105 @@
     </footer>
 
     <script>
-        // 添加简单的页面交互效果
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.card-shadow');
-            cards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.classList.add('ring-2', 'ring-primary/50');
-                });
-                card.addEventListener('mouseleave', function() {
-                    this.classList.remove('ring-2', 'ring-primary/50');
-                });
-            });
+        // 图片查看器功能
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalTitle = document.getElementById('modalTitle');
+        const closeModal = document.getElementById('closeModal');
+        const prevImage = document.getElementById('prevImage');
+        const nextImage = document.getElementById('nextImage');
+        
+        // 图片数组，用于导航
+        const images = [
+            { src: 'image1.png', title: '评论数前5的用户' },
+            { src: 'image2.png', title: '点赞数前5的用户' },
+            { src: 'image3.png', title: '播放量前5的用户' },
+            { src: 'image4.png', title: '词云1' },
+            { src: 'image5.png', title: '高频词图' },
+            { src: 'image6.png', title: '词云2' }
+        ];
+        
+        let currentImageIndex = 0;
+        
+        // 打开模态框
+        function openModal(src, title) {
+            // 找到当前图片在数组中的索引
+            currentImageIndex = images.findIndex(img => img.src === src);
+            
+            // 设置模态框内容
+            modalImage.src = src;
+            modalTitle.textContent = title;
+            
+            // 显示模态框并添加动画
+            modal.classList.remove('hidden');
+            modal.classList.add('animate-fade-in');
+            document.body.style.overflow = 'hidden'; // 防止背景滚动
+        }
+        
+        // 关闭模态框
+        function closeModalFunc() {
+            modal.classList.add('hidden');
+            document.body.style.overflow = ''; // 恢复背景滚动
+        }
+        
+        // 上一张图片
+        function showPrevImage() {
+            currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+            updateModalContent();
+        }
+        
+        // 下一张图片
+        function showNextImage() {
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            updateModalContent();
+        }
+        
+        // 更新模态框内容
+        function updateModalContent() {
+            const img = images[currentImageIndex];
+            modalImage.src = img.src;
+            modalTitle.textContent = img.title;
+            
+            // 添加图片切换动画
+            modalImage.classList.add('animate-fade-in');
+            setTimeout(() => {
+                modalImage.classList.remove('animate-fade-in');
+            }, 300);
+        }
+        
+        // 事件监听
+        closeModal.addEventListener('click', closeModalFunc);
+        prevImage.addEventListener('click', showPrevImage);
+        nextImage.addEventListener('click', showNextImage);
+        
+        // 点击模态框背景关闭
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModalFunc();
+            }
         });
+        
+        // 键盘导航
+        document.addEventListener('keydown', function(e) {
+            if (!modal.classList.contains('hidden')) {
+                if (e.key === 'Escape') closeModalFunc();
+                if (e.key === 'ArrowLeft') showPrevImage();
+                if (e.key === 'ArrowRight') showNextImage();
+            }
+        });
+        
+        // 添加淡入动画
+        document.head.insertAdjacentHTML('beforeend', `
+            <style>
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                .animate-fade-in {
+                    animation: fadeIn 0.3s ease-in-out;
+                }
+            </style>
+        `);
     </script>
 </body>
 </html>
