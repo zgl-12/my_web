@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任芸琪 - 个人资料与演艺生涯</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B5CF6', // 紫色主色调
+                        secondary: '#EC4899', // 粉色辅助色
+                        dark: '#1E293B', // 深色背景
+                        light: '#F8FAFC' // 浅色背景
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .text-shadow-lg {
+                text-shadow: 0 4px 8px rgba(0,0,0,0.25);
+            }
+            .bg-blur {
+                backdrop-filter: blur(8px);
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .hover-scale {
+                transition: transform 0.3s ease;
+            }
+            .hover-scale:hover {
+                transform: scale(1.05);
+            }
+            .music-player {
+                transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+            .music-player.hidden {
+                transform: translateX(-100%);
+            }
+            .volume-slider {
+                -webkit-appearance: none;
+                height: 3px;
+                border-radius: 5px;
+                background: rgba(255, 255, 255, 0.3);
+                outline: none;
+            }
+            .volume-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: white;
+                cursor: pointer;
+                transition: all 0.15s ease;
+            }
+            .volume-slider::-webkit-slider-thumb:hover {
+                transform: scale(1.2);
+                background: #EC4899;
+            }
+            .music-wave {
+                height: 24px;
+                display: flex;
+                align-items: flex-end;
+                gap: 2px;
+            }
+            .music-wave span {
+                width: 3px;
+                background: white;
+                border-radius: 3px;
+                animation: wave 1.2s ease-in-out infinite;
+            }
+            @keyframes wave {
+                0%, 100% {
+                    height: 4px;
+                }
+                50% {
+                    height: 16px;
+                }
+            }
+            .music-wave span:nth-child(2) { animation-delay: 0.1s; }
+            .music-wave span:nth-child(3) { animation-delay: 0.2s; }
+            .music-wave span:nth-child(4) { animation-delay: 0.3s; }
+            .music-wave span:nth-child(5) { animation-delay: 0.4s; }
+            .music-wave.paused span {
+                animation-play-state: paused;
+                height: 4px !important;
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-light text-dark antialiased">
+    <!-- 导航栏 -->
+    <header id="navbar" class="fixed w-full z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <a href="#" class="text-2xl font-bold text-primary flex items-center">
+                <i class="fa fa-star mr-2"></i>
+                <span>任芸琪</span>
+            </a>
+            
+            <!-- 桌面导航 -->
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="#home" class="font-medium hover:text-primary transition-colors">首页</a>
+                <a href="#about" class="font-medium hover:text-primary transition-colors">个人简介</a>
+                <a href="#works" class="font-medium hover:text-primary transition-colors">代表作品</a>
+                <a href="#gallery" class="font-medium hover:text-primary transition-colors">照片集</a>
+                <a href="#news" class="font-medium hover:text-primary transition-colors">最新动态</a>
+                <a href="#contact" class="font-medium hover:text-primary transition-colors">联系我们</a>
+            </nav>
+            
+            <!-- 移动端菜单按钮 -->
+            <button id="menuBtn" class="md:hidden text-2xl">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+        
+        <!-- 移动端导航菜单 -->
+        <div id="mobileMenu" class="md:hidden hidden bg-white/95 bg-blur shadow-lg absolute w-full">
+            <div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
+                <a href="#home" class="font-medium hover:text-primary transition-colors py-2 border-b border-gray-100">首页</a>
+                <a href="#about" class="font-medium hover:text-primary transition-colors py-2 border-b border-gray-100">个人简介</a>
+                <a href="#works" class="font-medium hover:text-primary transition-colors py-2 border-b border-gray-100">代表作品</a>
+                <a href="#gallery" class="font-medium hover:text-primary transition-colors py-2 border-b border-gray-100">照片集</a>
+                <a href="#news" class="font-medium hover:text-primary transition-colors py-2 border-b border-gray-100">最新动态</a>
+                <a href="#contact" class="font-medium hover:text-primary transition-colors py-2">联系我们</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 背景音乐播放器 -->
+    <div id="musicPlayer" class="music-player fixed left-0 top-1/2 -translate-y-1/2 bg-primary/90 bg-blur rounded-r-xl shadow-xl p-4 z-40 hidden md:flex items-center gap-4">
+        <button id="playPauseBtn" class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-colors">
+            <i class="fa fa-play" id="playIcon"></i>
+            <i class="fa fa-pause hidden" id="pauseIcon"></i>
+        </button>
+        <div class="music-wave" id="musicWave">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <input type="range" min="0" max="1" step="0.05" value="0.3" class="volume-slider" id="volumeSlider">
+        <button id="togglePlayerBtn" class="absolute right-0 w-8 h-16 bg-primary/90 rounded-r-lg shadow-lg flex items-center justify-center text-white hover:bg-primary transition-colors">
+            <i class="fa fa-angle-right"></i>
+        </button>
+    </div>
+    
+    <!-- 移动端音乐控制按钮 -->
+    <div class="fixed bottom-4 right-4 md:hidden z-40">
+        <button id="mobileMusicBtn" class="w-12 h-12 rounded-full bg-primary/90 bg-blur shadow-lg flex items-center justify-center text-white hover:bg-primary transition-colors">
+            <i class="fa fa-music"></i>
+        </button>
+    </div>
+    
+    <!-- 背景音乐 -->
+    <audio id="bgMusic" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-relaxing-moments-1854.mp3" type="audio/mpeg">
+        <!-- 备用音乐链接，确保跨区域可访问 -->
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- 英雄区域 -->
+    <section id="home" class="relative min-h-screen flex items-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="https://picsum.photos/id/64/1920/1080" alt="任芸琪背景图" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-r from-dark/80 to-dark/40"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 z-10 py-20">
+            <div class="max-w-2xl">
+                <h1 class="text-[clamp(2.5rem,8vw,5rem)] font-bold text-white leading-tight text-shadow-lg mb-4">
+                    任芸琪
+                </h1>
+                <p class="text-[clamp(1rem,3vw,1.5rem)] text-gray-200 mb-8 text-shadow">
+                    中国女演员、歌手，以其出色的演技和动人的歌声赢得了广大观众的喜爱
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="#about" class="px-8 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-full transition-all shadow-lg hover:shadow-primary/30">
+                        了解更多
+                    </a>
+                    <a href="#works" class="px-8 py-3 bg-white/20 hover:bg-white/30 text-white font-medium rounded-full transition-all backdrop-blur-sm">
+                        查看作品
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <a href="#about" class="text-white/80 hover:text-white">
+                <i class="fa fa-angle-down text-3xl"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- 个人简介 -->
+    <section id="about" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold text-dark mb-4">个人简介</h2>
+                <div class="w-24 h-1 bg-primary mx-auto"></div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="relative">
+                    <div class="relative z-10 rounded-2xl overflow-hidden shadow-2xl hover-scale">
+                        <img src="https://picsum.photos/id/65/600/800" alt="任芸琪照片" class="w-full h-auto">
+                    </div>
+                    <div class="absolute -bottom-6 -right-6 w-64 h-64 bg-secondary/20 rounded-full -z-10"></div>
+                    <div class="absolute -top-6 -left-6 w-32 h-32 bg-primary/20 rounded-full -z-10"></div>
+                </div>
+                
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6">任芸琪</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        任芸琪，中国女演员、歌手，1995年10月15日出生于上海市。她毕业于北京电影学院表演系，2017年凭借主演电视剧《青春的约定》正式进入演艺圈。
+                    </p>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        任芸琪以其自然清新的形象和扎实的演技赢得了观众的喜爱。她在《时光恋人》《星辰大海》等剧中的出色表现，使她成为华语影视圈备受瞩目的新生代演员之一。
+                    </p>
+                    <p class="text-gray-600 mb-8 leading-relaxed">
+                        除了演艺事业，任芸琪还发行了多张音乐专辑，其歌曲《星辰》《心动瞬间》等深受歌迷喜爱。她热衷于公益事业，担任多个环保和教育公益项目的形象大使。
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="flex items-start">
+                            <div class="text-primary text-2xl mr-4">
+                                <i class="fa fa-calendar"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-1">出生日期</h4>
+                                <p class="text-gray-600">1995年10月15日</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="text-primary text-2xl mr-4">
+                                <i class="fa fa-map-marker"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-1">出生地</h4>
+                                <p class="text-gray-600">上海市</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="text-primary text-2xl mr-4">
+                                <i class="fa fa-graduation-cap"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-1">毕业院校</h4>
+                                <p class="text-gray-600">北京电影学院</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="text-primary text-2xl mr-4">
+                                <i class="fa fa-heart"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-1">兴趣爱好</h4>
+                                <p class="text-gray-600">绘画、旅行、摄影</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                            <i class="fa fa-weibo"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                            <i class="fa fa-wechat"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                            <i class="fa fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                            <i class="fa fa-youtube-play"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 演艺经历 -->
+    <section class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold text-dark mb-4">演艺经历</h2>
+                <div class="w-24 h-1 bg-primary mx-auto"></div>
+            </div>
+            
+            <div class="max-w-3xl mx-auto">
+                <div class="relative">
+                    <!-- 时间线 -->
+                    <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gray-200"></div>
+                    
+                    <!-- 时间点1 -->
+                    <div class="relative z-10 mb-16">
+                        <div class="flex flex-col md:flex-row items-center">
+                            <div class="md:w-1/2 md:pr-12 mb-6 md:mb-0 md:text-right">
+                                <div class="bg-white p-6 rounded-xl shadow-lg hover-scale">
+                                    <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full mb-3">2017</span>
+                                    <h3 class="text-xl font-semibold mb-2">《青春的约定》</h3>
+                                    <p class="text-gray-600">主演，饰演林小雨</p>
+                                    <p class="text-gray-500 mt-3 text-sm">任芸琪的首部主演电视剧，凭借出色的演技获得了观众的关注和认可。</p>
+                                </div>
+                            </div>
+                            <div class="hidden md:block w-12 h-12 rounded-full bg-primary border-4 border-white shadow-lg flex items-center justify-center text-white">
+                                <i class="fa fa-film"></i>
+                            </div>
+                            <div class="md:w-1/2 md:pl-12"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 时间点2 -->
+                    <div class="relative z-10 mb-16">
+                        <div class="flex flex-col md:flex-row items-center">
+                            <div class="md:w-1/2 md:pr-12"></div>
+                            <div class="hidden md:block w-12 h-12 rounded-full bg-primary border-4 border-white shadow-lg flex items-center justify-center text-white">
+                                <i class="fa fa-film"></i>
+                            </div>
+                            <div class="md:w-1/2 md:pl-12 mb-6 md:mb-0">
+                                <div class="bg-white p-6 rounded-xl shadow-lg hover-scale">
+                                    <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full mb-3">2018</span>
+                                    <h3 class="text-xl font-semibold mb-2">《时光恋人》</h3>
+                                    <p class="text-gray-600">主演，饰演苏小暖</p>
+                                    <p class="text-gray-500 mt-3 text-sm">这部穿越题材的爱情剧让任芸琪的人气迅速上升，她在剧中的表现广受好评。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 时间点3 -->
+                    <div class="relative z-10 mb-16">
+                        <div class="flex flex-col md:flex-row items-center">
+                            <div class="md:w-1/2 md:pr-12 mb-6 md:mb-0 md:text-right">
+                                <div class="bg-white p-6 rounded-xl shadow-lg hover-scale">
+                                    <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full mb-3">2019</span>
+                                    <h3 class="text-xl font-semibold mb-2">首张音乐专辑《星辰》</h3>
+                                    <p class="text-gray-600">歌手出道</p>
+                                    <p class="text-gray-500 mt-3 text-sm">任芸琪跨界音乐领域，发行首张个人音乐专辑，主打歌《星辰》成为热门单曲。</p>
+                                </div>
+                            </div>
+                            <div class="hidden md:block w-12 h-12 rounded-full bg-primary border-4 border-white shadow-lg flex items-center justify-center text-white">
+                                <i class="fa fa-music"></i>
+                            </div>
+                            <div class="md:w-1/2 md:pl-12"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 时间点4 -->
+                    <div class="relative z-10 mb-16">
+                        <div class="flex flex-col md:flex-row items-center">
+                            <div class="md:w-1/2 md:pr-12"></div>
+                            <div class="hidden md:block w-12 h-12 rounded-full bg-primary border-4 border-white shadow-lg flex items-center justify-center text-white">
+                                <i class="fa fa-film"></i>
+                            </div>
+                            <div class="md:w-1/2 md:pl-12 mb-6 md:mb-0">
+                                <div class="bg-white p-6 rounded-xl shadow-lg hover-scale">
+                                    <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full mb-3">2020</span>
+                                    <h3 class="text-xl font-semibold mb-2">《星辰大海》</h3>
+                                    <p class="text-gray-600">主演，饰演方静怡</p>
+                                    <p class="text-gray-500 mt-3 text-sm">这部职场励志剧让任芸琪的演技得到了进一步的认可，她在剧中展现了坚韧不拔的女性形象。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 时间点5 -->
+                    <div class="relative z-10">
+                        <div class="flex flex-col md:flex-row items-center">
+                            <div class="md:w-1/2 md:pr-12 mb-6 md:mb-0 md:text-right">
+                                <div class="bg-white p-6 rounded-xl shadow-lg hover-scale">
+                                    <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full mb-3">2022</span>
+                                    <h3 class="text-xl font-semibold mb-2">《心动瞬间》</h3>
+                                    <p class="text-gray-600">主演电影</p>
+                                    <p class="text-gray-500 mt-3 text-sm">任芸琪首次主演电影，凭借该片获得了亚洲电影大奖最佳新人奖提名。</p>
+                                </div>
+                            </div>
+                            <div class="hidden md:block w-12 h-12 rounded-full bg-primary border-4 border-white shadow-lg flex items-center justify-center text-white">
+                                <i class="fa fa-film"></i>
+                            </div>
+                            <div class="md:w-1/2 md:pl-12"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 代表作品 -->
+    <section id="works" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold text-dark mb-4">代表作品</h2>
+                <div class="w-24 h-1 bg-primary mx-auto"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 作品1 -->
+                <div class="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div class="relative overflow-hidden">
+                        <img src="https://picsum.photos/id/237/600/400" alt="《青春的约定》海报" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                            <div class="p-6">
+                                <a href="#" class="inline-block px-4 py-2 bg-primary text-white rounded-full text-sm font-medium">
+                                    查看详情
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full mb-2">2017 · 电视剧</span>
+                        <h3 class="text-xl font-semibold mb-2">《青春的约定》</h3>
+                        <p class="text-gray-600 text-sm mb-4">饰演：林小雨</p>
+                        <p class="text-gray-500 text-sm line-clamp-2">
+                            一部青春校园剧，讲述了一群年轻人在大学时代的成长故事，任芸琪饰演的林小雨是一个积极向上的学霸。
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 作品2 -->
+                <div class="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div class="relative overflow-hidden">
+                        <img src="https://picsum.photos/id/177/600/400" alt="《时光恋人》海报" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                            <div class="p-6">
+                                <a href="#" class="inline-block px-4 py-2 bg-primary text-white rounded-full text-sm font-medium">
+                                    查看详情
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full mb-2">2018 · 电视剧</span>
+                        <h3 class="text-xl font-semibold mb-2">《时光恋人》</h3>
+                        <p class="text-gray-600 text-sm mb-4">饰演：苏小暖</p>
+                        <p class="text-gray-500 text-sm line-clamp-2">
+                            穿越题材的爱情剧，任芸琪饰演的苏小暖意外穿越到古代，与王爷展开了一段跨越时空的爱情故事。
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 作品3 -->
+                <div class="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div class="relative overflow-hidden">
+                        <img src="https://picsum.photos/id/1062/600/400" alt="《星辰大海》海报" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                            <div class="p-6">
+                                <a href="#" class="inline-block px-4 py-2 bg-primary text-white rounded-full text-sm font-medium">
+                                    查看详情
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full mb-2">2020 · 电视剧</span>
+                        <h3 class="text-xl font-semibold mb-2">《星辰大海》</h3>
+                        <p class="text-gray-600 text-sm mb-4">饰演：方静怡</p>
+                        <p class="text-gray-500 text-sm line-clamp-2">
+                            职场励志剧，任芸琪饰演的方静怡从一个普通的职场新人成长为行业精英，展现了现代女性的独立与坚韧。
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 作品4 -->
+                <div class="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div class="relative overflow-hidden">
+                        <img src="https://picsum.photos/id/1027/600/400" alt="《心动瞬间》海报" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                            <div class="p-6">
+                                <a href="#" class="inline-block px-4 py-2 bg-primary text-white rounded-full text-sm font-medium">
+                                    查看详情
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full mb-2">2022 · 电影</span>
+                        <h3 class="text-xl font-semibold mb-2">《心动瞬间》</h3>
+                        <p class="text-gray-600 text-sm mb-4">饰演：林小夏</p>
+                        <p class="text-gray-500 text-sm line-clamp-2">
+                            青春爱情电影，任芸琪饰演的林小夏与男主角在校园里相遇，共同经历了一段美好而难忘的初恋时光。
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 作品5 -->
+                <div class="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div class="relative overflow-hidden">
+                        <img src="https://picsum.photos/id/342/600/400" alt="《星辰》专辑封面" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                            <div class="p-6">
+                                <a href="#" class="inline-block px-4 py-2 bg-primary text-white rounded-full text-sm font-medium">
+                                    查看详情
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full mb-2">2019 · 音乐专辑</span>
+                        <h3 class="text-xl font-semibold mb-2">《星辰》</h3>
+                        <p class="text-gray-600 text-sm mb-4">音乐专辑</p>
+                        <p class="text-gray-500 text-sm line-clamp-2">
+                            任芸琪的首张音乐专辑，收录了《星辰》《梦想天空》《心动瞬间》等多首歌曲，展现了她的音乐才华。
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 作品6 -->
+                <div class="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div class="relative overflow-hidden">
+                        <img src="https://picsum.photos/id/1060/600/400" alt="《城市之光》海报" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                            <div class="p-6">
+                                <a href="#" class="inline-block px-4 py-2 bg-primary text-white rounded-full text-sm font-medium">
+                                    查看详情
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full mb-2">2023 · 电视剧</span>
+                        <h3 class="text-xl font-semibold mb-2">《城市之光》</h3>
+                        <p class="text-gray-600 text-sm mb-4">饰演：林夏</p>
+                        <p class="text-gray-500 text-sm line-clamp-2">
+                            都市情感剧，任芸琪饰演的林夏是一位年轻有为的设计师，在事业和爱情中面临着各种挑战和选择。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="#" class="inline-block px-8 py-3 border-2 border-primary text-primary font-medium rounded-full hover:bg-primary hover:text-white transition-colors">
+                    查看全部作品
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 照片集 -->
+    <section id="gallery" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold text-dark mb-4">照片集</h2>
+                <div class="w-24 h-1 bg-primary mx-auto"></div>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div class="relative overflow-hidden rounded-lg group cursor-pointer">
+                    <img src="https://picsum.photos/id/64/600/600" alt="任芸琪写真" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                        <div class="p-4">
+                            <h3 class="text-white font-medium">时尚写真</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative overflow-hidden rounded-lg group cursor-pointer">
+                    <img src="https://picsum.photos/id/65/600/600" alt="任芸琪写真" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                        <div class="p-4">
+                            <h3 class="text-white font-medium">电影宣传照</h3>
+                        </div>
+                    </div>
+                </div>
+                
