@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文化遗产与数据可视化</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B5CF6', // 主色调：紫色（代表文化与创意）
+                        secondary: '#EC4899', // 强调色：粉色（代表活力）
+                        neutral: '#F9FAFB'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+            }
+            .language-flag {
+                @apply w-6 h-6 rounded-full cursor-pointer transition-transform hover:scale-110;
+            }
+            .news-content-short {
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            .news-content-full {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body class="bg-neutral font-sans text-gray-800 min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <nav class="bg-primary text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
+            <div class="flex items-center space-x-2 w-full md:w-auto mb-3 md:mb-0">
+                <i class="fa fa-university text-2xl"></i>
+                <h1 class="text-xl font-bold">文化遗产与数据</h1>
+            </div>
+            
+            <div class="flex flex-wrap items-center justify-between w-full">
+                <div class="hidden md:flex space-x-6 mb-3 md:mb-0">
+                    <a href="#story" class="hover:text-secondary transition-colors">故事</a>
+                    <a href="#news" class="hover:text-secondary transition-colors">古城新闻</a>
+                    <a href="#visualization" class="hover:text-secondary transition-colors">数据可视化</a>
+                </div>
+                
+                <button class="md:hidden text-white text-xl ml-auto">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <!-- 故事部分 -->
+        <section id="story" class="mb-16 scroll-mt-20">
+            <div class="text-center mb-8">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold text-primary mb-2">画布上的革命</h2>
+                <p class="text-gray-600 italic">一个关于艺术理想与时代使命的故事</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 card-hover">
+                <div class="prose max-w-none">
+                    <div class="flex flex-col md:flex-row gap-8 items-center mb-6">
+                        <div class="md:w-1/3">
+                            <img src="https://picsum.photos/seed/art1/600/800" alt="艺术家创作场景" class="rounded-lg shadow-md w-full h-auto">
+                        </div>
+                        <div class="md:w-2/3">
+                            <h3 class="text-xl font-bold mb-3">第一章：梦想的起点</h3>
+                            <p>李明出生在一个普通的家庭，从小就对绘画有着浓厚的兴趣。他的父亲是一位工人，母亲是一位教师，他们虽然不懂艺术，但全力支持李明追求自己的梦想。李明在大学选择了艺术专业，他坚信艺术能够触动人心，改变世界。</p>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold mb-3">第二章：现实的挑战</h3>
+                    <p>毕业后，李明面临着严峻的现实挑战。艺术市场被商业化侵蚀，许多艺术家为了生存不得不妥协，创作迎合市场的作品。李明的朋友劝他放弃理想，但他坚持自己的艺术理念，不愿意为了金钱而放弃艺术的纯粹。</p>
+                    
+                    <div class="my-8">
+                        <img src="https://picsum.photos/seed/art2/1200/400" alt="艺术展览" class="rounded-lg shadow-md w-full h-auto">
+                    </div>
+                    
+                    <h3 class="text-xl font-bold mb-3">第三章：时代的使命</h3>
+                    <p>随着社会的发展，人们开始反思物质主义带来的问题，对精神文化的需求日益增长。李明的作品开始受到关注，他的画作不仅仅是美的展现，更是对时代问题的深刻反思。他用画笔记录下了城市的变迁，农民工的艰辛，以及普通人的喜怒哀乐。</p>
+                    
+                    <h3 class="text-xl font-bold mb-3">第四章：坚守与创新</h3>
+                    <p>李明在坚守艺术理想的过程中，也在不断创新。他尝试将传统绘画技巧与现代元素结合，创作出既具有时代感又不失艺术性的作品。他的画展吸引了越来越多的人，他的影响力逐渐扩大。</p>
+                    
+                    <h3 class="text-xl font-bold mb-3">第五章：不负时代使命</h3>
+                    <p>李明的艺术生涯达到了高峰，他的作品被国内外的博物馆收藏，他本人也获得了多项艺术大奖。但他没有因此而满足，他继续用画笔记录时代，传递正能量。他相信，艺术不仅仅是个人的追求，更是对社会的责任。</p>
+                    
+                    <div class="flex flex-col md:flex-row gap-8 items-center mt-6">
+                        <div class="md:w-2/3">
+                            <h3 class="text-xl font-bold mb-3">结局</h3>
+                            <p>在一次大型的国际艺术展览上，李明的作品被放在最显眼的位置。他站在自己的作品前，看着络绎不绝的观众，心中充满了满足和自豪。他知道，他不仅坚守了自己的艺术理想，也不负这个时代的使命。他的故事激励着更多的年轻人，去追求梦想，去改变世界。</p>
+                        </div>
+                        <div class="md:w-1/3">
+                            <img src="https://picsum.photos/seed/art3/600/800" alt="国际艺术展览" class="rounded-lg shadow-md w-full h-auto">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 新闻部分 -->
+        <section id="news" class="mb-16 scroll-mt-20">
+            <div class="text-center mb-8">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold text-primary mb-2">古城保护新闻</h2>
+                <p class="text-gray-600">探索中国历史文化名城的保护与新生</p>
+            </div>
+            
+            <!-- 语言标签页 -->
+            <div class="mb-8 border-b border-gray-200">
+                <div class="flex overflow-x-auto pb-2 space-x-4 language-tabs">
+                    <button class="px-4 py-2 text-primary border-b-2 border-primary font-medium whitespace-nowrap" data-lang="zh">中文</button>
+                    <button class="px-4 py-2 text-gray-500 hover:text-primary whitespace-nowrap" data-lang="en">English</button>
+                    <button class="px-4 py-2 text-gray-500 hover:text-primary whitespace-nowrap" data-lang="ja">日本語</button>
+                    <button class="px-4 py-2 text-gray-500 hover:text-primary whitespace-nowrap" data-lang="de">Deutsch</button>
+                    <button class="px-4 py-2 text-gray-500 hover:text-primary whitespace-nowrap" data-lang="fr">Français</button>
+                    <button class="px-4 py-2 text-gray-500 hover:text-primary whitespace-nowrap" data-lang="es">Español</button>
+                </div>
+            </div>
+            
+            <!-- 新闻内容 -->
+            <div class="news-content">
+                <!-- 中文新闻 -->
+                <div class="language-news active" data-lang="zh">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 正定新闻 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/zhengding/600/800" alt="河北正定古城" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">古老韵味触碰现代繁华</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">河北正定</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-zh-1">
+                                        <p>华灯亮起，河北正定古城更热闹了：五彩灯带映照下，人们或漫步于古城墙上，或欢聚在古街区中，或嬉戏于阳和楼下。古老的韵味触碰现代的繁华，迸发出别样的生机与活力。</p>
+                                        <p>夜幕降临，正定古城被灯光点亮，形成了独特的夜景。城墙上的灯光勾勒出古建筑的轮廓，古街区内的灯笼营造出温馨的氛围。阳和楼下，音乐喷泉吸引了众多游客驻足观看。近年来，正定古城在保护的基础上，积极发展旅游业，通过灯光秀、文化活动等方式，让古老的城墙焕发出新的活力。</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="zh-1">
+                                        查看原文 <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 上海新闻 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/shanghai/600/800" alt="上海武康大楼" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">建筑能阅读 城市有温度</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">上海</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-zh-2">
+                                        <p>1987年，27岁的葛雅萍嫁进武康大楼。30多年过去，当年的新娘子，如今已是孩子的外婆。"刚嫁到这里时，这些墙都是漏水的，楼里杂乱的电线像蜘蛛网。"</p>
+                                        <p>武康大楼始建于1924年，是上海第一座外廊式公寓建筑。近年来，上海市政府对武康大楼进行了全面修缮，保留了建筑的历史风貌，同时改善了居民的生活条件。如今，武康大楼不仅是居民的住所，也成为了上海的文化地标和旅游景点。葛雅萍说："现在的武康大楼不仅外观漂亮，内部设施也很现代化，我们的生活质量提高了很多。"</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="zh-2">
+                                        查看原文 <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 良渚新闻 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/liangzhu/600/800" alt="良渚博物院" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">"文化大走廊"串珠成链</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">浙江良渚</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-zh-3">
+                                        <p>漫步浙江杭州良渚博物院，通过AR眼镜，良渚先民5000年前的生活借助科技手段生动呈现在眼前；从良渚博物院出发，来到特色商业市集"玉鸟集"。</p>
+                                        <p>良渚文化是中国新石器时代晚期的一支重要文化，距今约5300-4300年。近年来，杭州市政府打造了"良渚文化大走廊"，将良渚博物院、良渚古城遗址公园、玉鸟集等景点串联起来，形成了一条集文化、旅游、商业于一体的特色线路。游客可以在这里感受5000年前良渚文明的魅力，也可以体验现代商业的活力。良渚文化大走廊的建设，不仅促进了当地旅游业的发展，也为文化遗产的保护和传承提供了新的思路。</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="zh-3">
+                                        查看原文 <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 平遥新闻 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/pingyao/600/800" alt="山西平遥古城" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">"古城里的生活更舒心了"</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">山西平遥</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-zh-4">
+                                        <p>自迎薰门步行入城，斑驳的老城门、深深的车辙印、厚重的古城墙、精美的雕刻……2.25平方公里的山西平遥古城内保存着300余处文物古迹。</p>
+                                        <p>平遥古城是中国保存最为完整的明清古城之一，1997年被列入世界文化遗产名录。近年来，平遥古城在保护文物古迹的同时，也注重改善居民的生活条件。通过改造老旧管网、整治环境卫生、发展特色民宿等措施，古城的面貌焕然一新。当地居民说："现在古城里的环境越来越好了，游客也越来越多，我们的生活也越来越舒心了。"</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="zh-4">
+                                        查看原文 <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 西安新闻 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/xian/600/800" alt="西安城墙" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">千年古都焕发新活力</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">陕西西安</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-zh-5">
+                                        <p>西安，这座有着3100多年建城史、1100多年建都史的千年古都，近年来通过一系列文化遗产保护和城市更新措施，正焕发出新的活力。</p>
+                                        <p>从明城墙的全面修缮到兵马俑的科技保护，从大唐不夜城的打造到小雁塔历史文化片区的改造，西安在保护历史文化遗产的同时，也在不断探索如何让古老的文化与现代生活相融合。如今，西安不仅是中国重要的历史文化名城，也是一座充满活力的现代化城市。夜晚的大唐不夜城，灯火辉煌，游人如织，成为了西安的新地标。西安的成功经验，为其他历史文化名城的保护和发展提供了有益借鉴。</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="zh-5">
+                                        查看原文 <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 英文新闻 -->
+                <div class="language-news hidden" data-lang="en">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 正定新闻英文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/zhengding/600/800" alt="Zhengding Ancient City" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">Ancient Charm Touches Modern Prosperity</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Zhengding, Hebei</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-en-1">
+                                        <p>As the streetlights come on, the ancient city of Zhengding in Hebei becomes livelier: under the illumination of colorful light strips, people either stroll on the city walls, gather in the ancient blocks.</p>
+                                        <p>When night falls, Zhengding Ancient City is illuminated by lights, creating a unique night view. The lights on the city walls outline the contours of ancient buildings, while the lanterns in the ancient blocks create a warm atmosphere. Under the Yanghe Tower, a musical fountain attracts many tourists. In recent years, on the basis of protection, Zhengding Ancient City has actively developed tourism. Through light shows and cultural activities, the ancient city walls have焕发new vitality.</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="en-1">
+                                        Read full article <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> July 12, 2025</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 上海新闻英文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/shanghai/600/800" alt="Wukang Building" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">Buildings Can Be Read, City Has Temperature</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Shanghai</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-en-2">
+                                        <p>In 1987, 27-year-old Ge Yaping married into the Wukang Building. More than 30 years later, the bride of that year is now a grandmother. "When I first married here, the walls were leaking."</p>
+                                        <p>Wukang Building was built in 1924 and is the first veranda-style apartment building in Shanghai. In recent years, the Shanghai Municipal Government has carried out a comprehensive renovation of the Wukang Building, retaining the historical features of the building while improving the living conditions of the residents. Now, the Wukang Building is not only a residence for residents, but also a cultural landmark and tourist attraction in Shanghai. Ge Yaping said: "Now the Wukang Building is not only beautiful in appearance, but also very modern in internal facilities. Our quality of life has improved a lot."</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="en-2">
+                                        Read full article <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> July 12, 2025</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 良渚新闻英文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/liangzhu/600/800" alt="Liangzhu Museum" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">"Cultural Corridor" Connects Gems</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Liangzhu, Zhejiang</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-en-3">
+                                        <p>Walking through the Liangzhu Museum in Hangzhou, Zhejiang, through AR glasses, the life of the Liangzhu ancestors 5,000 years ago is vividly presented through technological means; starting from the Liangzhu Museum, visitors can come to the characteristic commercial market "Yuniaoji".</p>
+                                        <p>The Liangzhu Culture is an important culture in the late Neolithic Age in China, dating back about 5,300-4,300 years. In recent years, the Hangzhou Municipal Government has created the "Liangzhu Cultural Corridor", connecting attractions such as the Liangzhu Museum, the Liangzhu Ancient City Ruins Park, and Yuniaoji, forming a characteristic route integrating culture, tourism, and commerce. Tourists can experience the charm of the Liangzhu civilization 5,000 years ago here, and also experience the vitality of modern commerce. The construction of the Liangzhu Cultural Corridor not only promotes the development of local tourism, but also provides new ideas for the protection and inheritance of cultural heritage.</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="en-3">
+                                        Read full article <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> July 12, 2025</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 平遥新闻英文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/pingyao/600/800" alt="Pingyao Ancient City" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">"Life in the Ancient City is More Comfortable"</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Pingyao, Shanxi</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-en-4">
+                                        <p>Walking into the city from the Yingxun Gate, the mottled old city gate, deep ruts, thick city walls, and exquisite carvings... More than 300 cultural relics and historic sites are preserved in the 2.25-square-kilometer Pingyao Ancient City in Shanxi.</p>
+                                        <p>Pingyao Ancient City is one of the most completely preserved ancient cities in the Ming and Qing Dynasties in China. It was listed as a World Cultural Heritage in 1997. In recent years, while protecting cultural relics and historic sites, Pingyao Ancient City has also focused on improving the living conditions of residents. Through measures such as transforming old pipe networks, renovating environmental sanitation, and developing characteristic homestays, the appearance of the ancient city has taken on a new look. Local residents said: "The environment in the ancient city is getting better and better, there are more and more tourists, and our life is becoming more and more comfortable."</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="en-4">
+                                        Read full article <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> July 12, 2025</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 西安新闻英文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/xian/600/800" alt="Xi'an City Wall" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">Thousand-Year-Old Capital Radiates New Vitality</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Xi'an, Shaanxi</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-en-5">
+                                        <p>Xi'an, a thousand-year-old capital with a history of more than 3,100 years of city construction and more than 1,100 years of capital establishment, has been radiating new vitality in recent years through a series of cultural heritage protection and urban renewal measures.</p>
+                                        <p>From the comprehensive renovation of the Ming Dynasty City Wall to the technological protection of the Terracotta Army, from the creation of the Grand Tang Mall to the transformation of the Xiaoyan Pagoda Historical and Cultural Area, Xi'an is constantly exploring how to integrate ancient culture with modern life while protecting historical and cultural heritage. Now, Xi'an is not only an important historical and cultural city in China, but also a vibrant modern city. At night, the Grand Tang Mall is brightly lit and crowded with tourists, becoming a new landmark in Xi'an. The successful experience of Xi'an provides useful reference for the protection and development of other historical and cultural cities.</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="en-5">
+                                        Read full article <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> July 12, 2025</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 德文新闻 -->
+                <div class="language-news hidden" data-lang="de">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 正定新闻德文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/zhengding/600/800" alt="Alte Stadt Zhengding" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">Der alte Charme trifft auf moderne Prosperität</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Zhengding, Hebei</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-de-1">
+                                        <p>Die Hitzewelle kann die Begeisterung der Menschen nicht hemmen. Wenn die Lichter angezündet werden, wird die alte Stadt Zhengding in Hebei lebhafter: Unter bunten Lichtern spazieren Menschen auf den Stadtmauern, treffen sich in den alten Gassen oder spielen unter dem Yanghe-Turm.</p>
+                                        <p>Am Abend wird die alte Stadt Zhengding von Lichtern erhellt und bietet eine einzigartige Nachtansicht. Die Lichter auf den Stadtmauern lassen die Konturen der alten Gebäude hervortreten, und die Laternen in den alten Geschäftsstraßen schaffen eine warme Atmosphäre. Unter dem Yanghe-Turm zieht ein Musikbrunnen viele Touristen an. In den letzten Jahren hat die alte Stadt Zhengding die Tourismusindustrie auf der Grundlage des Schutzes aktiv entwickelt. Durch Lichtshows und kulturelle Veranstaltungen erhält die alte Stadtmauer neue Vitalität.</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="de-1">
+                                        Ganzen Artikel lesen <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 上海新闻德文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/shanghai/600/800" alt="Wukang-Gebäude" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">Gebäude erzählen von der Wärme der Stadt</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Shanghai</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-de-2">
+                                        <p>1987 heiratete die 27-jährige Ge Yaping im Wukang-Gebäude. Mehr als 30 Jahre später ist die damalige Braut heute eine Großmutter mit Enkeln. "Als ich hier heiratete, leckten diese Wände."</p>
+                                        <p>Das Wukang-Gebäude wurde 1924 erbaut und ist das erste Gebäude mit Außenkorridoren in Shanghai. In den letzten Jahren hat die Shanghai-Stadtregierung eine umfassende Renovierung des Wukang-Gebäudes durchgeführt, um die historische Erscheinung des Gebäudes zu bewahren und gleichzeitig die Lebensumstände der Bewohner zu verbessern. Heute ist das Wukang-Gebäude nicht nur eine Wohnung für Bewohner, sondern auch ein kulturelles Wahrzeichen und Touristenziel Shanghais. Ge Yaping sagt: "Das heutige Wukang-Gebäude hat nicht nur ein gutes Äußeres, sondern auch moderne Innenausstattungen, und unsere Lebensqualität hat sich erheblich verbessert."</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="de-2">
+                                        Ganzen Artikel lesen <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 良渚新闻德文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/liangzhu/600/800" alt="Liangzhu-Museum" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">"Kultureller Korridor" verbindet Schätze</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Liangzhu, Zhejiang</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-de-3">
+                                        <p>Wenn man durch das Liangzhu-Museum in Hangzhou, Provinz Zhejiang, geht, erscheinen durch AR-Brillen die Lebensweisen der Urahnen von Liangzhu vor 5000 Jahren lebhaft vor Augen durch die Kraft der Technologie. Wenn man das Liangzhu-Museum verlässt, erreicht man das charakteristische Geschäftsviertel "Yuniao Ji".</p>
+                                        <p>Die Liangzhu-Kultur ist eine wichtige Kultur der späten Jungsteinzeit in China, die bis etwa 5300-4300 Jahren zurückreicht. In den letzten Jahren hat die Stadtregierung von Hangzhou den "Großen Liangzhu-Kulturkorridor" gebaut, der Touristenziele wie das Liangzhu-Museum, den Liangzhu-Altstadt-Ruinenpark und Yuniao Ji verbindet und eine charakteristische Route bildet, die Kultur, Tourismus und Wirtschaft integriert. Touristen können hier den Charme der 5000 Jahre alten Liangzhu-Zivilisation erleben und gleichzeitig die Vitalität des modernen Geschäftslebens genießen. Der Bau des Großen Liangzhu-Kulturkorridors fördert nicht nur die Entwicklung der örtlichen Tourismusindustrie, sondern bietet auch einen neuen Ansatz für den Schutz und die Weitergabe von Kulturerbes.</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="de-3">
+                                        Ganzen Artikel lesen <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 平遥新闻德文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/pingyao/600/800" alt="Alte Stadt Pingyao" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">"Das Leben in der alten Stadt wird komfortabler"</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Pingyao, Shanxi</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-de-4">
+                                        <p>Betritt man die Stadt durch die Yingxun-Tür, befinden sich in dem 2,25 Quadratkilometer großen Gebiet der alten Stadt Pingyao in der Provinz Shanxi über 300 Kulturerbeobjekte und historische Stätten, darunter unregelmäßige alte Stadttore, tiefe Wagenspuren, dicke alte Stadtmauern und exquisite Schnitzereien.</p>
+                                        <p>Die alte Stadt Pingyao ist eine der am besten erhaltenen alten Städte der Ming- und Qing-Dynastien in China und wurde 1997 zum Weltkulturerbe erklärt. In den letzten Jahren konzentriert sich die alte Stadt Pingyao nicht nur auf den Schutz von Kulturerbeobjekten und historischen Stätten, sondern auch auf die Verbesserung der Lebensumstände der Bewohner. Maßnahmen wie die Sanierung von veralteten Rohrleitungen, die Verbesserung der Umwelt hygiene und die Entwicklung charakteristischer Pensionen haben die alte Stadt erneuert. Ein örtlicher Bewohner sagt: "Heute ist die Umgebung der alten Stadt immer besser, die Zahl der Touristen steigt, und unser Leben wird immer komfortabler."</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="de-4">
+                                        Ganzen Artikel lesen <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 西安新闻德文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/xian/600/800" alt="Xian-Stadtmauer" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">Tausendjährige alte Hauptstadt strahlt neue Vitalität aus</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Xi'an, Shaanxi</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-de-5">
+                                         <p>Xi'an ist eine tausendjährige alte Hauptstadt mit einer städtischen Entwicklungsgeschichte von über 3100 Jahren und einer Hauptstadtgeschichte von über 1100 Jahren. In den letzten Jahren strahlt sie durch eine Reihe von Maßnahmen zum Schutz von Kulturerbe und städtischen Wiederaufbau neue Vitalität aus.</p>
+                                         <p>Von der umfassenden Sanierung der Stadtmauer der Ming-Dynastie bis zum wissenschaftlichen Schutz der Terrakotta-Armee, von der Schaffung der "Unendlichen Nachtstadt der Großen Tang-Dynastie" bis zur Umgestaltung des historischen Kulturbezirks des Kleinen Wildgans-Turms – Xi'an sucht ständig nach Wegen, alte Kultur und modernes Leben zu verbinden, während sie historische Kulturerbe schützt. Heute ist Xi'an nicht nur eine wichtige historische und kulturelle Stadt Chinas, sondern auch eine lebendige moderne Stadt. Die Nachtstadt der Großen Tang-Dynastie glüht bei Nacht und ist von Touristen belebt, was zu einem neuen Wahrzeichen von Xi'an geworden ist. Das Erfolgsbeispiel von Xi'an bietet einen nützlichen Bezugspunkt für den Schutz und die Entwicklung anderer historischer und kultureller Städte.</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="de-5">
+                                        Ganzen Artikel lesen <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 日文新闻 -->
+                <div class="language-news hidden" data-lang="ja">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 正定新闻日文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/zhengding/600/800" alt="正定古城" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">古風が現代の繁栄に触れ合う</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">河北省正定</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-ja-1">
+                                        <p>華灯が灯り、河北正定古城はもっとにぎわってきました。五彩のライトで照らされた下で、人々は古城壁を散策したり、古い街並みで集まって楽しんだり、陽和楼の下で遊んだりします。</p>
+                                        <p>夕方になると、正定古城はライトに照らされ、独特の夜景を演出しています。城壁の上のライトが古い建物の輪郭を浮かび上がらせ、古い商店街の提灯が温かい雰囲気を演出しています。陽和楼の下では、音楽噴水が多くの観光客を引き付けています。近年、正定古城は保護を基に観光業を積極的に発展させています。ライトショーや文化イベントを通じて、古い城壁に新たな活力が吹き込まれています。</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="ja-1">
+                                        全文を読む <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 上海新闻日文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/shanghai/600/800" alt="武康大樓" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">建物が語る 都市に温もり</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">上海</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-ja-2">
+                                        <p>1987年、27歳の葛雅萍さんが武康大樓に嫁ぎました。30年以上が経ち、当時の花嫁は現在では子孫のおばあさんになりました。「ここに嫁いできた頃、これらの壁は漏れていました。」</p>
+                                        <p>武康大樓は1924年に建てられ、上海初の外廊式アパート建築です。近年、上海市政府は武康大樓の全面改修を行い、建物の歴史的風貌を保持しながら、住民の生活環境を改善しています。現在、武康大樓は住民の住居だけでなく、上海の文化的ランドマークと観光スポットにもなっています。葛雅萍さんは「今の武康大樓は外観だけでなく、内部設備もとても近代的で、私たちの生活の質が大きく向上しました。」と語っています。</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="ja-2">
+                                        全文を読む <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 良渚新闻日文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/liangzhu/600/800" alt="良渚博物院" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">"文化大回廊"が宝をつなぐ</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">浙江省良渚</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-ja-3">
+                                        <p>浙江省杭州市の良渚博物院を歩くと、AR眼鏡を通じて、5000年前の良渚の先民の生活が技術の力で生き生きと眼前に現れます。良渚博物院から出ると、特色ある商業集落「玉鳥集」にたどり着きます。</p>
+                                        <p>良渚文化は中国新石器時代後期の重要な文化で、約5300-4300年前にさかのぼります。近年、杭州市政府は「良渚文化大回廊」を建設し、良渚博物院、良渚古城遺跡公園、玉鳥集などの観光スポットをつなぎ、文化、観光、商業を一体とした特色あるルートを形成しました。観光客はここで5000年前の良渚文明の魅力を体感することができ、また現代商業の活力を味わうこともできます。良渚文化大回廊の建設は、地元の観光業の発展を促進するだけでなく、文化遺産の保護と継承にも新たなアプローチを提供しています。</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="ja-3">
+                                        全文を読む <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 平遥新闻日文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/pingyao/600/800" alt="平遥古城" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">"古城の生活がもっと快適に"</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">山西省平遥</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-ja-4">
+                                        <p>迎薰門から城内に入ると、むらがある古い城門、深い車轍、厚い古城壁、精巧な彫刻...山西省平遥古城の2.25平方キロメートルの区域には、300以上の文化財と歴史的遺跡が保存されています。</p>
+                                        <p>平遥古城は中国で最も完全に保存された明清時代の古城の一つで、1997年に世界文化遺産に登録されました。近年、平遥古城は文化財と歴史的遺跡を保護すると同時に、住民の生活環境の改善にも力を入れています。老朽化した配管網の改造、環境衛生の整備、特色ある民宿の開発などの施策により、古城の姿は一新しました。地元の住民は「今では古城の環境がますます良くなり、観光客も増えてきて、私たちの生活もますます快適になっています。」と語っています。</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="ja-4">
+                                        全文を読む <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 西安新闻日文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/xian/600/800" alt="西安城壁" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">千年の古都が新たな活力を放つ</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">陕西省西安</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-ja-5">
+                                        <p>西安は、3100年以上の都市建設の歴史と1100年以上の建都の歴史を持つ千年の古都ですが、近年、一連の文化遺産保護と都市再生策を通じて、新たな活力を放っています。</p>
+                                        <p>明代城壁の全面改修から兵馬俑の科学的保護まで、大唐不夜城の創造から小雁塔歴史文化地区の改造まで、西安は歴史文化遺産を保護しながら、古代文化と現代生活をどう融合させるかを絶えず模索しています。現在、西安は中国の重要な歴史文化都市であるだけでなく、活力に溢れる現代都市にもなっています。夜の大唐不夜城は灯火が輝き、観光客でにぎわい、西安の新しいランドマークになっています。西安の成功例は、他の歴史文化都市の保護と発展に有益な参考を提供しています。</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="ja-5">
+                                        全文を読む <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 法文新闻 -->
+                <div class="language-news hidden" data-lang="fr">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 正定新闻法文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/zhengding/600/800" alt="Vieille ville de Zhengding" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">L'ancien charme touche la prospérité moderne</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Zhengding, Hebei</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-fr-1">
+                                        <p>La vague de chaleur ne peut pas arrêter l'enthousiasme des gens. Lorsque les lumières brillent, la vieille ville de Zhengding, Hebei, devient plus animée : sous les lumières multicolores, les gens se promènent sur les murs de la vieille ville, se réunissent dans les quartiers anciens ou jouent sous la tour Yanghe.</p>
+                                        <p>Le soir, la vieille ville de Zhengding est éclairée par des lumières, offrant un paysage nocturne unique. Les lumières sur les murs de la ville font ressortir les contours des anciens bâtiments, et les lanternes des vieux quartiers commerciaux créent une atmosphère chaleureuse. Sous la tour Yanghe, une fontaine musicale attire de nombreux touristes. Ces dernières années, la vieille ville de Zhengding a activement développé le tourisme sur la base de la protection. Grâce à des spectacles de lumière et des événements culturels, les anciens murs de la ville regagnent une nouvelle vitalité.</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="fr-1">
+                                        Lire la suite <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 上海新闻法文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/shanghai/600/800" alt="Bâtiment WuKang" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">Les bâtiments racontent la chaleur de la ville</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Shanghai</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-fr-2">
+                                        <p>En 1987, Ge Yaping, 27 ans, s'est mariée dans le bâtiment WuKang. Plus de 30 ans plus tard, la mariée d'alors est aujourd'hui une grand-mère avec petits-enfants. "Quand je suis venue vivre ici, ces murs fuyaient."</p>
+                                        <p>Le bâtiment WuKang, construit en 1924, est le premier immeuble d'appartements avec corridor extérieur à Shanghai. Ces dernières années, la municipalité de Shanghai a procédé à une rénovation complète du bâtiment WuKang, améliorant le cadre de vie des résidents tout en préservant l'apparence historique de l'immeuble. Aujourd'hui, le bâtiment WuKang n'est pas seulement un logement pour les résidents, mais aussi un monument culturel et un point touristique de Shanghai. Ge Yaping déclare : "Aujourd'hui, le bâtiment WuKang a non seulement une belle apparence, mais aussi des équipements intérieurs très modernes, et notre qualité de vie s'est grandement améliorée."</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="fr-2">
+                                        Lire la suite <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 良渚新闻法文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/liangzhu/600/800" alt="Musée de Liangzhu" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">"Le grand corridor culturel" relie les trésors</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Liangzhu, Zhejiang</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-fr-3">
+                                        <p>En visitant le musée de Liangzhu à Hangzhou, province du Zhejiang, on peut, grâce à des lunettes AR, voir vivre la vie des ancêtres de Liangzhu d'il y a 5000 ans grâce à la technologie. Quittant le musée de Liangzhu, on arrive au quartier commercial caractéristique "Yuniao Ji".</p>
+                                        <p>La culture de Liangzhu est une culture importante de la fin de l'âge de pierre dans la Chine, remontant à environ 5300-4300 ans. Ces dernières années, la municipalité de Hangzhou a construit le "Grand corridor culturel de Liangzhu", reliant des points touristiques tels que le musée de Liangzhu, le parc des ruines de la vieille ville de Liangzhu et Yuniao Ji, formant une route caractéristique intégrant culture, tourisme et commerce. Les touristes peuvent ici sentir le charme de la civilisation de Liangzhu datant de 5000 ans et goûter à la vitalité du commerce moderne. La construction du Grand corridor culturel de Liangzhu stimule non seulement le développement du tourisme local, mais offre aussi une nouvelle approche pour la protection et la transmission du patrimoine culturel.</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="fr-3">
+                                        Lire la suite <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 平遥新闻法文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/pingyao/600/800" alt="Vieille ville de Pingyao" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">"La vie dans la vieille ville devient plus confortable"</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Pingyao, Shanxi</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-fr-4">
+                                        <p>En entrant dans la ville par la porte Yingxun, on trouve dans la zone de 2,25 kilomètres carrés de la vieille ville de Pingyao, province du Shanxi, plus de 300 biens culturels et sites historiques, notamment des anciennes portes de ville irrégulières, de profondes ornières de charrettes, d'épais murs de vieille ville et des sculptures exquises.</p>
+                                        <p>La vieille ville de Pingyao est l'une des plus bien préservées des villes anciennes des dynasties Ming et Qing en Chine et a été inscrite au Patrimoine mondial de l'UNESCO en 1997. Ces dernières années, la vieille ville de Pingyao s'efforce non seulement de protéger les biens culturels et les sites historiques, mais aussi d'améliorer le cadre de vie des résidents. Des mesures telles que la rénovation des réseaux de tuyaux obsolètes, l'amélioration de l'hygiène environnementale et le développement de maisons d'hôtes caractéristiques ont donné un nouveau visage à la vieille ville. Un résident local déclare : "Aujourd'hui, l'environnement de la vieille ville s'améliore de plus en plus, le nombre de touristes augmente et notre vie devient de plus en plus confortable."</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="fr-4">
+                                        Lire la suite <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 西安新闻法文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/xian/600/800" alt="Muraille de Xi'an" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">La capitale millénaire respire une nouvelle vitalité</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Xi'an, Shaanxi</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-fr-5">
+                                        <p>Xi'an est une capitale millénaire avec plus de 3100 ans d'histoire urbaine et plus de 1100 ans d'histoire comme capitale. Ces dernières années, elle respire une nouvelle vitalité grâce à une série de mesures de protection du patrimoine culturel et de rénovation urbaine.</p>
+                                        <p>De la rénovation complète de la muraille de la dynastie Ming à la protection scientifique des guerriers de terre cuite, de la création de la "Ville éternelle de nuit de la grande dynastie Tang" à la transformation du quartier culturel historique de la Petite Pagode aux Grue, Xi'an explore constamment comment fusionner la culture ancienne et la vie moderne tout en protégeant le patrimoine historique et culturel. Aujourd'hui, Xi'an est non seulement une importante ville historique et culturelle de Chine, mais aussi une ville moderne pleine de vie. La Ville éternelle de nuit de la grande dynastie Tang brille de lumières la nuit et est animée de touristes, devenant un nouveau monument de Xi'an. L'exemple réussi de Xi'an offre une référence utile pour la protection et le développement d'autres villes historiques et culturelles.</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="fr-5">
+                                        Lire la suite <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 西班牙文新闻 -->
+                <div class="language-news hidden" data-lang="es">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 正定新闻西班牙文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/zhengding/600/800" alt="Antigua ciudad de Zhengding" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">El antiguo encanto toca la modernidad y la prosperidad</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Zhengding, Hebei</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-es-1">
+                                        <p>Las olas de calor no pueden detener el entusiasmo de las personas. Con las luces del atardecer, la antigua ciudad de Zhengding, Hebei, se vuelve más animada: bajo la luz de cintas de colores, las personas caminan por las murallas de la ciudad, se reúnen en las calles antiguas o juegan bajo el edificio Yanghe.</p>
+                                        <p>Al atardecer, la antigua ciudad de Zhengding se ilumina con luces, creando un paisaje nocturno único. Las luces en las murallas de la ciudad destacan los contornos de los edificios antiguos, y las linternas en los antiguos barrios comerciales crean una atmósfera cálida. Bajo el edificio Yanghe, una fuente musical atrae a muchos turistas. En los últimos años, la antigua ciudad de Zhengding ha desarrollado activamente el turismo basándose en la protección. A través de espectáculos de luces y eventos culturales, las antiguas murallas de la ciudad han cobrado nueva vitalidad.</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="es-1">
+                                        Leer todo <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 上海新闻西班牙文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/shanghai/600/800" alt="Edificio WuKang" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">Los edificios cuentan la calidez de la ciudad</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Shanghai</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-es-2">
+                                        <p>En 1987, Ge Yaping, de 27 años, se casó en el edificio WuKang. Más de 30 años después, la novia de entonces es ahora una abuela con nietos. "Cuando me mudé aquí, estas paredes tenían fugas."</p>
+                                        <p>El edificio WuKang, construido en 1924, es el primer edificio de apartamentos con pasillo exterior en Shanghai. En los últimos años, el gobierno municipal de Shanghai ha realizado una renovación completa del edificio WuKang, mejorando el entorno de vida de los residentes mientras conserva la apariencia histórica del edificio. Hoy en día, el edificio WuKang no es solo un hogar para los residentes, sino también un monumento cultural y un lugar turístico de Shanghai. Ge Yaping dice: "Hoy en día, el edificio WuKang no solo tiene una apariencia bonita, sino también equipos internos muy modernos, y nuestra calidad de vida ha mejorado mucho."</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="es-2">
+                                        Leer todo <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 良渚新闻西班牙文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/liangzhu/600/800" alt="Museo de Liangzhu" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">"El gran corredor cultural" conecta tesoros</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Liangzhu, Zhejiang</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-es-3">
+                                        <p>Al recorrer el Museo de Liangzhu en Hangzhou, provincia de Zhejiang, a través de gafas AR, la vida de los antepasados de Liangzhu de hace 5000 años aparece vividamente ante nuestros ojos gracias a la tecnología. Al salir del Museo de Liangzhu, llegamos al barrio comercial característico "Yuniao Ji".</p>
+                                        <p>La cultura de Liangzhu es una cultura importante de la época neolítica tardía en China, que se remonta a aproximadamente 5300-4300 años. En los últimos años, el gobierno municipal de Hangzhou ha construido el "Gran Corredor Cultural de Liangzhu", conectando lugares turísticos como el Museo de Liangzhu, el Parque de Ruinas de la Antigua Ciudad de Liangzhu y Yuniao Ji, formando una ruta característica que integra cultura, turismo y comercio. Los turistas pueden experimentar el encanto de la civilización de Liangzhu de hace 5000 años y disfrutar de la vitalidad del comercio moderno. La construcción del Gran Corredor Cultural de Liangzhu no solo promueve el desarrollo del turismo local, sino que también ofrece un nuevo enfoque para la protección y transmisión del patrimonio cultural.</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="es-3">
+                                        Leer todo <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 平遥新闻西班牙文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/pingyao/600/800" alt="Antigua ciudad de Pingyao" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">"La vida en la antigua ciudad se hace más confortable"</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Pingyao, Shanxi</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-es-4">
+                                        <p>Al entrar en la ciudad por la Puerta Yingxun, en el área de 2,25 kilómetros cuadrados de la antigua ciudad de Pingyao, provincia de Shanxi, se encuentran más de 300 bienes culturales y sitios históricos, incluyendo antiguas puertas de ciudad irregulares, profundas huellas de carruajes, gruesas murallas de antigua ciudad y exquisitas esculturas.</p>
+                                        <p>La antigua ciudad de Pingyao es una de las ciudades antiguas mejor conservadas de las dinastías Ming y Qing en China y fue inscrita en la Lista del Patrimonio Mundial de la UNESCO en 1997. En los últimos años, la antigua ciudad de Pingyao se ha esforzado no solo por proteger los bienes culturales y los sitios históricos, sino también por mejorar el entorno de vida de los residentes. Medidas como la renovación de las redes de tuberías obsoletas, la mejora de la higiene ambiental y el desarrollo de posadas características han dado un nuevo aspecto a la antigua ciudad. Un residente local dice: "Hoy en día, el entorno de la antigua ciudad es cada vez mejor, el número de turistas aumenta y nuestra vida es cada vez más confortable."</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="es-4">
+                                        Leer todo <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 西安新闻西班牙文 -->
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3">
+                                    <img src="https://picsum.photos/seed/xian/600/800" alt="Muralla de Xi'an" class="w-full h-full object-cover">
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">La antigua capital de mil años irradia nueva vitalidad</h3>
+                                        <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">Xi'an, Shaanxi</span>
+                                    </div>
+                                    
+                                    <div class="news-content-short mb-4" id="news-content-es-5">
+                                        <p>Xi'an es una antigua capital con más de 3100 años de historia urbana y más de 1100 años de historia como capital. En los últimos años, ha irradiado nueva vitalidad gracias a una serie de medidas de protección del patrimonio cultural y renovación urbana.</p>
+                                        <p>Desde la renovación completa de la muralla de la dinastía Ming hasta la protección científica de los guerreros de terracota, desde la creación de la "Ciudad Infinita de Noche de la Gran Dinastía Tang" hasta la transformación del Distrito Cultural Histórico de la Pequeña Pagoda del Cisne, Xi'an explora constantemente cómo fusionar la cultura antigua y la vida moderna mientras protege el patrimonio histórico y cultural. Hoy en día, Xi'an no solo es una importante ciudad histórica y cultural de China, sino también una ciudad moderna llena de vitalidad. La Ciudad Infinita de Noche de la Gran Dinastía Tang brilla con luces por la noche y está llena de turistas, convirtiéndose en un nuevo monumento de Xi'an. El ejemplo exitoso de Xi'an ofrece una referencia útil para la protección y desarrollo de otras ciudades históricas y culturales.</p>
+                                    </div>
+                                    
+                                    <button class="text-primary hover:text-secondary transition-colors text-sm mt-2 read-more-btn" data-id="es-5">
+                                        Leer todo <i class="fa fa-angle-right ml-1"></i>
+                                    </button>
+                                    
+                                    <p class="text-gray-600 text-sm mt-4"><i class="fa fa-calendar-o mr-1"></i> 2025年7月12日</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 可视化部分 -->
+        <section id="visualization" class="scroll-mt-20">
+            <div class="text-center mb-8">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold text-primary mb-2">数据可视化</h2>
+                <p class="text-gray-600">B站热门视频数据分析</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- 点赞数与分享数图表 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <h3 class="text-xl font-bold mb-4">视频互动数据TOP5</h3>
+                    <div class="w-full h-80" id="interactionChart"></div>
+                </div>
+
+                <!-- 播放量图表 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <h3 class="text-xl font-bold mb-4">视频播放量占比</h3>
+                    <div class="w-full h-80" id="viewChart"></div>
+                </div>
+            </div>
+            
+            <!-- 弹幕词云 -->
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                <h3 class="text-xl font-bold mb-4">弹幕词云分析</h3>
+                <div class="w-full h-64" id="wordcloud"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-primary text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">关于项目</h3>
+                    <p>本项目展示了文化遗产保护案例与相关数据可视化，旨在通过故事、新闻与数据的结合，呈现文化传承与时代发展的关系。</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">内容来源</h3>
+                    <ul class="space-y-2">
+                        <li><i class="fa fa-newspaper-o mr-2"></i> 人民日报相关报道</li>
+                        <li><i class="fa fa-bar-chart mr-2"></i> B站视频数据分析</li>
+                        <li><i class="fa fa-book mr-2"></i> 原创文学作品</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">联系我们</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-white hover:text-secondary transition-colors"><i class="fa fa-weibo text-xl"></i></a>
+                        <a href="#" class="text-white hover:text-secondary transition-colors"><i class="fa fa-wechat text-xl"></i></a>
+                        <a href="#" class="text-white hover:text-secondary transition-colors"><i class="fa fa-twitter text-xl"></i></a>
+                        <a href="#" class="text-white hover:text-secondary transition-colors"><i class="fa fa-envelope text-xl"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white/20 mt-8 pt-8 text-center text-sm">
+                <p>&copy; 2025 文化遗产与数据可视化平台 版权所有</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化图表
+            initCharts();
+            
+            // 初始化新闻标签切换
+            initNewsTabs();
+            
+            // 初始化语言切换
+            initLanguageSwitch();
+            
+            // 平滑滚动
+            initSmoothScroll();
+        });
+        
+        // 初始化图表
+        function initCharts() {
+            // 互动数据图表（点赞数与分享数）
+            const interactionChart = echarts.init(document.getElementById('interactionChart'));
+            const interactionOption = {
+                title: {
+                    text: '点赞数与分享数TOP5视频'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                legend: {
+                    data: ['点赞数', '分享数'],
+                    top: 30
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['视频1', '视频2', '视频3', '视频4', '视频5'],
+                    axisLabel: {
+                        rotate: 30
+                    }
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name: '点赞数',
+                        type: 'bar',
+                        data: [610251, 508095, 471513, 421863, 380521],
+                        itemStyle: {
+                            color: '#8B5CF6'
+                        }
+                    },
+                    {
+                        name: '分享数',
+                        type: 'bar',
+                        data: [83453, 52930, 50216, 41614, 30438],
+                        itemStyle: {
+                            color: '#EC4899'
+                        }
+                    }
+                ]
+            };
+            interactionChart.setOption(interactionOption);
+            
+            // 播放量图表
+            const viewChart = echarts.init(document.getElementById('viewChart'));
+            const viewOption = {
+                title: {
+                    text: '播放量占比与数值'
+                },
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    top: '5%',
+                    left: 'center'
+                },
+                series: [
+                    {
+                        name: '播放量占比',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: 16,
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            { value: 23.5, name: '【罗翔】先性侵然后谈恋爱还叫不叫性侵?' },
+                            { value: 20.3, name: '父母打架而已,我吃个瓜' },
+                            { value: 19.6, name: '从小被家暴的少年...' },
+                            { value: 17.0, name: '我被家暴了,这次我不再沉默' },
+                            { value: 19.6, name: '其他热门视频' }
+                        ]
+                    }
+                ]
+            };
+            viewChart.setOption(viewOption);
+            
+            // 弹幕词云
+            const wordcloud = echarts.init(document.getElementById('wordcloud'));
+            const wordcloudOption = {
+                series: [
+                    {
+                        type: 'wordCloud',
+                        gridSize: 10,
+                        sizeRange: [12, 50],
+                        rotationRange: [-90, 90],
+                        shape: 'circle',
+                        width: '100%',
+                        height: '100%',
+                        drawOutOfBound: false,
+                        textStyle: {
+                            color: function() {
+                                return 'rgb(' + [
+                                    Math.round(Math.random() * 150 + 50),
+                                    Math.round(Math.random() * 50),
+                                    Math.round(Math.random() * 200 + 55)
+                                ].join(',') + ')';
+                            }
+                        },
+                        emphasis: {
+                            focus: 'self',
+                            textStyle: {
+                                shadowBlur: 10,
+                                shadowColor: '#333'
+                            }
+                        },
+                        data: [
+                            { name: '哈哈哈哈', value: 10000 },
+                            { name: '家暴', value: 8000 },
+                            { name: '女权', value: 6500 },
+                            { name: '离婚', value: 6000 },
+                            { name: '笑死', value: 5800 },
+                            { name: '法官', value: 5000 },
+                            { name: '男人', value: 4800 },
+                            { name: '女人', value: 4500 },
+                            { name: '卧槽', value: 4000 },
+                            { name: '彩礼', value: 3800 },
+                            { name: '结婚', value: 3500 },
+                            { name: '法律', value: 3200 },
+                            { name: '支持', value: 3000 },
+                            { name: '垃圾', value: 2800 },
+                            { name: '农村', value: 2500 },
+                            { name: '美国', value: 2200 },
+                            { name: '韩国', value: 2000 },
+                            { name: '视频', value: 1800 },
+                            { name: '就是', value: 1500 },
+                            { name: '应该', value: 1200 }
+                        ]
+                    }
+                ]
+            };
+            wordcloud.setOption(wordcloudOption);
+            
+            // 响应窗口大小变化
+            window.addEventListener('resize', function() {
+                interactionChart.resize();
+                viewChart.resize();
+                wordcloud.resize();
+            });
+        }
+        
+        // 初始化新闻标签切换
+        function initNewsTabs() {
+            const tabs = document.querySelectorAll('.news-tabs button');
+            const newsItems = document.querySelectorAll('.news-item');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 移除所有标签的活跃状态
+                    tabs.forEach(t => {
+                        t.classList.remove('text-primary', 'border-b-2', 'border-primary', 'font-medium');
+                        t.classList.add('text-gray-500', 'hover:text-primary');
+                    });
+                    
+                    // 添加当前标签的活跃状态
+                    this.classList.remove('text-gray-500', 'hover:text-primary');
+                    this.classList.add('text-primary', 'border-b-2', 'border-primary', 'font-medium');
+                    
+                    // 隐藏所有新闻内容
+                    newsItems.forEach(item => {
+                        item.classList.add('hidden');
+                    });
+                    
+                    // 显示对应新闻内容
+                    const city = this.getAttribute('data-city');
+                    document.querySelector(`.news-item[data-city="${city}"]`).classList.remove('hidden');
+                });
+            });
+        }
+        
+        // 初始化语言切换
+        function initLanguageSwitch() {
+            const languageFlags = document.querySelectorAll('.language-flag');
+            
+            languageFlags.forEach(flag => {
+                flag.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    
+                    // 隐藏所有语言内容
+                    document.querySelectorAll('.language-content').forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    
+                    // 显示选中语言的内容
+                    document.querySelectorAll(`.language-content[data-lang="${lang}"]`).forEach(content => {
+                        content.classList.remove('hidden');
+                    });
+                });
+            });
+        }
+        
+        // 初始化平滑滚动
+        function initSmoothScroll() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>
