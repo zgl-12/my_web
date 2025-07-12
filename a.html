@@ -353,6 +353,16 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- 大图查看模态框 -->
+            <div id="imageModal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4">
+                <div class="relative w-full max-w-5xl">
+                    <button id="closeModal" class="absolute -top-12 right-0 text-white text-3xl hover:text-gray-300 transition-colors">
+                        <i class="fa fa-times"></i>
+                    </button>
+                    <img id="modalImage" src="q.png" alt="弹幕词云分析" class="w-full h-auto max-h-[85vh] object-contain">
+                </div>
+            </div>
         </section>
     </main>
             
@@ -541,6 +551,54 @@
             // 弹幕词云已替换为图片，无需初始化
         }
     </script>
+
+    <script>
+        // 获取DOM元素
+        const wordcloudImageContainer = document.getElementById('wordcloudImageContainer');
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const closeModal = document.getElementById('closeModal');
+    
+        // 点击图片容器时显示模态框
+        wordcloudImageContainer.addEventListener('click', () => {
+            // 获取原图src
+            const imageSrc = document.getElementById('wordcloudImage').src;
+            // 设置模态框图片src
+            modalImage.src = imageSrc;
+            // 显示模态框
+            imageModal.classList.remove('hidden');
+            imageModal.classList.add('flex');
+            // 禁止背景滚动
+            document.body.style.overflow = 'hidden';
+        });
+    
+        // 点击关闭按钮时隐藏模态框
+        closeModal.addEventListener('click', () => {
+            imageModal.classList.add('hidden');
+            imageModal.classList.remove('flex');
+            // 恢复背景滚动
+            document.body.style.overflow = '';
+        });
+    
+        // 点击模态框背景时隐藏模态框
+        imageModal.addEventListener('click', (e) => {
+            if (e.target === imageModal) {
+                imageModal.classList.add('hidden');
+                imageModal.classList.remove('flex');
+                document.body.style.overflow = '';
+            }
+        });
+    
+        // 键盘ESC键关闭模态框
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !imageModal.classList.contains('hidden')) {
+                imageModal.classList.add('hidden');
+                imageModal.classList.remove('flex');
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
+    
 </body>
 </html>
     
