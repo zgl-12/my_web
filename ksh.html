@@ -979,11 +979,19 @@
                 </div>
             </div>
             
-            <!-- 弹幕词云 -->
+            <!-- 弹幕词云（替换为图片展示） -->
             <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
                 <h3 class="text-xl font-bold mb-4">弹幕词云分析</h3>
-                <div class="w-full h-64" id="wordcloud"></div>
+                <div class="w-full h-[450px] md:h-[500px] relative overflow-hidden rounded-lg group cursor-default">
+                <!-- 图片容器，使用flex居中 -->
+                <div class="flex items-center justify-center w-full h-full bg-gray-100">
+                    <img src="q.png" alt="弹幕词云分析" 
+                         class="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                         loading="lazy">
+                </div>
             </div>
+        </div>   
+     
         </section>
     </main>
 
