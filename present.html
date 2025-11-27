@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信送礼物功能（完整聊天交互版）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+        }
+        /* 界面切换按钮 */
+        .tab-buttons {
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            background-color: #07C160; /* 微信绿 */
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: opacity 0.2s ease;
+        }
+        .tab-btn:hover {
+            opacity: 0.9;
+        }
+        .tab-btn:active {
+            transform: scale(0.98);
+        }
+        /* 手机外壳模拟 */
+        .phone {
+            width: 375px;
+            height: 667px;
+            background-color: white;
+            border-radius: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative; /* 承载page的绝对定位 */
+        }
+        /* 每个界面的容器（默认隐藏，激活时显示） */
+        .page {
+            width: 100%;
+            height: 100%;
+            display: none;
+            padding: 10px;
+            overflow-y: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0; /* 初始透明 */
+            transform: translateX(20px); /* 初始右移 */
+            transition: opacity 0.3s ease, transform 0.3s ease; /* 过渡动画 */
+        }
+        .page.active {
+            display: block;
+            opacity: 1; /* 激活后不透明 */
+            transform: translateX(0); /* 激活后归位 */
+        }
+        /* 通用组件样式 */
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: white;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 10px;
+        }
+        .back-btn {
+            font-size: 18px;
+            color: #07C160;
+            margin-right: 10px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .back-btn:hover {
+            color: #05a850;
+        }
+        .title {
+            font-size: 16px;
+            font-weight: bold;
+            flex: 1;
+            text-align: center;
+        }
+        .search-box {
+            flex: 1;
+            height: 30px;
+            background-color: #f5f5f5;
+            border-radius: 15px;
+            padding: 0 10px;
+            font-size: 14px;
+            border: none;
+            outline: none;
+            transition: background-color 0.2s ease;
+        }
+        .search-box:focus {
+            background-color: #e9e9e9;
+        }
+        .tag-bar {
+            display: flex;
+            gap: 8px;
+            padding: 10px;
+            overflow-x: auto;
+            background-color: white;
+            margin-bottom: 10px;
+        }
+        .tag {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            font-size: 13px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tag.active-tag {
+            border-color: #07C160;
+            color: #07C160;
+            background-color: rgba(7, 193, 96, 0.1);
+        }
+        .tag:hover {
+            border-color: #07C160;
+            color: #07C160;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 0 10px;
+        }
+        .goods-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+        /* PC端hover */
+        @media (hover: hover) {
+            .goods-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            }
+        }
+        /* 点击/触摸反馈 */
+        .goods-card:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .goods-card:active .goods-price {
+            color: #d91a1a; /* 点击时价格变红 */
+        }
+        .goods-img {
+            width: 100%;
+            height: 120px;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 12px;
+        }
+        .goods-info {
+            padding: 8px;
+        }
+        .goods-name {
+            font-size: 14px;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .goods-price {
+            font-size: 13px;
+            color: #f43530;
+            font-weight: bold;
+            transition: color 0.2s ease;
+        }
+        .goods-tag {
+            font-size: 10px;
+            color: white;
+            background-color: #ff7d00;
+            padding: 1px 4px;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+        .brand-tag {
+            font-size: 10px;
+            color: #07C160;
+            border: 1px solid #07C160;
+            padding: 1px 4px;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+        .discount-tag {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background-color: #f43530;
+            color: white;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .btn {
+            display: block;
+            width: 90%;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border-radius: 20px;
+            margin: 10px auto;
+            font-size: 16px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-orange {
+            background-color: #ff7d00;
+            color: white;
+        }
+        .btn-orange:hover {
+            background-color: #e67000;
+        }
+        .btn-orange:active {
+            transform: scale(0.98);
+        }
+        .btn-gray {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+        .btn-gray:hover {
+            background-color: #e9e9e9;
+        }
+        .btn-green {
+            background-color: #07C160;
+            color: white;
+        }
+        .btn-green:hover {
+            background-color: #05a850;
+        }
+        .btn-blue {
+            background-color: #1E88E5;
+            color: white;
+        }
+        /* ========== 核心新增：微信聊天界面样式 ========== */
+        /* 聊天头部 */
+        .chat-header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #f7f7f7;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .chat-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #ddd;
+            margin-right: 10px;
+        }
+        .chat-name {
+            font-size: 16px;
+            font-weight: bold;
+            flex: 1;
+        }
+        .chat-more {
+            font-size: 18px;
+            color: #666;
+        }
+        /* 聊天记录容器 */
+        .chat-container {
+            height: calc(100% - 110px);
+            background-color: #e5e5e5;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        /* 聊天消息气泡 */
+        .chat-message {
+            display: flex;
+            max-width: 80%;
+        }
+        .chat-message.left {
+            align-self: flex-start;
+        }
+        .chat-message.right {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        .msg-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #ccc;
+            margin: 0 8px;
+        }
+        .msg-content {
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.4;
+            position: relative;
+        }
+        .left .msg-content {
+            background-color: white;
+            border-bottom-left-radius: 4px;
+        }
+        .right .msg-content {
+            background-color: #07C160;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        /* 礼物消息样式（特殊气泡） */
+        .gift-msg {
+            background-color: #fff8e1;
+            border: 1px solid #ffc107;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .gift-icon-small {
+            font-size: 20px;
+            color: #ff7d00;
+        }
+        .gift-msg-text {
+            flex: 1;
+        }
+        .gift-msg-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 2px;
+        }
+        .gift-msg-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        .msg-time {
+            font-size: 10px;
+            color: #999;
+            margin-top: 5px;
+            text-align: center;
+            width: 100%;
+        }
+        /* 聊天输入区 */
+        .chat-input-area {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px;
+            background-color: white;
+            border-top: 1px solid #eee;
+        }
+        .chat-input {
+            width: 100%;
+            height: 40px;
+            background-color: #f5f5f5;
+            border-radius: 20px;
+            padding: 0 15px;
+            font-size: 14px;
+            border: none;
+            outline: none;
+            transition: background-color 0.2s ease;
+        }
+        .chat-input:focus {
+            background-color: #e9e9e9;
+        }
+        /* 功能栏 */
+        .func-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            margin-top: 5px;
+        }
+        .func-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .func-item:active {
+            transform: scale(0.95);
+        }
+        .func-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .gift-icon {
+            color: #07C160;
+            position: relative;
+        }
+        .gift-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 15px;
+            height: 15px;
+            background-color: red;
+            color: white;
+            font-size: 10px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* ========== 原有样式优化 ========== */
+        /* 2. 礼物首页（完全无地址相关） */
+        .filter-bar {
+            background-color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+        .range-filter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .filter-label {
+            font-size: 13px;
+            color: #666;
+        }
+        .range-select {
+            flex: 1;
+            height: 30px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 0 8px;
+            font-size: 13px;
+            color: #666;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+        .range-select:focus {
+            border-color: #07C160;
+        }
+        .filter-btn {
+            font-size: 12px;
+            padding: 4px 8px;
+            background-color: #07C160;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .filter-btn:hover {
+            background-color: #05a850;
+        }
+        /* 筛选按钮加载状态 */
+        .filter-btn.loading {
+            position: relative;
+            pointer-events: none;
+        }
+        .filter-btn.loading::after {
+            content: "";
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #fff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+        /* 空状态提示 */
+        .empty-state {
+            display:none;text-align:center;padding:50px 0;color:#999;
+        }
+        /* 3. 商品详情页（仅提示收礼人填地址，无查看权限） */
+        .detail-img {
+            width: 100%;
+            height: 200px;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            margin-bottom: 10px;
+            transition: opacity 0.2s ease;
+        }
+        .detail-img:hover {
+            opacity: 0.9;
+        }
+        .detail-info {
+            padding: 0 10px;
+        }
+        .detail-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .detail-name {
+            font-size: 18px;
+            flex: 1;
+        }
+        .detail-brand {
+            font-size: 10px;
+            color: #07C160;
+            border: 1px solid #07C160;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .detail-desc {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+        .detail-price {
+            font-size: 16px;
+            color: #f43530;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        .original-price {
+            font-size: 12px;
+            color: #999;
+            text-decoration: line-through;
+            margin-left: 10px;
+        }
+        .detail-delivery {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .delivery-tag {
+            color: #1E88E5;
+            font-size: 12px;
+            border: 1px solid #1E88E5;
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        .detail-extra {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #666;
+        }
+        .detail-extra-item {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .detail-fold {
+            padding: 10px;
+            font-size: 14px;
+            color: #999;
+            border-top: 1px solid #eee;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .detail-fold:hover {
+            color: #07C160;
+        }
+        /* 4. 发送定制页（核心隐私提示） */
+        .recipient-box {
+            padding: 10px;
+            background-color: white;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .recipient-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            color: #333;
+            transition: color 0.2s ease;
+        }
+        .recipient-input:focus {
+            color: #07C160;
+        }
+        .group-send {
+            font-size: 13px;
+            color: #07C160;
+            padding: 3px 8px;
+            border: 1px solid #07C160;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .group-send:hover {
+            background-color: rgba(7, 193, 96, 0.1);
+        }
+        /* 核心隐私提示 */
+        .privacy-tips {
+            padding: 10px;
+            background-color: #f0f9ff;
+            color: #1E88E5;
+            font-size: 13px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            border-left: 3px solid #1E88E5;
+        }
+        .delivery-check {
+            padding: 10px;
+            background-color: white;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+        .check-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .surprise-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .switch-label {
+            font-size: 13px;
+            color: #333;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #07C160;
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+        /* 开关提示 */
+        .switch-tips {
+            display:none;padding:8px 10px;font-size:12px;color:#666;background:#fef7f7;border-radius:5px;margin-bottom:10px;
+        }
+        .msg-template {
+            padding: 10px;
+            background-color: white;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+        .template-tag {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .template-btn {
+            padding: 3px 8px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            font-size: 13px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .template-btn.active {
+            background-color: #07C160;
+            color: white;
+        }
+        .template-btn:hover:not(.active) {
+            border-color: #07C160;
+            color: #07C160;
+        }
+        .msg-input {
+            width: 100%;
+            height: 80px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 14px;
+            outline: none;
+            resize: none;
+            margin-bottom: 10px;
+            transition: all 0.2s ease, opacity 0.2s ease;
+        }
+        .msg-input:focus {
+            border-color: #07C160;
+        }
+        /* 字数统计 */
+        .msg-count {
+            font-size: 12px;
+            color: #999;
+            text-align: right;
+            margin-top: -8px;
+            margin-right: 5%;
+            margin-bottom: 10px;
+        }
+        .msg-count.error {
+            color: #f43530;
+        }
+        .media-tools {
+            display: flex;
+            gap: 15px;
+            padding-left: 5px;
+        }
+        .media-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            color: #666;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .media-btn:active {
+            transform: scale(0.95);
+        }
+        .media-icon {
+            font-size: 18px;
+            margin-bottom: 3px;
+        }
+        .amount-box {
+            padding: 10px;
+            background-color: white;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+        .coupon-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #f43530;
+        }
+        /* 5. 送礼成功页（无任何地址信息） */
+        .success-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .success-icon {
+            font-size: 60px;
+            color: #07C160;
+            margin-bottom: 20px;
+            animation: bounce 1s ease;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .success-text {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .success-subtext {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        /* 6. 收礼人-填写地址（仅收礼人可见，强化隐私） */
+        .address-page {
+            padding: 10px;
+        }
+        .address-title {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .address-privacy {
+            padding: 8px;
+            background-color: #fef7f7;
+            color: #f43530;
+            font-size: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .address-form {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .form-item {
+            margin-bottom: 15px;
+        }
+        .form-label {
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .form-input {
+            width: 100%;
+            height: 40px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 0 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+        .form-input:focus {
+            border-color: #07C160;
+        }
+        .area-select {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        .area-select select {
+            flex: 1;
+            height: 40px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 0 5px;
+            font-size: 14px;
+            outline: none;
+        }
+        .full-address {
+            height: 80px;
+            resize: none;
+            padding: 10px;
+        }
+        .check-delivery {
+            font-size: 13px;
+            color: #07C160;
+            margin-bottom: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+        /* 7. 送礼人-物流跟踪（无任何地址信息） */
+        .sender-logistics {
+            padding: 10px;
+        }
+        .logistics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .logistics-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .order-status {
+            font-size: 13px;
+            color: #07C160;
+            background-color: rgba(7, 193, 96, 0.1);
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+        /* 送礼人物流页仅显示商品和物流状态，无地址 */
+        .sender-logistics-info {
+            background-color: white;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+        .sender-info-item {
+            display: flex;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .sender-info-label {
+            color: #999;
+            width: 60px;
+        }
+        .sender-info-content {
+            color: #333;
+            flex: 1;
+        }
+        .logistics-timeline {
+            position: relative;
+            padding-left: 20px;
+            margin-top: 20px;
+        }
+        .logistics-timeline:before {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #eee;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            transition: opacity 0.2s ease;
+            cursor: pointer;
+        }
+        .timeline-item:last-child {
+            margin-bottom: 10px;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -18px;
+            top: 0;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: #07C160;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px rgba(7, 193, 96, 0.2);
+        }
+        .timeline-item.active .timeline-dot {
+            background-color: #07C160;
+        }
+        .timeline-item.active .timeline-content {
+            border-left: 3px solid #07C160; /* 高亮节点加左侧边框 */
+        }
+        .timeline-item.inactive {
+            pointer-events: none; /* 未发生节点不可点击 */
+            opacity: 0.7;
+        }
+        .timeline-item.inactive .timeline-dot {
+            background-color: #eee;
+        }
+        .timeline-content {
+            background-color: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: background-color 0.2s ease;
+        }
+        .timeline-content:hover {
+            background-color: #f9f9f9;
+        }
+        .timeline-time {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 3px;
+        }
+        .timeline-text {
+            font-size: 13px;
+            color: #333;
+        }
+        /* 物流弹窗（仅显示物流信息，无地址） */
+        .logistics-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        .modal-content {
+            width: 80%;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 60%;
+            overflow-y: auto;
+            transform: scale(0.9);
+            animation: scaleIn 0.3s ease forwards;
+        }
+        @keyframes scaleIn {
+            0% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+        .modal-close {
+            text-align: right;
+            font-size: 18px;
+            cursor: pointer;
+            color: #999;
+            margin-bottom: 10px;
+            transition: color 0.2s ease;
+        }
+        .modal-close:hover {
+            color: #f43530;
+        }
+        .modal-title {
+            font-weight:bold;margin-bottom:10px;
+        }
+        .modal-info {
+            font-size:13px;color:#333;
+        }
+    </style>
+</head>
+<body>
+    <!-- 界面切换按钮（区分送礼人/收礼人视角） -->
+    <div class="tab-buttons">
+        <button class="tab-btn" onclick="switchPage('page1')">1. 聊天界面</button>
+        <button class="tab-btn" onclick="switchPage('page2')">2. 礼物首页</button>
+        <button class="tab-btn" onclick="switchPage('page3')">3. 商品详情</button>
+        <button class="tab-btn" onclick="switchPage('page4')">4. 发送定制</button>
+        <button class="tab-btn" onclick="switchPage('page5')">5. 送礼成功</button>
+        <button class="tab-btn" onclick="switchPage('page7')">6. 物流跟踪</button>
+        <button class="tab-btn" onclick="switchPage('page6')">7. 收礼人填地址</button>
+    </div>
+
+    <!-- 手机外壳 -->
+    <div class="phone">
+        <!-- 1. 核心修改：微信聊天界面（带真实聊天记录） -->
+        <div class="page active" id="page1">
+            <!-- 聊天头部 -->
+            <div class="chat-header">
+                <div class="back-btn" style="margin-right: 0;">←</div>
+                <div class="chat-avatar"></div>
+                <div class="chat-name">张总</div>
+                <div class="chat-more">⋮</div>
+            </div>
+            
+            <!-- 聊天记录区域 -->
+            <div class="chat-container" id="chatContainer">
+                <!-- 时间戳 -->
+                <div class="msg-time">今天 10:00</div>
+                
+                <!-- 对方消息 -->
+                <div class="chat-message left">
+                    <div class="msg-avatar"></div>
+                    <div class="msg-content">
+                        小李，上次合作的项目辛苦了，有空聊一下后续规划
+                    </div>
+                </div>
+                
+                <!-- 自己消息 -->
+                <div class="chat-message right">
+                    <div class="msg-avatar"></div>
+                    <div class="msg-content">
+                        谢谢张总！应该的，我随时都可以~
+                    </div>
+                </div>
+                
+                <!-- 对方消息 -->
+                <div class="chat-message left">
+                    <div class="msg-avatar"></div>
+                    <div class="msg-content">
+                        不用客气，合作愉快！
+                    </div>
+                </div>
+                
+                <!-- 时间戳 -->
+                <div class="msg-time">今天 14:20</div>
+            </div>
+            
+            <!-- 聊天输入区 -->
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" placeholder="输入消息...">
+                <!-- 功能栏 -->
+                <div class="func-bar">
+                    <div class="func-item">
+                        <div class="func-icon">📷</div>
+                        <div>照片</div>
+                    </div>
+                    <div class="func-item">
+                        <div class="func-icon">🎥</div>
+                        <div>拍摄</div>
+                    </div>
+                    <div class="func-item">
+                        <div class="func-icon">📁</div>
+                        <div>文件</div>
+                    </div>
+                    <div class="func-item">
+                        <div class="func-icon">🧧</div>
+                        <div>红包</div>
+                    </div>
+                    <div class="func-item" onclick="switchPage('page2')">
+                        <div class="func-icon gift-icon">🎁
+                            <div class="gift-badge">限</div>
+                        </div>
+                        <div>礼物</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 送礼人-礼物首页（完全无地址相关） -->
+        <div class="page" id="page2">
+            <div class="nav-bar">
+                <div class="back-btn" onclick="switchPage('page1')">←</div>
+                <div class="title">微信礼物</div>
+                <input type="text" class="search-box" placeholder="搜索礼物/场景/价格">
+            </div>
+            <!-- 仅保留价格/品牌筛选 -->
+            <div class="filter-bar">
+                <div class="range-filter">
+                    <span class="filter-label">价格区间：</span>
+                    <select class="range-select">
+                        <option value="all">全部价格</option>
+                        <option value="0-50">50元内</option>
+                        <option value="50-100">50-100元</option>
+                        <option value="100-300">100-300元</option>
+                        <option value="300+">300元以上</option>
+                    </select>
+                    <select class="range-select">
+                        <option value="all">全部品牌</option>
+                        <option value="famous">知名品牌</option>
+                        <option value="local">本地特产</option>
+                        <option value="design">原创设计</option>
+                    </select>
+                    <button class="filter-btn" onclick="filterGoods()">筛选</button>
+                </div>
+                <div style="display:flex;justify-content:flex-end;margin-top:8px;">
+                    <button class="filter-btn" style="background:#f5f5f5;color:#666;" onclick="resetFilter()">重置筛选</button>
+                </div>
+            </div>
+            <div class="tag-bar">
+                <div class="tag active-tag" onclick="selectTag(this)">🏮节日限定</div>
+                <div class="tag" onclick="selectTag(this)">🎂生日祝福</div>
+                <div class="tag" onclick="selectTag(this)">👔商务礼仪</div>
+                <div class="tag" onclick="selectTag(this)">👶儿童专属</div>
+                <div class="tag" onclick="selectTag(this)">✨小众创意</div>
+                <div class="tag" onclick="selectTag(this)">💖健康礼品</div>
+                <div class="tag" onclick="selectTag(this)">🇨🇳国潮精选</div>
+            </div>
+            <div class="card-grid">
+                <div class="goods-card" onclick="switchPage('page3')">
+                    <div class="discount-tag">满减20</div>
+                    <div class="goods-img">新年福袋图片</div>
+                    <div class="goods-info">
+                        <div class="goods-name"><span class="brand-tag">品牌认证</span>新年限定福袋</div>
+                        <div class="goods-price">￥88 <span class="goods-tag">热销</span></div>
+                    </div>
+                </div>
+                <div class="goods-card" onclick="switchPage('page3')">
+                    <div class="discount-tag">8折</div>
+                    <div class="goods-img">商务保温杯图片</div>
+                    <div class="goods-info">
+                        <div class="goods-name"><span class="brand-tag">品牌认证</span>商务定制保温杯</div>
+                        <div class="goods-price">￥159 <span class="goods-tag">商务</span></div>
+                    </div>
+                </div>
+                <div class="goods-card" onclick="switchPage('page3')">
+                    <div class="goods-img">儿童益智积木图片</div>
+                    <div class="goods-info">
+                        <div class="goods-name"><span class="brand-tag">品牌认证</span>儿童益智积木</div>
+                        <div class="goods-price">￥69 <span class="goods-tag">儿童</span></div>
+                    </div>
+                </div>
+                <div class="goods-card" onclick="switchPage('page3')">
+                    <div class="discount-tag">新人券</div>
+                    <div class="goods-img">健康茶礼盒图片</div>
+                    <div class="goods-info">
+                        <div class="goods-name"><span class="brand-tag">品牌认证</span>有机健康茶礼盒</div>
+                        <div class="goods-price">￥129 <span class="goods-tag">健康</span></div>
+                    </div>
+                </div>
+            </div>
+            <!-- 空状态提示 -->
+            <div class="empty-state">
+                <div style="font-size:40px;margin-bottom:10px;">🎁</div>
+                <div>暂无匹配的礼物哦~</div>
+                <div style="font-size:12px;margin-top:5px;">试试调整筛选条件吧</div>
+            </div>
+        </div>
+
+        <!-- 3. 送礼人-商品详情（仅提示收礼人填地址，无查看权限） -->
+        <div class="page" id="page3">
+            <div class="nav-bar">
+                <div class="back-btn" onclick="switchPage('page2')">←</div>
+                <div class="title">商品详情</div>
+            </div>
+            <div class="detail-img">商务保温杯大图</div>
+            <div class="detail-info">
+                <div class="detail-header">
+                    <div class="detail-name">商务定制保温杯</div>
+                    <div class="detail-brand">品牌认证</div>
+                </div>
+                <div class="detail-desc">316不锈钢材质·可定制logo·保温12小时</div>
+                <div class="detail-price">
+                    ￥159.00
+                    <span class="original-price">￥199.00</span>
+                    <span class="goods-tag">8折优惠</span>
+                </div>
+                <div class="detail-delivery">
+                    🚚 全国包邮（收礼人自行填写地址后发货）
+                    <span class="delivery-tag">地址仅收礼人可见</span>
+                </div>
+                <div class="detail-extra">
+                    <div class="detail-extra-item">
+                        <span>⭐</span>
+                        <span>4.9分（126条评价）</span>
+                    </div>
+                    <div class="detail-extra-item">
+                        <span>📦</span>
+                        <span>收礼人确认地址后72小时内发货</span>
+                    </div>
+                </div>
+                <button class="btn btn-orange" onclick="switchPage('page4')">立即赠送</button>
+                <button class="btn btn-gray">加入收藏</button>
+                <div class="detail-fold" onclick="toggleDetail()">▼ 展开详情（用户评价/商品规格/售后保障）</div>
+                <!-- 折叠内容 -->
+                <div class="detail-content" style="display:none;padding:10px;font-size:13px;color:#333;border-top:1px solid #eee;">
+                    <div style="margin-bottom:10px;font-weight:bold;">用户评价（126）</div>
+                    <div style="margin-bottom:8px;display:flex;gap:8px;">
+                        <div style="width:30px;height:30px;background:#eee;border-radius:50%;"></div>
+                        <div>
+                            <div>张先生：保温杯质量很好，保温效果超预期</div>
+                            <div style="font-size:11px;color:#999;margin-top:2px;">2025-06-10</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:10px;font-weight:bold;margin-top:15px;">商品规格</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;">
+                        <div style="padding:3px 8px;border:1px solid #eee;border-radius:5px;">黑色（300ml）</div>
+                        <div style="padding:3px 8px;border:1px solid #07C160;color:#07C160;border-radius:5px;">银色（500ml）</div>
+                        <div style="padding:3px 8px;border:1px solid #eee;border-radius:5px;">金色（400ml）</div>
+                    </div>
+                    <div style="font-weight:bold;margin-top:15px;">售后保障</div>
+                    <div style="color:#666;margin-top:5px;">7天无理由退换 · 一年质保 · 假一赔十</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 送礼人-发送定制（核心隐私提示） -->
+        <div class="page" id="page4">
+            <div class="nav-bar">
+                <div class="back-btn" onclick="switchPage('page3')">←</div>
+                <div class="title">赠送礼物</div>
+            </div>
+            <div class="recipient-box">
+                <input type="text" class="recipient-input" placeholder="选择好友/群聊" value="张总">
+                <div class="group-send">多人群发</div>
+            </div>
+            <!-- 核心隐私提示：明确送礼人无地址查看权限 -->
+            <div class="privacy-tips">
+                📌 隐私说明：礼物发出后，收礼人将收到微信通知并自行填写收货地址，你（送礼人）全程无法查看收礼人的任何地址信息，地址仅用于本次礼物配送。
+            </div>
+            <!-- 配送与惊喜设置 -->
+            <div class="delivery-check">
+                <div class="check-title">配送与惊喜设置</div>
+                <div class="surprise-switch">
+                    <span class="switch-label">保留惊喜感（不显示礼物内容）</span>
+                    <label class="switch">
+                        <input type="checkbox" checked id="surpriseSwitch">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="surprise-switch">
+                    <span class="switch-label">收礼人确认收货后通知我</span>
+                    <label class="switch">
+                        <input type="checkbox" checked id="deliverySwitch">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <!-- 开关提示 -->
+            <div class="switch-tips"></div>
+            <!-- 个性化祝福 -->
+            <div class="msg-template">
+                <div class="check-title">个性化祝福</div>
+                <div class="template-tag">
+                    <button class="template-btn active">节日模板</button>
+                    <button class="template-btn">生日模板</button>
+                    <button class="template-btn">商务模板</button>
+                    <button class="template-btn">儿童模板</button>
+                </div>
+                <textarea class="msg-input" placeholder="可输入个性化祝福语（限50字）" oninput="countWords()">祝您事业顺利，合作愉快！</textarea>
+                <div class="msg-count">14/50</div>
+                <div class="media-tools">
+                    <div class="media-btn">
+                        <div class="media-icon">🖼️</div>
+                        <div>图片</div>
+                    </div>
+                    <div class="media-btn">
+                        <div class="media-icon">🎤</div>
+                        <div>语音</div>
+                    </div>
+                    <div class="media-btn">
+                        <div class="media-icon">✏️</div>
+                        <div>手写</div>
+                    </div>
+                </div>
+            </div>
+            <div class="amount-box">
+                商品金额：￥159.00
+                <div class="coupon-info">
+                    <span>🎫</span>
+                    <span>已自动使用满100减20优惠券，实付￥139.00</span>
+                </div>
+            </div>
+            <button class="btn btn-orange" onclick="switchPage('page5')">确认赠送</button>
+            <button class="btn btn-gray" onclick="switchPage('page3')">取消</button>
+        </div>
+
+        <!-- 5. 送礼人-送礼成功（无任何地址信息） -->
+        <div class="page" id="page5">
+            <div class="success-page">
+                <div class="success-icon">🎁</div>
+                <div class="success-text">礼物已成功发出！</div>
+                <div class="success-subtext">
+                    收礼人将收到微信通知<br>
+                    你可查看物流进度，但无法查看收礼人地址<br>
+                    收礼人确认收货后你将收到提醒
+                </div>
+                <button class="btn btn-green" onclick="addGiftMsgAndReturn()">返回聊天</button>
+                <button class="btn btn-gray" onclick="switchPage('page7')">查看物流进度</button>
+            </div>
+        </div>
+
+        <!-- 6. 收礼人-填写地址（仅收礼人可见，强化隐私） -->
+        <div class="page" id="page6">
+            <div class="nav-bar">
+                <div class="back-btn" onclick="switchPage('page5')">←</div>
+                <div class="title">填写收货地址</div>
+            </div>
+            <div class="address-page">
+                <div class="address-title">你收到了一份礼物，请填写收货地址</div>
+                <!-- 收礼人隐私提示 -->
+                <div class="address-privacy">
+                    🔒 你的地址信息仅用于本次礼物配送，送礼人无法查看，我们将严格保护你的隐私
+                </div>
+                <div class="address-form">
+                    <div class="form-item">
+                        <label class="form-label">收件人姓名</label>
+                        <input type="text" class="form-input" placeholder="请输入姓名">
+                    </div>
+                    <div class="form-item">
+                        <label class="form-label">联系电话</label>
+                        <input type="tel" class="form-input" placeholder="请输入手机号">
+                    </div>
+                    <div class="area-select">
+                        <select>
+                            <option value="">省份</option>
+                            <option value="北京">北京市</option>
+                            <option value="上海">上海市</option>
+                            <option value="广东">广东省</option>
+                        </select>
+                        <select>
+                            <option value="">城市</option>
+                            <option value="北京">北京市</option>
+                            <option value="上海">上海市</option>
+                            <option value="广州">广州市</option>
+                        </select>
+                        <select>
+                            <option value="">区县</option>
+                            <option value="朝阳">朝阳区</option>
+                            <option value="浦东">浦东新区</option>
+                            <option value="天河">天河区</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label class="form-label">详细地址</label>
+                        <textarea class="form-input full-address" placeholder="请输入街道、小区、门牌号等"></textarea>
+                    </div>
+                    <div class="check-delivery" onclick="checkDelivery()">点击校验配送范围</div>
+                    <button class="btn btn-green" onclick="switchPage('page7')">确认地址并提交</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. 送礼人-物流跟踪（无任何地址信息） -->
+        <div class="page" id="page7">
+            <div class="nav-bar">
+                <div class="back-btn" onclick="switchPage('page5')">←</div>
+                <div class="title">物流进度</div>
+            </div>
+            <div class="sender-logistics">
+                <div class="logistics-header">
+                    <div class="logistics-title">订单编号：2025061800123</div>
+                    <div class="order-status">运输中</div>
+                </div>
+                <!-- 送礼人物流页仅显示商品和物流状态，无任何地址 -->
+                <div class="sender-logistics-info">
+                    <div class="sender-info-item">
+                        <div class="sender-info-label">商品：</div>
+                        <div class="sender-info-content">商务定制保温杯</div>
+                    </div>
+                    <div class="sender-info-item">
+                        <div class="sender-info-label">快递公司：</div>
+                        <div class="sender-info-content">顺丰速运（SF1234567890123）</div>
+                    </div>
+                    <div class="sender-info-item">
+                        <div class="sender-info-label">发货状态：</div>
+                        <div class="sender-info-content">已发货（收礼人地址已确认）</div>
+                    </div>
+                </div>
+                <div class="logistics-timeline">
+                    <div class="timeline-item active">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">2025-06-18 14:30:25</div>
+                            <div class="timeline-text">快递已发出，前往转运中心</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item active">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">2025-06-18 12:15:40</div>
+                            <div class="timeline-text">商品已打包完成，等待快递公司揽收</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item active">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">2025-06-18 10:00:00</div>
+                            <div class="timeline-text">收礼人已确认地址，商家开始处理订单</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item inactive">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">预计2025-06-19 12:00前</div>
+                            <div class="timeline-text">快递到达目的地网点，准备派送</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item inactive">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">预计2025-06-19 18:00前</div>
+                            <div class="timeline-text">快递已签收</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 物流弹窗（仅显示物流信息，无地址） -->
+            <div class="logistics-modal">
+                <div class="modal-content">
+                    <div class="modal-close" onclick="closeModal()">×</div>
+                    <div class="modal-title">物流详情</div>
+                    <div class="modal-info">
+                        快递员：李师傅<br>
+                        转运中心：华北转运中心<br>
+                        预计下一站：目的地配送站<br>
+                        预计送达时间：2025-06-19 18:00前
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. 界面切换逻辑（带过渡动画）
+        function switchPage(pageId) {
+            const allPages = document.querySelectorAll('.page');
+            allPages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // 2. 核心新增：送礼成功后添加礼物消息并返回聊天页
+        function addGiftMsgAndReturn() {
+            // 创建礼物消息元素
+            const giftMsg = document.createElement('div');
+            giftMsg.className = 'chat-message right';
+            
+            const msgAvatar = document.createElement('div');
+            msgAvatar.className = 'msg-avatar';
+            
+            const msgContent = document.createElement('div');
+            msgContent.className = 'msg-content';
+            
+            // 礼物消息特殊样式
+            const giftMsgInner = document.createElement('div');
+            giftMsgInner.className = 'gift-msg';
+            
+            const giftIcon = document.createElement('div');
+            giftIcon.className = 'gift-icon-small';
+            giftIcon.textContent = '🎁';
+            
+            const giftMsgText = document.createElement('div');
+            giftMsgText.className = 'gift-msg-text';
+            
+            const giftTitle = document.createElement('div');
+            giftTitle.className = 'gift-msg-title';
+            giftTitle.textContent = '我送了一份礼物';
+            
+            const giftDesc = document.createElement('div');
+            giftDesc.className = 'gift-msg-desc';
+            giftDesc.textContent = '商务定制保温杯 | 收礼人可自行填写地址';
+            
+            // 组装礼物消息
+            giftMsgText.appendChild(giftTitle);
+            giftMsgText.appendChild(giftDesc);
+            giftMsgInner.appendChild(giftIcon);
+            giftMsgInner.appendChild(giftMsgText);
+            msgContent.appendChild(giftMsgInner);
+            
+            // 添加时间戳
+            const msgTime = document.createElement('div');
+            msgTime.className = 'msg-time';
+            const now = new Date();
+            const timeStr = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+            msgTime.textContent = timeStr;
+            
+            giftMsg.appendChild(msgAvatar);
+            giftMsg.appendChild(msgContent);
+            
+            // 添加到聊天容器
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.appendChild(giftMsg);
+            chatContainer.appendChild(msgTime);
+            
+            // 滚动到最新消息
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // 切换回聊天页
+            switchPage('page1');
+        }
+
+        // 3. 礼物筛选交互（仅价格/品牌筛选）
+        function filterGoods() {
+            const priceSelect = document.querySelectorAll('.range-select')[0];
+            const filterBtn = document.querySelector('.filter-btn');
+            const cardGrid = document.querySelector('.card-grid');
+            const emptyState = document.querySelector('.empty-state');
+
+            filterBtn.classList.add('loading'); // 加载动效
+            setTimeout(() => {
+                filterBtn.classList.remove('loading');
+                // 筛选规则：价格选全部 → 显示商品；否则显示空状态
+                if (priceSelect.value === 'all') {
+                    cardGrid.style.display = 'grid';
+                    emptyState.style.display = 'none';
+                } else {
+                    cardGrid.style.display = 'none';
+                    emptyState.style.display = 'block';
+                }
+            }, 800);
+        }
+
+        // 4. 重置筛选条件
+        function resetFilter() {
+            document.querySelectorAll('.range-select').forEach(select => select.value = 'all');
+            document.querySelector('.card-grid').style.display = 'grid';
+            document.querySelector('.empty-state').style.display = 'none';
+        }
+
+        // 5. 商品详情折叠/展开
+        function toggleDetail() {
+            const foldBtn = document.querySelector('.detail-fold');
+            const detailContent = document.querySelector('.detail-content');
+            if (detailContent.style.display === 'none') {
+                detailContent.style.display = 'block';
+                foldBtn.innerHTML = '▲ 收起详情（用户评价/商品规格/售后保障）';
+            } else {
+                detailContent.style.display = 'none';
+                foldBtn.innerHTML = '▼ 展开详情（用户评价/商品规格/售后保障）';
+            }
+        }
+
+        // 6. 祝福语字数统计（限制50字）
+        function countWords() {
+            const textarea = document.querySelector('.msg-input');
+            const countEl = document.querySelector('.msg-count');
+            const len = textarea.value.length;
+            countEl.textContent = `${len}/50`;
+            if (len > 50) {
+                countEl.classList.add('error');
+                textarea.value = textarea.value.substring(0, 50); // 截断超出内容
+                countEl.textContent = '50/50';
+            } else {
+                countEl.classList.remove('error');
+            }
+        }
+
+        // 7. 祝福语模板切换（带内容过渡）
+        const templateBtns = document.querySelectorAll('.template-btn');
+        templateBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                templateBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const textarea = document.querySelector('.msg-input');
+                // 淡入过渡效果
+                textarea.style.opacity = 0;
+                setTimeout(() => {
+                    switch(btn.textContent) {
+                        case '节日模板':
+                            textarea.value = '祝您节日愉快，万事顺意！';
+                            break;
+                        case '生日模板':
+                            textarea.value = '生日快乐，岁岁平安，喜乐常伴！';
+                            break;
+                        case '商务模板':
+                            textarea.value = '祝您事业顺利，合作共赢，再创佳绩！';
+                            break;
+                        case '儿童模板':
+                            textarea.value = '愿宝贝健康成长，快乐无忧，聪明伶俐！';
+                            break;
+                    }
+                    textarea.style.opacity = 1;
+                    countWords(); // 同步更新字数
+                }, 100);
+            });
+        });
+
+        // 8. 开关切换提示（隐私相关）
+        const surpriseSwitch = document.getElementById('surpriseSwitch');
+        const deliverySwitch = document.getElementById('deliverySwitch');
+        const switchTips = document.querySelector('.switch-tips');
+
+        surpriseSwitch.addEventListener('change', function() {
+            if (!this.checked) {
+                switchTips.textContent = '⚠️ 对方将直接看到礼物具体内容，惊喜感降低';
+                switchTips.style.display = 'block';
+                setTimeout(() => switchTips.style.display = 'none', 3000);
+            }
+        });
+
+        deliverySwitch.addEventListener('change', function() {
+            if (!this.checked) {
+                switchTips.textContent = '⚠️ 收礼人确认收货后你将不会收到通知，请谨慎关闭';
+                switchTips.style.display = 'block';
+                setTimeout(() => switchTips.style.display = 'none', 3000);
+            }
+        });
+
+        // 9. 收礼人地址校验（仅收礼人可见）
+        function checkDelivery() {
+            alert('✅ 配送范围校验成功！该地址支持配送，预计3天内送达。');
+        }
+
+        // 10. 物流节点点击弹窗（仅显示物流信息）
+        const timelineItems = document.querySelectorAll('.timeline-item.active');
+        const modal = document.querySelector('.logistics-modal');
+
+        timelineItems.forEach(item => {
+            item.addEventListener('click', () => {
+                modal.style.display = 'flex';
+            });
+        });
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // 11. 标签栏选中交互
+        function selectTag(tagEl) {
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(t => t.classList.remove('active-tag'));
+            tagEl.classList.add('active-tag');
+        }
+
+        // 12. 页面加载完成后初始化
+        window.onload = function() {
+            // 初始化字数统计
+            countWords();
+            // 给所有按钮添加点击震动反馈（移动端）
+            const allBtns = document.querySelectorAll('.btn, .func-item, .media-btn');
+            allBtns.forEach(btn => {
+                btn.addEventListener('touchstart', () => {
+                    btn.style.transform = 'scale(0.95)';
+                });
+                btn.addEventListener('touchend', () => {
+                    btn.style.transform = 'scale(1)';
+                });
+            });
+        };
+    </script>
