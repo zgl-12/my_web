@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>微信送礼物功能解决方案（完整交互版）</title>
+    <title>微信送礼物功能（收礼人地址隐私版）</title>
     <style>
         * {
             margin: 0;
@@ -317,34 +317,34 @@
             align-items: center;
             justify-content: center;
         }
-        /* 2. 礼物首页（新增筛选功能） */
+        /* 2. 礼物首页（完全移除地址相关） */
         .filter-bar {
             background-color: white;
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 8px;
         }
-        .address-filter {
+        .range-filter {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 8px;
         }
         .filter-label {
             font-size: 13px;
             color: #666;
         }
-        .address-input {
+        .range-select {
             flex: 1;
             height: 30px;
             border: 1px solid #eee;
             border-radius: 5px;
             padding: 0 8px;
             font-size: 13px;
+            color: #666;
             outline: none;
             transition: border-color 0.2s ease;
         }
-        .address-input:focus {
+        .range-select:focus {
             border-color: #07C160;
         }
         .filter-btn {
@@ -382,30 +382,11 @@
             0% { transform: translateY(-50%) rotate(0deg); }
             100% { transform: translateY(-50%) rotate(360deg); }
         }
-        .range-filter {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .range-select {
-            flex: 1;
-            height: 30px;
-            border: 1px solid #eee;
-            border-radius: 5px;
-            padding: 0 8px;
-            font-size: 13px;
-            color: #666;
-            outline: none;
-            transition: border-color 0.2s ease;
-        }
-        .range-select:focus {
-            border-color: #07C160;
-        }
         /* 空状态提示 */
         .empty-state {
             display:none;text-align:center;padding:50px 0;color:#999;
         }
-        /* 3. 商品详情页（新增品牌认证、物流说明） */
+        /* 3. 商品详情页（仅提示收礼人填地址，无任何地址查看） */
         .detail-img {
             width: 100%;
             height: 200px;
@@ -497,7 +478,7 @@
         .detail-fold:hover {
             color: #07C160;
         }
-        /* 4. 发送定制页（新增地址筛选、惊喜感开关、个性化贺卡） */
+        /* 4. 发送定制页（强化地址隐私提示） */
         .recipient-box {
             padding: 10px;
             background-color: white;
@@ -528,6 +509,17 @@
         }
         .group-send:hover {
             background-color: rgba(7, 193, 96, 0.1);
+        }
+        /* 核心隐私提示 */
+        .privacy-tips {
+            padding: 10px;
+            background-color: #f0f9ff;
+            color: #1E88E5;
+            font-size: 13px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            border-left: 3px solid #1E88E5;
         }
         .delivery-check {
             padding: 10px;
@@ -686,7 +678,7 @@
             font-size: 12px;
             color: #f43530;
         }
-        /* 5. 收礼反馈页（新增物流跟踪） */
+        /* 5. 送礼成功页（无地址相关信息） */
         .success-page {
             display: flex;
             flex-direction: column;
@@ -708,10 +700,88 @@
         .success-text {
             font-size: 16px;
             color: #333;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
         }
-        /* 物流跟踪页 */
-        .logistics-page {
+        .success-subtext {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        /* 6. 收礼人地址填写页（仅收礼人可见，强化隐私） */
+        .address-page {
+            padding: 10px;
+        }
+        .address-title {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .address-privacy {
+            padding: 8px;
+            background-color: #fef7f7;
+            color: #f43530;
+            font-size: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .address-form {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .form-item {
+            margin-bottom: 15px;
+        }
+        .form-label {
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .form-input {
+            width: 100%;
+            height: 40px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 0 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+        .form-input:focus {
+            border-color: #07C160;
+        }
+        .area-select {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        .area-select select {
+            flex: 1;
+            height: 40px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 0 5px;
+            font-size: 14px;
+            outline: none;
+        }
+        .full-address {
+            height: 80px;
+            resize: none;
+            padding: 10px;
+        }
+        .check-delivery {
+            font-size: 13px;
+            color: #07C160;
+            margin-bottom: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+        /* 7. 送礼人视角物流页（无任何地址信息） */
+        .sender-logistics {
             padding: 10px;
         }
         .logistics-header {
@@ -733,22 +803,23 @@
             padding: 3px 8px;
             border-radius: 10px;
         }
-        .logistics-info {
+        /* 送礼人物流页仅显示商品和物流状态，无地址 */
+        .sender-logistics-info {
             background-color: white;
             border-radius: 8px;
             padding: 10px;
             margin-bottom: 15px;
         }
-        .info-item {
+        .sender-info-item {
             display: flex;
             margin-bottom: 8px;
             font-size: 13px;
         }
-        .info-label {
+        .sender-info-label {
             color: #999;
             width: 60px;
         }
-        .info-content {
+        .sender-info-content {
             color: #333;
             flex: 1;
         }
@@ -818,7 +889,7 @@
             font-size: 13px;
             color: #333;
         }
-        /* 物流弹窗 */
+        /* 物流弹窗（仅显示物流信息，无地址） */
         .logistics-modal {
             display: none;
             position: fixed;
@@ -870,19 +941,20 @@
     </style>
 </head>
 <body>
-    <!-- 界面切换按钮 -->
+    <!-- 界面切换按钮（区分送礼人/收礼人视角） -->
     <div class="tab-buttons">
-        <button class="tab-btn" onclick="switchPage('page1')">1. 功能入口</button>
-        <button class="tab-btn" onclick="switchPage('page2')">2. 礼物首页（含筛选）</button>
-        <button class="tab-btn" onclick="switchPage('page3')">3. 商品详情（含品牌）</button>
-        <button class="tab-btn" onclick="switchPage('page4')">4. 发送定制（含惊喜+贺卡）</button>
-        <button class="tab-btn" onclick="switchPage('page5')">5. 收礼反馈</button>
-        <button class="tab-btn" onclick="switchPage('page6')">6. 物流跟踪（新增）</button>
+        <button class="tab-btn" onclick="switchPage('page1')">1. 送礼人-功能入口</button>
+        <button class="tab-btn" onclick="switchPage('page2')">2. 送礼人-礼物首页</button>
+        <button class="tab-btn" onclick="switchPage('page3')">3. 送礼人-商品详情</button>
+        <button class="tab-btn" onclick="switchPage('page4')">4. 送礼人-发送定制</button>
+        <button class="tab-btn" onclick="switchPage('page5')">5. 送礼人-送礼成功</button>
+        <button class="tab-btn" onclick="switchPage('page7')">6. 送礼人-物流跟踪</button>
+        <button class="tab-btn" onclick="switchPage('page6')">7. 收礼人-填写地址（仅本人可见）</button>
     </div>
 
     <!-- 手机外壳 -->
     <div class="phone">
-        <!-- 1. 功能入口界面 -->
+        <!-- 1. 送礼人-功能入口 -->
         <div class="page active" id="page1">
             <div style="height: 80%;"></div> <!-- 模拟聊天空白区 -->
             <div class="chat-input" contenteditable="true">输入消息...</div>
@@ -912,20 +984,15 @@
             </div>
         </div>
 
-        <!-- 2. 礼物首页（新增地址筛选、配送范围筛选） -->
+        <!-- 2. 送礼人-礼物首页（完全无地址相关） -->
         <div class="page" id="page2">
             <div class="nav-bar">
                 <div class="back-btn" onclick="switchPage('page1')">←</div>
                 <div class="title">微信礼物</div>
                 <input type="text" class="search-box" placeholder="搜索礼物/场景/价格">
             </div>
-            <!-- 新增筛选栏（必备需求：地址前置筛选） -->
+            <!-- 仅保留价格/品牌筛选 -->
             <div class="filter-bar">
-                <div class="address-filter">
-                    <span class="filter-label">配送地址：</span>
-                    <input type="text" class="address-input" placeholder="输入收礼人地址">
-                    <button class="filter-btn" onclick="filterGoods()">筛选</button>
-                </div>
                 <div class="range-filter">
                     <span class="filter-label">价格区间：</span>
                     <select class="range-select">
@@ -941,6 +1008,7 @@
                         <option value="local">本地特产</option>
                         <option value="design">原创设计</option>
                     </select>
+                    <button class="filter-btn" onclick="filterGoods()">筛选</button>
                 </div>
                 <div style="display:flex;justify-content:flex-end;margin-top:8px;">
                     <button class="filter-btn" style="background:#f5f5f5;color:#666;" onclick="resetFilter()">重置筛选</button>
@@ -996,7 +1064,7 @@
             </div>
         </div>
 
-        <!-- 3. 商品详情页（新增品牌认证、优惠标识） -->
+        <!-- 3. 送礼人-商品详情（仅提示收礼人填地址，无查看权限） -->
         <div class="page" id="page3">
             <div class="nav-bar">
                 <div class="back-btn" onclick="switchPage('page2')">←</div>
@@ -1015,8 +1083,8 @@
                     <span class="goods-tag">8折优惠</span>
                 </div>
                 <div class="detail-delivery">
-                    🚚 全国包邮 · 3天内送达
-                    <span class="delivery-tag">支持配送查询</span>
+                    🚚 全国包邮（收礼人自行填写地址后发货）
+                    <span class="delivery-tag">地址仅收礼人可见</span>
                 </div>
                 <div class="detail-extra">
                     <div class="detail-extra-item">
@@ -1025,7 +1093,7 @@
                     </div>
                     <div class="detail-extra-item">
                         <span>📦</span>
-                        <span>72小时内发货</span>
+                        <span>收礼人确认地址后72小时内发货</span>
                     </div>
                 </div>
                 <button class="btn btn-orange" onclick="switchPage('page4')">立即赠送</button>
@@ -1053,7 +1121,7 @@
             </div>
         </div>
 
-        <!-- 4. 发送定制页（新增惊喜感开关、个性化贺卡） -->
+        <!-- 4. 送礼人-发送定制（核心隐私提示） -->
         <div class="page" id="page4">
             <div class="nav-bar">
                 <div class="back-btn" onclick="switchPage('page3')">←</div>
@@ -1063,7 +1131,11 @@
                 <input type="text" class="recipient-input" placeholder="选择好友/群聊">
                 <div class="group-send">多人群发</div>
             </div>
-            <!-- 新增配送查询与惊喜感开关（必备+魅力需求） -->
+            <!-- 核心隐私提示：明确送礼人无地址查看权限 -->
+            <div class="privacy-tips">
+                📌 隐私说明：礼物发出后，收礼人将收到微信通知并自行填写收货地址，你（送礼人）全程无法查看收礼人的任何地址信息，地址仅用于本次礼物配送。
+            </div>
+            <!-- 配送与惊喜设置 -->
             <div class="delivery-check">
                 <div class="check-title">配送与惊喜设置</div>
                 <div class="surprise-switch">
@@ -1074,7 +1146,7 @@
                     </label>
                 </div>
                 <div class="surprise-switch">
-                    <span class="switch-label">提前确认配送范围</span>
+                    <span class="switch-label">收礼人确认收货后通知我</span>
                     <label class="switch">
                         <input type="checkbox" checked id="deliverySwitch">
                         <span class="slider"></span>
@@ -1083,7 +1155,7 @@
             </div>
             <!-- 开关提示 -->
             <div class="switch-tips"></div>
-            <!-- 个性化贺卡（支持图片/语音）（魅力需求） -->
+            <!-- 个性化祝福 -->
             <div class="msg-template">
                 <div class="check-title">个性化祝福</div>
                 <div class="template-tag">
@@ -1120,43 +1192,96 @@
             <button class="btn btn-gray" onclick="switchPage('page3')">取消</button>
         </div>
 
-        <!-- 5. 收礼反馈页 -->
+        <!-- 5. 送礼人-送礼成功（无任何地址信息） -->
         <div class="page" id="page5">
             <div class="success-page">
                 <div class="success-icon">🎁</div>
-                <div class="success-text">礼物已送达<br>对方将收到通知～</div>
-                <button class="btn btn-green" onclick="switchPage('page6')">查看物流</button>
+                <div class="success-text">礼物已成功发出！</div>
+                <div class="success-subtext">
+                    收礼人将收到微信通知<br>
+                    你可查看物流进度，但无法查看收礼人地址<br>
+                    收礼人确认收货后你将收到提醒
+                </div>
+                <button class="btn btn-green" onclick="switchPage('page7')">查看物流进度</button>
                 <button class="btn btn-gray" onclick="switchPage('page1')">返回聊天</button>
             </div>
         </div>
 
-        <!-- 6. 物流跟踪页（必备需求：实时物流更新） -->
+        <!-- 6. 收礼人-填写地址（仅收礼人可见，强化隐私） -->
         <div class="page" id="page6">
             <div class="nav-bar">
                 <div class="back-btn" onclick="switchPage('page5')">←</div>
-                <div class="title">物流跟踪</div>
+                <div class="title">填写收货地址</div>
             </div>
-            <div class="logistics-page">
+            <div class="address-page">
+                <div class="address-title">你收到了一份礼物，请填写收货地址</div>
+                <!-- 收礼人隐私提示 -->
+                <div class="address-privacy">
+                    🔒 你的地址信息仅用于本次礼物配送，送礼人无法查看，我们将严格保护你的隐私
+                </div>
+                <div class="address-form">
+                    <div class="form-item">
+                        <label class="form-label">收件人姓名</label>
+                        <input type="text" class="form-input" placeholder="请输入姓名">
+                    </div>
+                    <div class="form-item">
+                        <label class="form-label">联系电话</label>
+                        <input type="tel" class="form-input" placeholder="请输入手机号">
+                    </div>
+                    <div class="area-select">
+                        <select>
+                            <option value="">省份</option>
+                            <option value="北京">北京市</option>
+                            <option value="上海">上海市</option>
+                            <option value="广东">广东省</option>
+                        </select>
+                        <select>
+                            <option value="">城市</option>
+                            <option value="北京">北京市</option>
+                            <option value="上海">上海市</option>
+                            <option value="广州">广州市</option>
+                        </select>
+                        <select>
+                            <option value="">区县</option>
+                            <option value="朝阳">朝阳区</option>
+                            <option value="浦东">浦东新区</option>
+                            <option value="天河">天河区</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label class="form-label">详细地址</label>
+                        <textarea class="form-input full-address" placeholder="请输入街道、小区、门牌号等"></textarea>
+                    </div>
+                    <div class="check-delivery" onclick="checkDelivery()">点击校验配送范围</div>
+                    <button class="btn btn-green" onclick="switchPage('page7')">确认地址并提交</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. 送礼人-物流跟踪（无任何地址信息） -->
+        <div class="page" id="page7">
+            <div class="nav-bar">
+                <div class="back-btn" onclick="switchPage('page5')">←</div>
+                <div class="title">物流进度</div>
+            </div>
+            <div class="sender-logistics">
                 <div class="logistics-header">
                     <div class="logistics-title">订单编号：2025061800123</div>
                     <div class="order-status">运输中</div>
                 </div>
-                <div class="logistics-info">
-                    <div class="info-item">
-                        <div class="info-label">商品：</div>
-                        <div class="info-content">商务定制保温杯</div>
+                <!-- 送礼人物流页仅显示商品和物流状态，无任何地址 -->
+                <div class="sender-logistics-info">
+                    <div class="sender-info-item">
+                        <div class="sender-info-label">商品：</div>
+                        <div class="sender-info-content">商务定制保温杯</div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">收件人：</div>
-                        <div class="info-content">张先生 138****1234</div>
+                    <div class="sender-info-item">
+                        <div class="sender-info-label">快递公司：</div>
+                        <div class="sender-info-content">顺丰速运（SF1234567890123）</div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">配送地址：</div>
-                        <div class="info-content">北京市朝阳区建国路88号</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">快递公司：</div>
-                        <div class="info-content">顺丰速运（SF1234567890123）</div>
+                    <div class="sender-info-item">
+                        <div class="sender-info-label">发货状态：</div>
+                        <div class="sender-info-content">已发货（收礼人地址已确认）</div>
                     </div>
                 </div>
                 <div class="logistics-timeline">
@@ -1164,7 +1289,7 @@
                         <div class="timeline-dot"></div>
                         <div class="timeline-content">
                             <div class="timeline-time">2025-06-18 14:30:25</div>
-                            <div class="timeline-text">快递已发出，前往北京转运中心</div>
+                            <div class="timeline-text">快递已发出，前往转运中心</div>
                         </div>
                     </div>
                     <div class="timeline-item active">
@@ -1178,7 +1303,7 @@
                         <div class="timeline-dot"></div>
                         <div class="timeline-content">
                             <div class="timeline-time">2025-06-18 10:00:00</div>
-                            <div class="timeline-text">订单支付成功，商家开始处理</div>
+                            <div class="timeline-text">收礼人已确认地址，商家开始处理订单</div>
                         </div>
                     </div>
                     <div class="timeline-item inactive">
@@ -1197,16 +1322,16 @@
                     </div>
                 </div>
             </div>
-            <!-- 物流弹窗 -->
+            <!-- 物流弹窗（仅显示物流信息，无地址） -->
             <div class="logistics-modal">
                 <div class="modal-content">
                     <div class="modal-close" onclick="closeModal()">×</div>
                     <div class="modal-title">物流详情</div>
                     <div class="modal-info">
                         快递员：李师傅<br>
-                        联系电话：139****8765<br>
-                        转运中心：北京顺义转运中心<br>
-                        预计下一站：北京朝阳区配送站
+                        转运中心：华北转运中心<br>
+                        预计下一站：目的地配送站<br>
+                        预计送达时间：2025-06-19 18:00前
                     </div>
                 </div>
             </div>
@@ -1221,19 +1346,18 @@
             document.getElementById(pageId).classList.add('active');
         }
 
-        // 2. 礼物筛选交互（加载动效+空状态）
+        // 2. 礼物筛选交互（仅价格/品牌筛选）
         function filterGoods() {
-            const addressInput = document.querySelector('.address-input');
             const priceSelect = document.querySelectorAll('.range-select')[0];
-            const filterBtn = document.querySelector('.address-filter .filter-btn');
+            const filterBtn = document.querySelector('.filter-btn');
             const cardGrid = document.querySelector('.card-grid');
             const emptyState = document.querySelector('.empty-state');
 
             filterBtn.classList.add('loading'); // 加载动效
             setTimeout(() => {
                 filterBtn.classList.remove('loading');
-                // 筛选规则：地址非空/价格非全部 → 显示空状态
-                if (addressInput.value.trim() === '' && priceSelect.value === 'all') {
+                // 筛选规则：价格选全部 → 显示商品；否则显示空状态
+                if (priceSelect.value === 'all') {
                     cardGrid.style.display = 'grid';
                     emptyState.style.display = 'none';
                 } else {
@@ -1245,7 +1369,6 @@
 
         // 3. 重置筛选条件
         function resetFilter() {
-            document.querySelector('.address-input').value = '';
             document.querySelectorAll('.range-select').forEach(select => select.value = 'all');
             document.querySelector('.card-grid').style.display = 'grid';
             document.querySelector('.empty-state').style.display = 'none';
@@ -1309,7 +1432,7 @@
             });
         });
 
-        // 7. 惊喜感/配送开关切换提示
+        // 7. 开关切换提示（隐私相关）
         const surpriseSwitch = document.getElementById('surpriseSwitch');
         const deliverySwitch = document.getElementById('deliverySwitch');
         const switchTips = document.querySelector('.switch-tips');
@@ -1324,13 +1447,18 @@
 
         deliverySwitch.addEventListener('change', function() {
             if (!this.checked) {
-                switchTips.textContent = '⚠️ 未确认配送范围，可能存在礼物无法送达的风险';
+                switchTips.textContent = '⚠️ 收礼人确认收货后你将不会收到通知，请谨慎关闭';
                 switchTips.style.display = 'block';
                 setTimeout(() => switchTips.style.display = 'none', 3000);
             }
         });
 
-        // 8. 物流节点点击弹窗
+        // 8. 收礼人地址校验（仅收礼人可见）
+        function checkDelivery() {
+            alert('✅ 配送范围校验成功！该地址支持配送，预计3天内送达。');
+        }
+
+        // 9. 物流节点点击弹窗（仅显示物流信息）
         const timelineItems = document.querySelectorAll('.timeline-item.active');
         const modal = document.querySelector('.logistics-modal');
 
@@ -1344,14 +1472,14 @@
             modal.style.display = 'none';
         }
 
-        // 9. 标签栏选中交互
+        // 10. 标签栏选中交互
         function selectTag(tagEl) {
             const tags = document.querySelectorAll('.tag');
             tags.forEach(t => t.classList.remove('active-tag'));
             tagEl.classList.add('active-tag');
         }
 
-        // 10. 页面加载完成后初始化
+        // 11. 页面加载完成后初始化
         window.onload = function() {
             // 初始化字数统计
             countWords();
