@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信送礼 - 更可靠的社交赠礼工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        // 模拟订单数据（实际应从后端获取）
+        const orderData = {
+            id: "2025061800123",
+            product: "商务定制保温杯",
+            express: "顺丰速运",
+            expressNo: "SF1234567890123",
+            status: "运输中",
+            createTime: "2025-06-18 10:00:00",
+            logistics: [
+                { time: "2025-06-18 14:30:25", desc: "快递已发出，前往转运中心" },
+                { time: "2025-06-18 12:15:40", desc: "商品已打包完成，等待快递公司揽收" },
+                { time: "2025-06-18 10:00:00", desc: "收礼人已确认地址，商家开始处理订单" }
+            ],
+            estimate: {
+                delivery: "2025-06-19 12:00前",
+                sign: "2025-06-19 18:00前"
+            },
+            payAmount: 139,
+            originalAmount: 159,
+            coupon: "满100减20",
+            isWithin24h: true // 模拟下单后24小时内
+        };
+
+        // 配送范围校验
+        function checkDelivery() {
+            const province = document.getElementById("province").value;
+            const city = document.getElementById("city").value;
+            const detail = document.getElementById("detailAddr").value;
+            if (province && city && detail) {
+                alert(`配送范围校验成功！该地址支持配送，预计3天内送达。`);
+                document.getElementById("confirmAddrBtn").removeAttribute("disabled");
+            } else {
+                alert("请填写完整地址信息");
+            }
+        }
+
+        // 惊喜感切换
+        function toggleSurprise() {
+            const checkbox = document.getElementById("surpriseToggle");
+            const preview = document.getElementById("giftPreview");
+            if (checkbox.checked) {
+                preview.textContent = "🎁 神秘礼物（收礼人将看不到具体内容）";
+            } else {
+                preview.textContent = "商务定制保温杯（316不锈钢材质·可定制logo）";
+            }
+        }
+
+        // 显示订单管理（仅24小时内）
+        window.onload = function() {
+            if (orderData.isWithin24h) {
+                document.getElementById("orderManage").classList.remove("hidden");
+            }
+        };
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .wechat-gray {
+                background-color: #f7f7f7;
+            }
+            .wechat-green {
+                color: #07c160;
+            }
+            .wechat-dark {
+                color: #333333;
+            }
+            .wechat-light {
+                color: #888888;
+            }
+            .brand-tag {
+                background-color: #ffd700;
+                color: #8b4513;
+                font-size: 12px;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-weight: 600;
+            }
+            .work-tag {
+                background-color: #e6f7ff;
+                color: #1890ff;
+                font-size: 12px;
+                padding: 2px 6px;
+                border-radius: 3px;
+            }
+            .logistics-item::before {
+                content: "●";
+                color: #07c160;
+                font-size: 8px;
+                margin-right: 8px;
+            }
+            .logistics-item:last-child::after {
+                content: "";
+                display: block;
+                height: 20px;
+                width: 1px;
+                background-color: #eee;
+                margin-left: 4px;
+            }
+        }
+    </style>
+</head>
+<body class="wechat-gray min-h-screen font-sans">
+    <!-- 1. 聊天窗口入口页 -->
+    <div id="chatPage" class="max-w-md mx-auto bg-white min-h-screen">
+        <div class="p-4 border-b border-gray-200 flex items-center">
+            <<i class="fa fa-arrow-left mr-3 wechat-dark"></</i>
+            <span class="text-lg font-medium wechat-dark">张总</span>
+        </div>
+        <div class="p-4 space-y-4">
+            <div class="flex justify-start">
+                <div class="bg-gray-200 rounded-lg px-4 py-2 max-w-[70%]">
+                    <p class="wechat-dark">小李,上次合作的项目辛苦了,有空聊一下后续规划</p>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <div class="bg-[#07c160] text-white rounded-lg px-4 py-2 max-w-[70%]">
+                    <p>谢谢张总!应该的,我随时都可以~</p>
+                </div>
+            </div>
+            <div class="flex justify-start">
+                <div class="bg-gray-200 rounded-lg px-4 py-2 max-w-[70%]">
+                    <p class="wechat-dark">不用客气,合作愉快!</p>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 max-w-md mx-auto bg-white p-3 border-t border-gray-200">
+            <div class="flex items-center bg-gray-100 rounded-full px-4 py-2">
+                <input type="text" placeholder="输入消息..." class="flex-1 bg-transparent outline-none wechat-dark">
+                <div class="flex space-x-4 text-gray-500">
+                    <<i class="fa fa-image text-xl"></</i>
+                    <<i class="fa fa-camera text-xl"></</i>
+                    <<i class="fa fa-file-text-o text-xl"></</i>
+                    <<i class="fa fa-red-envelope text-xl text-red-500"></</i>
+                    <a href="#giftHome" class="text-xl wechat-green"><<i class="fa fa-gift"></</i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 礼物首页 -->
+    <div id="giftHome" class="max-w-md mx-auto bg-white min-h-screen hidden">
+        <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+            <<i class="fa fa-arrow-left mr-3 wechat-dark cursor-pointer" onclick="document.getElementById('giftHome').classList.add('hidden');document.getElementById('chatPage').classList.remove('hidden')"></</i>
+            <span class="text-lg font-medium wechat-dark">微信礼物</span>
+            <<i class="fa fa-search text-gray-500 text-xl"></</i>
+        </div>
+        <!-- 搜索栏 -->
+        <div class="p-3">
+            <div class="relative">
+                <input type="text" placeholder="搜索礼物/场景/价格" class="w-full bg-gray-100 rounded-full px-4 py-2 pl-10 outline-none">
+                <<i class="fa fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></</i>
+            </div>
+        </div>
+        <!-- 筛选栏 -->
+        <div class="p-3 border-t border-gray-100">
+            <div class="flex items-center justify-between mb-3">
+                <span class="font-medium wechat-dark">筛选</span>
+                <button class="text-[#07c160] text-sm">重置筛选</button>
+            </div>
+            <div class="grid grid-cols-3 gap-2 mb-3">
+                <button class="bg-[#07c160] text-white rounded-full px-3 py-1 text-sm">全部价格</button>
+                <button class="bg-gray-100 rounded-full px-3 py-1 text-sm wechat-dark">全部品牌</button>
+                <button class="bg-gray-100 rounded-full px-3 py-1 text-sm wechat-dark">更多筛选</button>
+            </div>
+            <!-- 场景标签 -->
+            <div class="flex space-x-2 overflow-x-auto pb-2 mb-3">
+                <button class="bg-gray-100 rounded-full px-3 py-1 text-sm whitespace-nowrap wechat-dark">节日限定</button>
+                <button class="bg-gray-100 rounded-full px-3 py-1 text-sm whitespace-nowrap wechat-dark">生日祝福</button>
+                <button class="bg-gray-100 rounded-full px-3 py-1 text-sm whitespace-nowrap wechat-dark">儿童</button>
+                <button class="bg-[#1890ff] text-white rounded-full px-3 py-1 text-sm whitespace-nowrap">商务礼仪</button>
+                <button class="bg-gray-100 rounded-full px-3 py-1 text-sm whitespace-nowrap wechat-dark">健康</button>
+            </div>
+            <!-- 优惠标签 -->
+            <div class="flex space-x-2 mb-4">
+                <span class="bg-red-500 text-white text-xs px-2 py-1 rounded">8折</span>
+                <span class="bg-orange-500 text-white text-xs px-2 py-1 rounded">满减20</span>
+                <span class="bg-purple-500 text-white text-xs px-2 py-1 rounded">新人券</span>
+            </div>
+        </div>
+        <!-- 商品列表 -->
+        <div class="p-3 space-y-4">
+            <!-- 商品1 -->
+            <a href="#productDetail" class="block">
+                <div class="flex bg-gray-50 rounded-lg overflow-hidden">
+                    <img src="https://picsum.photos/120/120?random=1" alt="商务定制保温杯" class="w-24 h-24 object-cover">
+                    <div class="flex-1 p-3">
+                        <div class="flex items-center mb-1">
+                            <span class="brand-tag">品牌认证</span>
+                            <span class="work-tag ml-1">职场适配</span>
+                        </div>
+                        <h3 class="font-medium text-sm wechat-dark line-clamp-2">品牌认证 商务定制保温杯</h3>
+                        <p class="text-xs wechat-light mt-1">316不锈钢·可定制logo·保温12小时</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <div>
+                                <span class="text-red-500 font-bold">¥159</span>
+                                <span class="text-xs line-through wechat-light ml-1">¥199</span>
+                            </div>
+                            <span class="text-xs bg-red-100 text-red-500 px-1 rounded">热销</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            <!-- 商品2 -->
+            <div class="flex bg-gray-50 rounded-lg overflow-hidden">
+                <img src="https://picsum.photos/120/120?random=2" alt="新年限定福袋" class="w-24 h-24 object-cover">
+                <div class="flex-1 p-3">
+                    <div class="flex items-center mb-1">
+                        <span class="brand-tag">品牌认证</span>
+                    </div>
+                    <h3 class="font-medium text-sm wechat-dark line-clamp-2">品牌认证 新年限定福袋</h3>
+                    <p class="text-xs wechat-light mt-1">坚果礼盒·春节定制包装</p>
+                    <div class="flex justify-between items-center mt-2">
+                        <div>
+                            <span class="text-red-500 font-bold">¥88</span>
+                            <span class="text-xs line-through wechat-light ml-1">¥108</span>
+                        </div>
+                        <span class="text-xs bg-red-100 text-red-500 px-1 rounded">节日限定</span>
+                    </div>
+                </div>
+            </div>
+            <!-- 商品3 -->
+            <div class="flex bg-gray-50 rounded-lg overflow-hidden">
+                <img src="https://picsum.photos/120/120?random=3" alt="有机健康茶礼盒" class="w-24 h-24 object-cover">
+                <div class="flex-1 p-3">
+                    <div class="flex items-center mb-1">
+                        <span class="brand-tag">品牌认证</span>
+                        <span class="work-tag ml-1">职场适配</span>
+                    </div>
+                    <h3 class="font-medium text-sm wechat-dark line-clamp-2">品牌认证 有机健康茶礼盒</h3>
+                    <p class="text-xs wechat-light mt-1">无农药残留·礼盒装·可定制祝福</p>
+                    <div class="flex justify-between items-center mt-2">
+                        <div>
+                            <span class="text-red-500 font-bold">¥129</span>
+                            <span class="text-xs line-through wechat-light ml-1">¥159</span>
+                        </div>
+                        <span class="text-xs bg-green-100 text-green-500 px-1 rounded">健康</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 商品详情页 -->
+    <div id="productDetail" class="max-w-md mx-auto bg-white min-h-screen hidden">
+        <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+            <<i class="fa fa-arrow-left mr-3 wechat-dark cursor-pointer" onclick="document.getElementById('productDetail').classList.add('hidden');document.getElementById('giftHome').classList.remove('hidden')"></</i>
+            <span class="text-lg font-medium wechat-dark">商品详情</span>
+            <<i class="fa fa-heart-o text-gray-500 text-xl"></</i>
+        </div>
+        <!-- 商品图片 -->
+        <div class="h-64 bg-gray-100 flex items-center justify-center">
+            <img src="https://picsum.photos/300/300?random=1" alt="商务定制保温杯" class="max-h-full max-w-full object-contain">
+        </div>
+        <!-- 商品信息 -->
+        <div class="p-4 space-y-3">
+            <div class="flex items-center">
+                <span class="brand-tag mr-2">品牌认证</span>
+                <span class="work-tag">职场适配</span>
+            </div>
+            <h1 class="text-lg font-bold wechat-dark">商务定制保温杯 316不锈钢材质</h1>
+            <p class="text-sm wechat-light">可定制logo·保温12小时·全国包邮</p>
+            <div class="flex items-baseline space-x-2">
+                <span class="text-2xl text-red-500 font-bold">¥159</span>
+                <span class="text-sm line-through wechat-light">¥199</span>
+                <span class="bg-red-100 text-red-500 text-xs px-2 py-1 rounded">8折优惠</span>
+            </div>
+            <!-- 售后保障 -->
+            <div class="flex items-center text-sm wechat-light">
+                <<i class="fa fa-check-circle wechat-green mr-1"></</i>
+                <span>7天无理由退换 · 一年质保 · 假一赔十</span>
+            </div>
+            <!-- 用户评价 -->
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-medium wechat-dark">用户评价 (126)</h3>
+                    <span class="text-yellow-400">★★★★★ 4.9</span>
+                </div>
+                <div class="space-y-2">
+                    <div class="text-sm">
+                        <p class="wechat-dark">张先生：保温杯质量很好，保温效果超预期，商务送礼很合适</p>
+                        <p class="text-xs wechat-light mt-1">2025-06-10</p>
+                    </div>
+                    <div class="text-sm">
+                        <p class="wechat-dark">李女士：logo定制很精致，客户很满意，物流也快</p>
+                        <p class="text-xs wechat-light mt-1">2025-06-08</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 底部操作栏 -->
+        <div class="absolute bottom-0 left-0 right-0 max-w-md mx-auto bg-white p-3 border-t border-gray-200">
+            <button class="w-full bg-[#07c160] text-white rounded-lg py-3 font-medium" onclick="document.getElementById('productDetail').classList.add('hidden');document.getElementById('giftConfirm').classList.remove('hidden')">
+                立即赠送
+            </button>
+        </div>
+    </div>
+
+    <!-- 4. 赠送确认页 -->
+    <div id="giftConfirm" class="max-w-md mx-auto bg-white min-h-screen hidden">
+        <div class="p-4 border-b border-gray-200 flex items-center">
+            <<i class="fa fa-arrow-left mr-3 wechat-dark cursor-pointer" onclick="document.getElementById('giftConfirm').classList.add('hidden');document.getElementById('productDetail').classList.remove('hidden')"></</i>
+            <span class="text-lg font-medium wechat-dark">赠送礼物</span>
+        </div>
+        <div class="p-4 space-y-4">
+            <!-- 收礼人信息 -->
+            <div>
+                <h3 class="font-medium wechat-dark mb-2">收礼人</h3>
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <p class="wechat-dark">张总</p>
+                    <p class="text-sm wechat-light mt-1">隐私说明: 礼物发出后,收礼人将收到微信通知并自行填写收货地址,你全程无法查看收礼人的任何地址信息</p>
+                </div>
+            </div>
+            <!-- 礼物信息 -->
+            <div>
+                <h3 class="font-medium wechat-dark mb-2">礼物信息</h3>
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <p id="giftPreview" class="wechat-dark">商务定制保温杯（316不锈钢材质·可定制logo）</p>
+                </div>
+            </div>
+            <!-- 配送与惊喜设置 -->
+            <div>
+                <h3 class="font-medium wechat-dark mb-2">配送与惊喜设置</h3>
+                <div class="bg-gray-50 rounded-lg p-3 space-y-3">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="surpriseToggle" class="mr-2" onclick="toggleSurprise()">
+                        <label for="surpriseToggle" class="wechat-dark">保留惊喜感（不显示礼物内容）</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="noticeToggle" class="mr-2" checked>
+                        <label for="noticeToggle" class="wechat-dark">收礼人确认收货后通知我</label>
+                    </div>
+                </div>
+            </div>
+            <!-- 个性化祝福 -->
+            <div>
+                <h3 class="font-medium wechat-dark mb-2">个性化祝福</h3>
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <select class="w-full bg-transparent border-b border-gray-200 mb-2 outline-none wechat-dark">
+                        <option>节日模板</option>
+                        <option selected>商务模板</option>
+                        <option>生日模板</option>
+                        <option>儿童模板</option>
+                    </select>
+                    <textarea placeholder="输入祝福内容..." class="w-full bg-transparent outline-none wechat-dark text-sm h-16" maxlength="50">祝您事业顺利,合作愉快!</textarea>
+                    <div class="flex justify-between mt-1">
+                        <div class="flex space-x-3 text-gray-500">
+                            <<i class="fa fa-image"></</i>
+                            <<i class="fa fa-microphone"></</i>
+                            <<i class="fa fa-paint-brush"></</i>
+                        </div>
+                        <span class="text-xs wechat-light">12/50</span>
+                    </div>
+                </div>
+            </div>
+            <!-- 价格信息 -->
+            <div>
+                <h3 class="font-medium wechat-dark mb-2">价格信息</h3>
+                <div class="bg-gray-50 rounded-lg p-3 space-y-2">
+                    <div class="flex justify-between">
+                        <span class="wechat-light">商品金额</span>
+                        <span class="wechat-dark">¥{{orderData.originalAmount}}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="wechat-light">优惠券</span>
+                        <span class="text-red-500">-¥20（{{orderData.coupon}}）</span>
+                    </div>
+                    <div class="flex justify-between font-medium">
+                        <span class="wechat-dark">实付款</span>
+                        <span class="text-red-500 text-lg">¥{{orderData.payAmount}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 底部支付栏 -->
+        <div class="absolute bottom-0 left-0 right-0 max-w-md mx-auto bg-white p-3 border-t border-gray-200">
+            <button class="w-full bg-[#07c160] text-white rounded-lg py-3 font-medium" onclick="document.getElementById('giftConfirm').classList.add('hidden');document.getElementById('giftSent').classList.remove('hidden')">
+                确认赠送
+            </button>
+        </div>
+    </div>
+
+    <!-- 5. 礼物送出成功页 -->
+    <div id="giftSent" class="max-w-md mx-auto bg-white min-h-screen hidden flex flex-col items-center justify-center p-6 text-center">
+        <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-4">
+            <<i class="fa fa-check text-3xl wechat-green"></</i>
+        </div>
+        <h2 class="text-xl font-bold wechat-dark mb-2">礼物已成功发出!</h2>
+        <p class="wechat-light mb-6">收礼人将收到微信通知，你可查看物流进度，但无法查看收礼人地址</p>
+        <div class="flex space-x-4">
+            <button class="flex-1 bg-gray-100 rounded-lg py-3 font-medium wechat-dark" onclick="document.getElementById('giftSent').classList.add('hidden');document.getElementById('chatPage').classList.remove('hidden')">
+                返回聊天
+            </button>
+            <button class="flex-1 bg-[#07c160] text-white rounded-lg py-3 font-medium" onclick="document.getElementById('giftSent').classList.add('hidden');document.getElementById('logisticsPage').classList.remove('hidden')">
+                查看物流进度
+            </button>
+        </div>
+    </div>
+
+    <!-- 6. 物流进度页 -->
+    <div id="logisticsPage" class="max-w-md mx-auto bg-white min-h-screen hidden">
+        <div class="p-4 border-b border-gray-200 flex items-center">
+            <<i class="fa fa-arrow-left mr-3 wechat-dark cursor-pointer" onclick="document.getElementById('logisticsPage').classList.add('hidden');document.getElementById('giftSent').classList.remove('hidden')"></</i>
+            <span class="text-lg font-medium wechat-dark">物流进度</span>
+        </div>
+        <!-- 订单管理（24小时内显示） -->
+        <div id="orderManage" class="hidden p-3 bg-yellow-50 border-b border-yellow-100">
+            <div class="flex justify-between items-center">
+                <p class="text-sm text-yellow-700"><<i class="fa fa-clock-o mr-1"></</i> 下单后24小时内可修改订单</p>
+                <div class="flex space-x-2">
+                    <button class="bg-yellow-500 text-white text-xs px-2 py-1 rounded">修改订单</button>
+                    <button class="bg-red-500 text-white text-xs px-2 py-1 rounded">申请退款</button>
+                    <button class="bg-gray-500 text-white text-xs px-2 py-1 rounded">联系售后</button>
+                </div>
+            </div>
+        </div>
+        <!-- 订单信息 -->
+        <div class="p-4 border-b border-gray-100">
+            <div class="flex justify-between mb-2">
+                <span class="wechat-light">订单编号</span>
+                <span class="wechat-dark">{{orderData.id}}</span>
+            </div>
+            <div class="flex justify-between mb-2">
+                <span class="wechat-light">商品名称</span>
+                <span class="wechat-dark">{{orderData.product}}</span>
+            </div>
+            <div class="flex justify-between mb-2">
+                <span class="wechat-light">快递公司</span>
+                <span class="wechat-dark">{{orderData.express}} ({{orderData.expressNo}})</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="wechat-light">发货状态</span>
+                <span class="text-red-500 font-medium">{{orderData.status}}</span>
+            </div>
+        </div>
+        <!-- 预计时间 -->
+        <div class="p-4 border-b border-gray-100">
+            <div class="flex justify-between mb-2">
+                <span class="wechat-light">预计到达网点</span>
+                <span class="wechat-dark">{{orderData.estimate.delivery}}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="wechat-light">预计签收时间</span>
+                <span class="wechat-dark">{{orderData.estimate.sign}}</span>
+            </div>
+        </div>
+        <!-- 物流轨迹 -->
+        <div class="p-4">
+            <h3 class="font-medium wechat-dark mb-4">物流轨迹</h3>
+            <div class="space-y-4">
+                {{#each orderData.logistics}}
+                <div class="flex">
+                    <div class="flex flex-col items-center mr-3">
+                        <div class="logistics-item"></div>
+                    </div>
+                    <div>
+                        <p class="wechat-dark">{{this.desc}}</p>
+                        <p class="text-xs wechat-light mt-1">{{this.time}}</p>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. 收礼人地址填写页 -->
+    <div id="addrPage" class="max-w-md mx-auto bg-white min-h-screen hidden">
+        <div class="p-4 border-b border-gray-200 flex items-center">
+            <<i class="fa fa-arrow-left mr-3 wechat-dark cursor-pointer"></</i>
+            <span class="text-lg font-medium wechat-dark">填写收货地址</span>
+        </div>
+        <div class="p-4 space-y-4">
+            <p class="text-sm wechat-light">你的地址信息仅用于本次礼物配送，送礼人无法查看，我们将严格保护你的隐私</p>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-sm font-medium wechat-dark mb-1">收件人姓名</label>
+                    <input type="text" class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none" placeholder="请输入姓名">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium wechat-dark mb-1">联系电话</label>
+                    <input type="tel" class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none" placeholder="请输入手机号">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-medium wechat-dark mb-1">省份</label>
+                        <input type="text" id="province" class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none" placeholder="请输入省份">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium wechat-dark mb-1">城市</label>
+                        <input type="text" id="city" class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none" placeholder="请输入城市">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium wechat-dark mb-1">详细地址</label>
+                    <input type="text" id="detailAddr" class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none" placeholder="请输入街道、小区、门牌号等">
+                </div>
+                <button class="w-full bg-gray-100 rounded-lg py-3 font-medium wechat-dark" onclick="checkDelivery()">
+                    点击校验配送范围
+                </button>
+            </div>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 max-w-md mx-auto bg-white p-3 border-t border-gray-200">
+            <button id="confirmAddrBtn" class="w-full bg-[#07c160] text-white rounded-lg py-3 font-medium" disabled>
+                确认地址并提交
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 模板变量替换（实际项目中由后端渲染）
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('body *');
+            elements.forEach(el => {
+                if (el.childNodes.length === 1 && el.childNodes[0].nodeType === 3) {
+                    let text = el.textContent;
+                    text = text.replace(/{{orderData\.id}}/g, orderData.id)
+                              .replace(/{{orderData\.product}}/g, orderData.product)
+                              .replace(/{{orderData\.express}}/g, orderData.express)
+                              .replace(/{{orderData\.expressNo}}/g, orderData.expressNo)
+                              .replace(/{{orderData\.status}}/g, orderData.status)
+                              .replace(/{{orderData\.estimate\.delivery}}/g, orderData.estimate.delivery)
+                              .replace(/{{orderData\.estimate\.sign}}/g, orderData.estimate.sign)
+                              .replace(/{{orderData\.payAmount}}/g, orderData.payAmount)
+                              .replace(/{{orderData\.originalAmount}}/g, orderData.originalAmount)
+                              .replace(/{{orderData\.coupon}}/g, orderData.coupon);
+                    el.textContent = text;
+                }
+            });
+
+            // 渲染物流轨迹
+            const logisticsContainer = document.querySelector('.space-y-4');
+            if (logisticsContainer) {
+                logisticsContainer.innerHTML = '';
+                orderData.logistics.forEach(item => {
+                    const logisticsItem = document.createElement('div');
+                    logisticsItem.className = 'flex';
+                    logisticsItem.innerHTML = `
+                        <div class="flex flex-col items-center mr-3">
+                            <div class="logistics-item"></div>
+                        </div>
+                        <div>
+                            <p class="wechat-dark">${item.desc}</p>
+                            <p class="text-xs wechat-light mt-1">${item.time}</p>
+                        </div>
+                    `;
+                    logisticsContainer.appendChild(logisticsItem);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
