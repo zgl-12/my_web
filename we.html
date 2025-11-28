@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>微信送礼物功能（完整交互版）</title>
+    <title>微信送礼物功能（隐形痛点优化版）</title>
     <style>
         * {
             margin: 0;
@@ -125,7 +125,6 @@
             font-size: 13px;
             white-space: nowrap;
             cursor: pointer;
-            cursor: pointer;
             transition: all 0.2s ease;
         }
         .tag.active-tag {
@@ -137,16 +136,15 @@
             border-color: #07C160;
             color: #07C160;
         }
-        /* 新增：商务标签优先样式 */
+        /* 新增：职场标签样式 */
         .tag.business-tag {
             border-color: #1E88E5;
             color: #1E88E5;
             background-color: rgba(30, 136, 229, 0.1);
         }
         .tag.business-tag.active-tag {
-            border-color: #1E88E5;
-            color: white;
             background-color: #1E88E5;
+            color: white;
         }
         .card-grid {
             display: grid;
@@ -162,6 +160,32 @@
             position: relative;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             cursor: pointer;
+        }
+        /* 新增：职场商品标识 */
+        .goods-card.business-goods::before {
+            content: "职场适配";
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #1E88E5;
+            color: white;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        /* 新增：品牌认证标识 */
+        .brand-certify {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background-color: #ffb800;
+            color: white;
+            font-size: 10px;
+            padding: 1px 4px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
         }
         /* PC端hover */
         @media (hover: hover) {
@@ -212,39 +236,26 @@
             border-radius: 3px;
             margin-left: 5px;
         }
-        /* 新增：品牌认证标签优化（金色醒目） */
+        /* 品牌认证标签 */
         .brand-tag {
             font-size: 10px;
-            color: #8b4513;
-            background-color: #ffd700;
+            color: #ffb800;
+            border: 1px solid #ffb800;
             padding: 1px 4px;
             border-radius: 3px;
             margin-right: 5px;
-            font-weight: bold;
-            position: relative;
         }
-        /* 品牌标签hover提示 */
-        .brand-tag:hover::after {
-            content: "正品保障 · 假一赔十";
-            position: absolute;
-            top: -25px;
-            left: 0;
-            background-color: #333;
-            color: white;
-            font-size: 10px;
-            padding: 3px 5px;
-            border-radius: 3px;
-            white-space: nowrap;
-            z-index: 99;
+        .brand-auth {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 3px;
         }
-        /* 新增：职场适配标签 */
-        .work-tag {
-            font-size: 10px;
-            color: #1E88E5;
-            border: 1px solid #1E88E5;
-            padding: 1px 4px;
-            border-radius: 3px;
-            margin-left: 3px;
+        .brand-auth-icon {
+            color: #ffb800;
+            font-size: 12px;
         }
         .discount-tag {
             position: absolute;
@@ -298,7 +309,7 @@
             background-color: #1E88E5;
             color: white;
         }
-        /* ========== 核心新增：微信聊天界面样式 ========== */
+        /* ========== 微信聊天界面样式 ========== */
         /* 聊天头部 */
         .chat-header {
             display: flex;
@@ -472,8 +483,70 @@
             align-items: center;
             justify-content: center;
         }
+        /* ========== 商品详情页新增样式（品牌信任） ========== */
+        .trust-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+            padding: 8px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 12px;
+            color: #666;
+        }
+        .trust-icon {
+            color: #07C160;
+            font-size: 14px;
+        }
+        /* ========== 物流页新增样式（订单管理） ========== */
+        .order-manager {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f0f9ff;
+            border-radius: 8px;
+        }
+        .order-manager-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #1E88E5;
+            cursor: pointer;
+        }
+        .order-operate {
+            display: none;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .operate-btn {
+            padding: 5px 12px;
+            background-color: white;
+            border: 1px solid #1E88E5;
+            color: #1E88E5;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .operate-btn:hover {
+            background-color: #1E88E5;
+            color: white;
+        }
+        .after-sales-tip {
+            font-size: 11px;
+            color: #999;
+            margin-top: 5px;
+            text-align: right;
+        }
         /* ========== 原有样式优化 ========== */
-        /* 2. 礼物首页（完全无地址相关） */
+        /* 2. 礼物首页（新增职场分类，移除无效模块） */
         .filter-bar {
             background-color: white;
             padding: 10px;
@@ -542,7 +615,7 @@
         .empty-state {
             display:none;text-align:center;padding:50px 0;color:#999;
         }
-        /* 3. 商品详情页（仅提示收礼人填地址，无查看权限） */
+        /* 3. 商品详情页（新增品牌认证、职场适配、信任保障） */
         .detail-img {
             width: 100%;
             height: 200px;
@@ -569,14 +642,15 @@
             font-size: 18px;
             flex: 1;
         }
-        /* 新增：商品详情页品牌认证标签优化 */
         .detail-brand {
-            font-size: 10px;
-            color: #8b4513;
-            background-color: #ffd700;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 12px;
+            color: #ffb800;
+            border: 1px solid #ffb800;
             padding: 2px 5px;
             border-radius: 3px;
-            font-weight: bold;
         }
         .detail-desc {
             font-size: 14px;
@@ -600,7 +674,7 @@
         .detail-delivery {
             font-size: 13px;
             color: #666;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 5px;
@@ -623,16 +697,6 @@
             display: flex;
             align-items: center;
             gap: 3px;
-        }
-        /* 新增：正品保障提示 */
-        .authenticity-tips {
-            padding: 8px;
-            background-color: #fff8e1;
-            border-left: 3px solid #ffc107;
-            font-size: 12px;
-            color: #8b4513;
-            margin-bottom: 15px;
-            border-radius: 4px;
         }
         .detail-fold {
             padding: 10px;
@@ -678,7 +742,7 @@
         .group-send:hover {
             background-color: rgba(7, 193, 96, 0.1);
         }
-        /* 核心隐私提示：明确送礼人无地址查看权限 */
+        /* 核心隐私提示 */
         .privacy-tips {
             padding: 10px;
             background-color: #f0f9ff;
@@ -948,7 +1012,7 @@
             text-align: center;
             cursor: pointer;
         }
-        /* 7. 送礼人-物流跟踪（无任何地址信息） */
+        /* 7. 送礼人-物流跟踪（新增订单管理） */
         .sender-logistics {
             padding: 10px;
         }
@@ -970,49 +1034,6 @@
             background-color: rgba(7, 193, 96, 0.1);
             padding: 3px 8px;
             border-radius: 10px;
-        }
-        /* 新增：订单管理模块（24小时内可见） */
-        .order-manage {
-            background-color: #fff8e1;
-            border: 1px solid #ffc107;
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .manage-tips {
-            font-size: 12px;
-            color: #8b4513;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .manage-btns {
-            display: flex;
-            gap: 5px;
-        }
-        .manage-btn {
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 4px;
-            border: none;
-            color: white;
-            cursor: pointer;
-            transition: opacity 0.2s ease;
-        }
-        .manage-btn.modify {
-            background-color: #ffc107;
-        }
-        .manage-btn.refund {
-            background-color: #f43530;
-        }
-        .manage-btn.service {
-            background-color: #1E88E5;
-        }
-        .manage-btn:hover {
-            opacity: 0.9;
         }
         /* 送礼人物流页仅显示商品和物流状态，无地址 */
         .sender-logistics-info {
@@ -1155,17 +1176,17 @@
     <!-- 界面切换按钮（区分送礼人/收礼人视角） -->
     <div class="tab-buttons">
         <button class="tab-btn" onclick="switchPage('page1')">1. 聊天界面</button>
-        <button class="tab-btn" onclick="switchPage('page2')">2. 礼物首页</button>
-        <button class="tab-btn" onclick="switchPage('page3')">3. 商品详情</button>
+        <button class="tab-btn" onclick="switchPage('page2')">2. 礼物首页（职场分类）</button>
+        <button class="tab-btn" onclick="switchPage('page3')">3. 商品详情（品牌认证）</button>
         <button class="tab-btn" onclick="switchPage('page4')">4. 发送定制</button>
         <button class="tab-btn" onclick="switchPage('page5')">5. 送礼成功</button>
-        <button class="tab-btn" onclick="switchPage('page7')">6. 物流跟踪</button>
+        <button class="tab-btn" onclick="switchPage('page7')">6. 物流跟踪（订单管理）</button>
         <button class="tab-btn" onclick="switchPage('page6')">7. 收礼人填地址</button>
     </div>
 
     <!-- 手机外壳 -->
     <div class="phone">
-        <!-- 1. 核心修改：微信聊天界面（带真实聊天记录） -->
+        <!-- 1. 微信聊天界面（带真实聊天记录） -->
         <div class="page active" id="page1">
             <!-- 聊天头部 -->
             <div class="chat-header">
@@ -1239,7 +1260,7 @@
             </div>
         </div>
 
-        <!-- 2. 送礼人-礼物首页（强化职场场景适配） -->
+        <!-- 2. 礼物首页（新增职场分类，移除无效模块） -->
         <div class="page" id="page2">
             <div class="nav-bar">
                 <div class="back-btn" onclick="switchPage('page1')">←</div>
@@ -1250,14 +1271,14 @@
             <div class="filter-bar">
                 <div class="range-filter">
                     <span class="filter-label">价格区间：</span>
-                    <select class="range-select" id="priceRange">
+                    <select class="range-select">
                         <option value="all">全部价格</option>
                         <option value="0-50">50元内</option>
                         <option value="50-100">50-100元</option>
                         <option value="100-300">100-300元</option>
                         <option value="300+">300元以上</option>
                     </select>
-                    <select class="range-select" id="brandRange">
+                    <select class="range-select">
                         <option value="all">全部品牌</option>
                         <option value="famous">知名品牌</option>
                         <option value="local">本地特产</option>
@@ -1270,57 +1291,78 @@
                 </div>
             </div>
             <div class="tag-bar">
-                <div class="tag" onclick="selectTag(this)">🏮节日限定</div>
+                <div class="tag active-tag" onclick="selectTag(this)">🏮节日限定</div>
                 <div class="tag" onclick="selectTag(this)">🎂生日祝福</div>
-                <!-- 新增：商务标签优先样式，默认选中 -->
-                <div class="tag business-tag active-tag" onclick="selectTag(this)">👔商务礼仪</div>
+                <div class="tag business-tag" onclick="selectTag(this, true)">💼职场/商务</div>
                 <div class="tag" onclick="selectTag(this)">👶儿童专属</div>
                 <div class="tag" onclick="selectTag(this)">✨小众创意</div>
                 <div class="tag" onclick="selectTag(this)">💖健康礼品</div>
                 <div class="tag" onclick="selectTag(this)">🇨🇳国潮精选</div>
             </div>
             <div class="card-grid" id="goodsGrid">
-                <div class="goods-card" onclick="switchPage('page3')">
+                <!-- 职场适配商品（带品牌认证） -->
+                <div class="goods-card business-goods" onclick="switchPage('page3')">
+                    <div class="brand-certify">🏷️ 品牌认证</div>
                     <div class="discount-tag">满减20</div>
-                    <div class="goods-img">新年福袋图片</div>
+                    <div class="goods-img">商务笔记本图片</div>
                     <div class="goods-info">
-                        <div class="goods-name"><span class="brand-tag">品牌认证</span>新年限定福袋</div>
-                        <div class="goods-price">￥88 <span class="goods-tag">热销</span></div>
+                        <div class="brand-auth">
+                            <span class="brand-auth-icon">✅</span>
+                            <span>官方授权 · 正品保障</span>
+                        </div>
+                        <div class="goods-name"><span class="brand-tag">品牌认证</span>商务定制笔记本</div>
+                        <div class="goods-price">￥129 <span class="goods-tag">商务</span></div>
                     </div>
                 </div>
-                <div class="goods-card" onclick="switchPage('page3')">
+                <div class="goods-card business-goods" onclick="switchPage('page3')">
+                    <div class="brand-certify">🏷️ 品牌认证</div>
                     <div class="discount-tag">8折</div>
                     <div class="goods-img">商务保温杯图片</div>
                     <div class="goods-info">
-                        <div class="goods-name"><span class="brand-tag">品牌认证</span>商务定制保温杯<span class="work-tag">职场适配</span></div>
+                        <div class="brand-auth">
+                            <span class="brand-auth-icon">✅</span>
+                            <span>官方授权 · 正品保障</span>
+                        </div>
+                        <div class="goods-name"><span class="brand-tag">品牌认证</span>商务定制保温杯</div>
                         <div class="goods-price">￥159 <span class="goods-tag">商务</span></div>
                     </div>
                 </div>
+                <!-- 普通品牌认证商品 -->
                 <div class="goods-card" onclick="switchPage('page3')">
+                    <div class="brand-certify">🏷️ 品牌认证</div>
                     <div class="goods-img">儿童益智积木图片</div>
                     <div class="goods-info">
+                        <div class="brand-auth">
+                            <span class="brand-auth-icon">✅</span>
+                            <span>官方授权 · 正品保障</span>
+                        </div>
                         <div class="goods-name"><span class="brand-tag">品牌认证</span>儿童益智积木</div>
                         <div class="goods-price">￥69 <span class="goods-tag">儿童</span></div>
                     </div>
                 </div>
                 <div class="goods-card" onclick="switchPage('page3')">
+                    <div class="brand-certify">🏷️ 品牌认证</div>
                     <div class="discount-tag">新人券</div>
                     <div class="goods-img">健康茶礼盒图片</div>
                     <div class="goods-info">
-                        <div class="goods-name"><span class="brand-tag">品牌认证</span>有机健康茶礼盒<span class="work-tag">职场适配</span></div>
+                        <div class="brand-auth">
+                            <span class="brand-auth-icon">✅</span>
+                            <span>官方授权 · 正品保障</span>
+                        </div>
+                        <div class="goods-name"><span class="brand-tag">品牌认证</span>有机健康茶礼盒</div>
                         <div class="goods-price">￥129 <span class="goods-tag">健康</span></div>
                     </div>
                 </div>
             </div>
             <!-- 空状态提示 -->
-            <div class="empty-state" id="emptyState">
+            <div class="empty-state">
                 <div style="font-size:40px;margin-bottom:10px;">🎁</div>
                 <div>暂无匹配的礼物哦~</div>
                 <div style="font-size:12px;margin-top:5px;">试试调整筛选条件吧</div>
             </div>
         </div>
 
-        <!-- 3. 送礼人-商品详情（强化品牌信任） -->
+        <!-- 3. 商品详情页（新增品牌认证、职场适配、信任保障） -->
         <div class="page" id="page3">
             <div class="nav-bar">
                 <div class="back-btn" onclick="switchPage('page2')">←</div>
@@ -1330,17 +1372,35 @@
             <div class="detail-info">
                 <div class="detail-header">
                     <div class="detail-name">商务定制保温杯</div>
-                    <div class="detail-brand">品牌认证</div>
+                    <div class="detail-brand">
+                        <span>🏷️</span>
+                        <span>品牌认证</span>
+                    </div>
+                </div>
+                <!-- 新增：品牌信任保障模块 -->
+                <div class="trust-badge">
+                    <div class="trust-item">
+                        <span class="trust-icon">✅</span>
+                        <span>正品保障</span>
+                    </div>
+                    <div class="trust-item">
+                        <span class="trust-icon">✅</span>
+                        <span>假一赔十</span>
+                    </div>
+                    <div class="trust-item">
+                        <span class="trust-icon">✅</span>
+                        <span>职场适配</span>
+                    </div>
+                    <div class="trust-item">
+                        <span class="trust-icon">✅</span>
+                        <span>官方授权</span>
+                    </div>
                 </div>
                 <div class="detail-desc">316不锈钢材质·可定制logo·保温12小时</div>
                 <div class="detail-price">
                     ￥159.00
                     <span class="original-price">￥199.00</span>
                     <span class="goods-tag">8折优惠</span>
-                </div>
-                <!-- 新增：正品保障提示 -->
-                <div class="authenticity-tips">
-                    🛡️ 正品保障：品牌官方授权 · 假一赔十 · 7天无理由退换 · 一年质保
                 </div>
                 <div class="detail-delivery">
                     🚚 全国包邮（收礼人自行填写地址后发货）
@@ -1360,20 +1420,13 @@
                 <button class="btn btn-gray">加入收藏</button>
                 <div class="detail-fold" onclick="toggleDetail()">▼ 展开详情（用户评价/商品规格/售后保障）</div>
                 <!-- 折叠内容 -->
-                <div class="detail-content" id="detailContent" style="display:none;padding:10px;font-size:13px;color:#333;border-top:1px solid #eee;">
+                <div class="detail-content" style="display:none;padding:10px;font-size:13px;color:#333;border-top:1px solid #eee;">
                     <div style="margin-bottom:10px;font-weight:bold;">用户评价（126）</div>
                     <div style="margin-bottom:8px;display:flex;gap:8px;">
                         <div style="width:30px;height:30px;background:#eee;border-radius:50%;"></div>
                         <div>
-                            <div>张先生：保温杯质量很好，保温效果超预期，商务送礼很合适</div>
+                            <div>张先生：保温杯质量很好，保温效果超预期，商务场合送客户很合适，品牌有保障放心</div>
                             <div style="font-size:11px;color:#999;margin-top:2px;">2025-06-10</div>
-                        </div>
-                    </div>
-                    <div style="margin-bottom:8px;display:flex;gap:8px;">
-                        <div style="width:30px;height:30px;background:#eee;border-radius:50%;"></div>
-                        <div>
-                            <div>李女士：logo定制很精致，客户很满意，物流也快</div>
-                            <div style="font-size:11px;color:#999;margin-top:2px;">2025-06-08</div>
                         </div>
                     </div>
                     <div style="margin-bottom:10px;font-weight:bold;margin-top:15px;">商品规格</div>
@@ -1383,17 +1436,12 @@
                         <div style="padding:3px 8px;border:1px solid #eee;border-radius:5px;">金色（400ml）</div>
                     </div>
                     <div style="font-weight:bold;margin-top:15px;">售后保障</div>
-                    <div style="color:#666;margin-top:5px;line-height:1.5;">
-                        ✅ 7天无理由退换（未拆封）<br>
-                        ✅ 一年免费质保（非人为损坏）<br>
-                        ✅ 假一赔十（品牌官方认证）<br>
-                        ✅ 正品发票（可开具企业报销发票）
-                    </div>
+                    <div style="color:#666;margin-top:5px;">7天无理由退换 · 一年质保 · 假一赔十 · 12小时售后响应</div>
                 </div>
             </div>
         </div>
 
-        <!-- 4. 送礼人-发送定制（核心隐私提示） -->
+        <!-- 4. 发送定制页（核心隐私提示） -->
         <div class="page" id="page4">
             <div class="nav-bar">
                 <div class="back-btn" onclick="switchPage('page3')">←</div>
@@ -1401,7 +1449,7 @@
             </div>
             <div class="recipient-box">
                 <input type="text" class="recipient-input" placeholder="选择好友/群聊" value="张总">
-                <div class="group-send" onclick="alert('多人群发功能已开启，可选择多个好友同时赠送')">多人群发</div>
+                <div class="group-send">多人群发</div>
             </div>
             <!-- 核心隐私提示：明确送礼人无地址查看权限 -->
             <div class="privacy-tips">
@@ -1426,28 +1474,28 @@
                 </div>
             </div>
             <!-- 开关提示 -->
-            <div class="switch-tips" id="switchTips"></div>
+            <div class="switch-tips"></div>
             <!-- 个性化祝福 -->
             <div class="msg-template">
                 <div class="check-title">个性化祝福</div>
                 <div class="template-tag">
-                    <button class="template-btn active" onclick="changeTemplate(this, '节日模板')">节日模板</button>
-                    <button class="template-btn" onclick="changeTemplate(this, '生日模板')">生日模板</button>
-                    <button class="template-btn" onclick="changeTemplate(this, '商务模板')">商务模板</button>
-                    <button class="template-btn" onclick="changeTemplate(this, '儿童模板')">儿童模板</button>
+                    <button class="template-btn active">节日模板</button>
+                    <button class="template-btn">生日模板</button>
+                    <button class="template-btn">商务模板</button>
+                    <button class="template-btn">儿童模板</button>
                 </div>
-                <textarea class="msg-input" id="msgInput" placeholder="可输入个性化祝福语（限50字）" oninput="countWords()">祝您事业顺利，合作愉快！</textarea>
-                <div class="msg-count" id="msgCount">14/50</div>
+                <textarea class="msg-input" placeholder="可输入个性化祝福语（限50字）" oninput="countWords()">祝您事业顺利，合作愉快！</textarea>
+                <div class="msg-count">14/50</div>
                 <div class="media-tools">
-                    <div class="media-btn" onclick="alert('图片选择器已打开，可选择1-3张图片作为祝福配图')">
+                    <div class="media-btn">
                         <div class="media-icon">🖼️</div>
                         <div>图片</div>
                     </div>
-                    <div class="media-btn" onclick="alert('语音录制已开启，最长可录制60秒语音祝福')">
+                    <div class="media-btn">
                         <div class="media-icon">🎤</div>
                         <div>语音</div>
                     </div>
-                    <div class="media-btn" onclick="alert('手写祝福面板已打开，可手写个性化祝福语')">
+                    <div class="media-btn">
                         <div class="media-icon">✏️</div>
                         <div>手写</div>
                     </div>
@@ -1464,7 +1512,7 @@
             <button class="btn btn-gray" onclick="switchPage('page3')">取消</button>
         </div>
 
-        <!-- 5. 送礼人-送礼成功（无任何地址信息） -->
+        <!-- 5. 送礼成功页（无任何地址信息） -->
         <div class="page" id="page5">
             <div class="success-page">
                 <div class="success-icon">🎁</div>
@@ -1494,26 +1542,26 @@
                 <div class="address-form">
                     <div class="form-item">
                         <label class="form-label">收件人姓名</label>
-                        <input type="text" class="form-input" placeholder="请输入姓名" id="recipientName">
+                        <input type="text" class="form-input" placeholder="请输入姓名">
                     </div>
                     <div class="form-item">
                         <label class="form-label">联系电话</label>
-                        <input type="tel" class="form-input" placeholder="请输入手机号" id="recipientPhone">
+                        <input type="tel" class="form-input" placeholder="请输入手机号">
                     </div>
                     <div class="area-select">
-                        <select id="provinceSelect">
+                        <select>
                             <option value="">省份</option>
                             <option value="北京">北京市</option>
                             <option value="上海">上海市</option>
                             <option value="广东">广东省</option>
                         </select>
-                        <select id="citySelect">
+                        <select>
                             <option value="">城市</option>
                             <option value="北京">北京市</option>
                             <option value="上海">上海市</option>
                             <option value="广州">广州市</option>
                         </select>
-                        <select id="areaSelect">
+                        <select>
                             <option value="">区县</option>
                             <option value="朝阳">朝阳区</option>
                             <option value="浦东">浦东新区</option>
@@ -1522,15 +1570,15 @@
                     </div>
                     <div class="form-item">
                         <label class="form-label">详细地址</label>
-                        <textarea class="form-input full-address" placeholder="请输入街道、小区、门牌号等" id="detailAddress"></textarea>
+                        <textarea class="form-input full-address" placeholder="请输入街道、小区、门牌号等"></textarea>
                     </div>
                     <div class="check-delivery" onclick="checkDelivery()">点击校验配送范围</div>
-                    <button class="btn btn-green" onclick="submitAddress()">确认地址并提交</button>
+                    <button class="btn btn-green" onclick="switchPage('page7')">确认地址并提交</button>
                 </div>
             </div>
         </div>
 
-        <!-- 7. 送礼人-物流跟踪（新增订单操作灵活性） -->
+        <!-- 7. 物流跟踪页（新增订单管理功能） -->
         <div class="page" id="page7">
             <div class="nav-bar">
                 <div class="back-btn" onclick="switchPage('page5')">←</div>
@@ -1541,25 +1589,24 @@
                     <div class="logistics-title">订单编号：2025061800123</div>
                     <div class="order-status">运输中</div>
                 </div>
-                
-                <!-- 新增：订单管理模块（24小时内可见） -->
-                <div class="order-manage">
-                    <div class="manage-tips">
-                        <span>🕒</span>
-                        <span>下单后24小时内可修改/退款</span>
+                <!-- 新增：订单管理模块（下单24小时内显示） -->
+                <div class="order-manager">
+                    <div class="order-manager-btn" onclick="toggleOrderManager()">
+                        <span>订单管理</span>
+                        <span id="managerArrow">▼</span>
                     </div>
-                    <div class="manage-btns">
-                        <button class="manage-btn modify" onclick="alert('已进入订单修改页面，可调整款式/地址备注等信息')">修改订单</button>
-                        <button class="manage-btn refund" onclick="alert('退款申请已提交，将在12小时内审核，审核通过后原路退款')">申请退款</button>
-                        <button class="manage-btn service" onclick="alert('已为你接通专属售后客服，12小时内响应')">联系售后</button>
+                    <div class="order-operate" id="orderOperate">
+                        <button class="operate-btn" onclick="alert('订单修改申请已提交，专属售后将在12小时内响应')">修改订单</button>
+                        <button class="operate-btn" onclick="alert('退款申请已提交，审核通过后将原路退回，预计1-3个工作日到账')">申请退款</button>
+                        <button class="operate-btn" onclick="alert('已接入专属售后通道，客服将在12小时内与你联系')">联系售后</button>
                     </div>
+                    <div class="after-sales-tip">售后响应时间：12小时内 | 支持下单24小时内操作</div>
                 </div>
-                
                 <!-- 送礼人物流页仅显示商品和物流状态，无任何地址 -->
                 <div class="sender-logistics-info">
                     <div class="sender-info-item">
                         <div class="sender-info-label">商品：</div>
-                        <div class="sender-info-content">商务定制保温杯</div>
+                        <div class="sender-info-content">商务定制保温杯（品牌认证）</div>
                     </div>
                     <div class="sender-info-item">
                         <div class="sender-info-label">快递公司：</div>
@@ -1571,21 +1618,21 @@
                     </div>
                 </div>
                 <div class="logistics-timeline">
-                    <div class="timeline-item active" onclick="openLogisticsModal('快递已发出，前往转运中心', '2025-06-18 14:30:25', '快递员：李师傅<br>转运中心：华北转运中心<br>预计下一站：目的地配送站')">
+                    <div class="timeline-item active">
                         <div class="timeline-dot"></div>
                         <div class="timeline-content">
                             <div class="timeline-time">2025-06-18 14:30:25</div>
                             <div class="timeline-text">快递已发出，前往转运中心</div>
                         </div>
                     </div>
-                    <div class="timeline-item active" onclick="openLogisticsModal('商品已打包完成', '2025-06-18 12:15:40', '打包员：王师傅<br>打包仓库：华东仓库<br>包裹重量：0.8kg')">
+                    <div class="timeline-item active">
                         <div class="timeline-dot"></div>
                         <div class="timeline-content">
                             <div class="timeline-time">2025-06-18 12:15:40</div>
                             <div class="timeline-text">商品已打包完成，等待快递公司揽收</div>
                         </div>
                     </div>
-                    <div class="timeline-item active" onclick="openLogisticsModal('收礼人已确认地址', '2025-06-18 10:00:00', '地址确认时间：10:00:00<br>商家处理耗时：2小时15分钟')">
+                    <div class="timeline-item active">
                         <div class="timeline-dot"></div>
                         <div class="timeline-content">
                             <div class="timeline-time">2025-06-18 10:00:00</div>
@@ -1609,15 +1656,16 @@
                 </div>
             </div>
             <!-- 物流弹窗（仅显示物流信息，无地址） -->
-            <div class="logistics-modal" id="logisticsModal">
+            <div class="logistics-modal">
                 <div class="modal-content">
                     <div class="modal-close" onclick="closeModal()">×</div>
-                    <div class="modal-title" id="modalTitle">物流详情</div>
-                    <div class="modal-info" id="modalInfo">
+                    <div class="modal-title">物流详情</div>
+                    <div class="modal-info">
                         快递员：李师傅<br>
                         转运中心：华北转运中心<br>
                         预计下一站：目的地配送站<br>
-                        预计送达时间：2025-06-19 18:00前
+                        预计送达时间：2025-06-19 18:00前<br>
+                        售后电话：400-888-8888（12小时响应）
                     </div>
                 </div>
             </div>
@@ -1629,31 +1677,8 @@
         function switchPage(pageId) {
             const allPages = document.querySelectorAll('.page');
             allPages.forEach(page => page.classList.remove('active'));
-            const targetPage = document.getElementById(pageId);
-            targetPage.classList.add('active');
-            // 滚动到顶部
-            targetPage.scrollTop = 0;
+            document.getElementById(pageId).classList.add('active');
         }
 
         // 2. 核心新增：送礼成功后添加礼物消息并返回聊天页
-        function addGiftMsgAndReturn() {
-            // 创建礼物消息元素
-            const giftMsg = document.createElement('div');
-            giftMsg.className = 'chat-message right';
-            
-            const msgAvatar = document.createElement('div');
-            msgAvatar.className = 'msg-avatar';
-            
-            const msgContent = document.createElement('div');
-            msgContent.className = 'msg-content';
-            
-            // 礼物消息特殊样式
-            const giftMsgInner = document.createElement('div');
-            giftMsgInner.className = 'gift-msg';
-            
-            const giftIcon = document.createElement('div');
-            giftIcon.className = 'gift-icon-small';
-            giftIcon.textContent = '🎁';
-            
-            const giftMsgText = document.createElement('div');
-            giftMsgText.className = 'gift-msg-text
+        function addGiftMsgAndReturn()
