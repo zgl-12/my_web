@@ -1172,294 +1172,7 @@
         }
     </style>
 </head>
-// 1. 界面切换逻辑（带过渡动画）
-function switchPage(pageId) {
-    const allPages = document.querySelectorAll('.page');
-    allPages.forEach(page => page.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
-}
 
-// 2. 礼物筛选交互（价格/品牌筛选+职场标签筛选）
-function filterGoods() {
-    const priceSelect = document.querySelectorAll('.range-select')[0];
-    const brandSelect = document.querySelectorAll('.range-select')[1];
-    const filterBtn = document.querySelector('.filter-btn');
-    const cardGrid = document.getElementById('goodsGrid');
-    const emptyState = document.querySelector('.empty-state');
-
-    // 加载动效
-    filterBtn.classList.add('loading');
-    
-    // 模拟筛选请求延迟
-    setTimeout(() => {
-        filterBtn.classList.remove('loading');
-        let hasMatch = false;
-        const goodsCards = document.querySelectorAll('.goods-card');
-        
-        goodsCards.forEach(card => {
-            const isPriceMatch = priceSelect.value === 'all' || 
-                (priceSelect.value === '0-50' && card.querySelector('.goods-price').innerText.includes('￥') && parseInt(card.querySelector('.goods-price').innerText.replace(/[^\d]/g, '')) <= 50) ||
-                (priceSelect.value === '50-100' && card.querySelector('.goods-price').innerText.includes('￥') && parseInt(card.querySelector('.goods-price').innerText.replace(/[^\d]/g, '')) >= 50 && parseInt(card.querySelector('.goods-price').innerText.replace(/[^\d]/g, '')) <= 100) ||
-                (priceSelect.value === '100-300' && card.querySelector('.goods-price').innerText.includes('￥') && parseInt(card.querySelector('.goods-price').innerText.replace(/[^\d]/g, '')) >= 100 && parseInt(card.querySelector('.goods-price').innerText.replace(/[^\d]/g, '')) <= 300) ||
-                (priceSelect.value === '300+' && card.querySelector('.goods-price').innerText.includes('￥') && parseInt(card.querySelector('.goods-price').innerText.replace(/[^\d]/g, '')) >= 300);
-
-            const isBrandMatch = brandSelect.value === 'all' ||
-                (brandSelect.value === 'famous' && card.querySelector('.brand-tag')) ||
-                (brandSelect.value === 'local' && card.querySelector('.goods-tag')?.innerText.includes('健康')) ||
-                (brandSelect.value === 'design' && card.querySelector('.goods-tag')?.innerText.includes('创意'));
-
-            if (isPriceMatch && isBrandMatch) {
-                card.style.display = 'block';
-                hasMatch = true;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-
-        // 显示/隐藏空状态
-        if (hasMatch) {
-            cardGrid.style.display = 'grid';
-            emptyState.style.display = 'none';
-        } else {
-            cardGrid.style.display = 'none';
-            emptyState.style.display = 'block';
-        }
-    }, 800);
-}
-
-// 3. 重置筛选条件
-function resetFilter() {
-    const priceSelect = document.querySelectorAll('.range-select')[0];
-    const brandSelect = document.querySelectorAll('.range-select')[1];
-    const cardGrid = document.getElementById('goodsGrid');
-    const emptyState = document.querySelector('.empty-state');
-    const tags = document.querySelectorAll('.tag');
-    
-    // 重置筛选框
-    priceSelect.value = 'all';
-    brandSelect.value = 'all';
-    
-    // 重置标签选中状态
-    tags.forEach(tag => {
-        tag.classList.remove('active-tag');
-        if (tag.innerText.includes('节日限定')) {
-            tag.classList.add('active-tag');
-        }
-    });
-    
-    // 显示所有商品
-    document.querySelectorAll('.goods-card').forEach(card => {
-        card.style.display = 'block';
-    });
-    cardGrid.style.display = 'grid';
-    emptyState.style.display = 'none';
-}
-
-// 4. 标签选择交互（含职场标签特殊处理）
-function selectTag(el, isBusiness = false) {
-    const tags = document.querySelectorAll('.tag');
-    const goodsCards = document.querySelectorAll('.goods-card');
-    
-    // 移除所有标签选中状态
-    tags.forEach(tag => {
-        tag.classList.remove('active-tag');
-    });
-    
-    // 激活当前标签
-    el.classList.add('active-tag');
-    
-    // 职场标签特殊筛选
-    if (isBusiness) {
-        goodsCards.forEach(card => {
-            if (card.classList.contains('business-goods')) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    } else {
-        // 其他标签：显示所有商品
-        goodsCards.forEach(card => {
-            card.style.display = 'block';
-        });
-    }
-}
-
-// 5. 商品详情折叠/展开
-function toggleDetail() {
-    const detailContent = document.querySelector('.detail-content');
-    const foldBtn = document.querySelector('.detail-fold');
-    if (detailContent.style.display === 'none' || !detailContent.style.display) {
-        detailContent.style.display = 'block';
-        foldBtn.innerHTML = '▲ 收起详情（用户评价/商品规格/售后保障）';
-    } else {
-        detailContent.style.display = 'none';
-        foldBtn.innerHTML = '▼ 展开详情（用户评价/商品规格/售后保障）';
-    }
-}
-
-// 6. 祝福语字数统计（限制50字）
-function countWords() {
-    const msgInput = document.querySelector('.msg-input');
-    const msgCount = document.querySelector('.msg-count');
-    const maxLen = 50;
-    const currentLen = msgInput.value.length;
-    
-    if (currentLen > maxLen) {
-        // 超出字数截断
-        msgInput.value = msgInput.value.substring(0, maxLen);
-        msgCount.textContent = `${maxLen}/${maxLen}`;
-        msgCount.classList.add('error');
-    } else {
-        msgCount.textContent = `${currentLen}/${maxLen}`;
-        msgCount.classList.remove('error');
-    }
-}
-
-// 7. 祝福语模板切换（带淡入过渡）
-const templateBtns = document.querySelectorAll('.template-btn');
-templateBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        templateBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const textarea = document.querySelector('.msg-input');
-        
-        // 过渡动画
-        textarea.style.opacity = 0;
-        setTimeout(() => {
-            switch(btn.textContent) {
-                case '节日模板':
-                    textarea.value = '祝您节日愉快，万事顺意，喜乐常伴！';
-                    break;
-                case '生日模板':
-                    textarea.value = '生日快乐，岁岁平安，愿所有美好如期而至！';
-                    break;
-                case '商务模板':
-                    textarea.value = '祝您事业顺利，合作共赢，再创佳绩！';
-                    break;
-                case '儿童模板':
-                    textarea.value = '愿宝贝健康成长，快乐无忧，聪明伶俐！';
-                    break;
-            }
-            textarea.style.opacity = 1;
-            countWords(); // 同步字数统计
-        }, 100);
-    });
-});
-
-// 8. 开关切换提示（惊喜感/收货通知）
-const surpriseSwitch = document.getElementById('surpriseSwitch');
-const deliverySwitch = document.getElementById('deliverySwitch');
-const switchTips = document.querySelector('.switch-tips');
-
-surpriseSwitch.addEventListener('change', function() {
-    if (!this.checked) {
-        switchTips.textContent = '⚠️ 对方将直接看到礼物具体内容，惊喜感降低';
-        switchTips.style.display = 'block';
-        setTimeout(() => switchTips.style.display = 'none', 3000);
-    }
-});
-
-deliverySwitch.addEventListener('change', function() {
-    if (!this.checked) {
-        switchTips.textContent = '⚠️ 收礼人确认收货后你将不会收到通知，请谨慎关闭';
-        switchTips.style.display = 'block';
-        setTimeout(() => switchTips.style.display = 'none', 3000);
-    }
-});
-
-// 9. 订单管理展开/收起
-function toggleOrderManager() {
-    const orderOperate = document.getElementById('orderOperate');
-    const managerArrow = document.getElementById('managerArrow');
-    if (orderOperate.style.display === 'none' || !orderOperate.style.display) {
-        orderOperate.style.display = 'flex';
-        managerArrow.innerHTML = '▲';
-    } else {
-        orderOperate.style.display = 'none';
-        managerArrow.innerHTML = '▼';
-    }
-}
-
-// 10. 收礼人地址校验
-function checkDelivery() {
-    alert('✅ 配送范围校验成功！你的地址支持配送，预计3-5天送达～');
-}
-
-// 11. 物流弹窗关闭
-function closeModal() {
-    document.getElementById('logisticsModal').style.display = 'none';
-}
-
-// 12. 物流节点点击弹窗
-const timelineItems = document.querySelectorAll('.timeline-item.active');
-timelineItems.forEach(item => {
-    item.addEventListener('click', () => {
-        document.getElementById('logisticsModal').style.display = 'flex';
-    });
-});
-
-// 13. 送礼成功后添加礼物消息并返回聊天页
-function addGiftMsgAndReturn() {
-    const chatContainer = document.getElementById('chatContainer');
-    const now = new Date();
-    const timeStr = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
-    
-    // 创建礼物消息元素
-    const giftMsg = document.createElement('div');
-    giftMsg.className = 'chat-message right';
-    giftMsg.innerHTML = `
-        <div class="msg-avatar"></div>
-        <div class="msg-content">
-            <div class="gift-msg">
-                <div class="gift-icon-small">🎁</div>
-                <div class="gift-msg-text">
-                    <div class="gift-msg-title">你向张总赠送了一份礼物</div>
-                    <div class="gift-msg-desc">商务定制保温杯（品牌认证）</div>
-                </div>
-            </div>
-            <div class="msg-time">${timeStr}</div>
-        </div>
-    `;
-    
-    // 添加到聊天容器
-    chatContainer.appendChild(giftMsg);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-    
-    // 切换到聊天页
-    switchPage('page1');
-}
-
-// 14. 页面加载完成初始化
-window.onload = function() {
-    // 初始化字数统计
-    countWords();
-    
-    // 给所有按钮添加移动端触摸反馈
-    const allBtns = document.querySelectorAll('.btn, .func-item, .media-btn, .operate-btn, .filter-btn');
-    allBtns.forEach(btn => {
-        btn.addEventListener('touchstart', () => {
-            btn.style.transform = 'scale(0.95)';
-        });
-        btn.addEventListener('touchend', () => {
-            btn.style.transform = 'scale(1)';
-        });
-    });
-    
-    // 初始化订单管理状态
-    document.getElementById('orderOperate').style.display = 'none';
-    
-    // 给商品卡片添加点击反馈
-    const goodsCards = document.querySelectorAll('.goods-card');
-    goodsCards.forEach(card => {
-        card.addEventListener('click', () => {
-            card.style.transform = 'scale(0.98)';
-            setTimeout(() => {
-                card.style.transform = 'scale(1)';
-            }, 100);
-        });
-    });
-};
 <body>
     <!-- 界面切换按钮（区分送礼人/收礼人视角） -->
     <div class="tab-buttons">
@@ -1959,3 +1672,294 @@ window.onload = function() {
             </div>
         </div>
     </div>
+
+    <script>
+        // 1. 界面切换逻辑（带过渡动画）
+        function switchPage(pageId) {
+            const allPages = document.querySelectorAll('.page');
+            allPages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+       // 2. 礼物筛选交互（价格/品牌筛选+职场标签筛选）
+       function filterGoods() {
+           const priceSelect = document.querySelectorAll('.range-select')[0];
+           const brandSelect = document.querySelectorAll('.range-select')[1];
+           const filterBtn = document.querySelector('.filter-btn');
+           const cardGrid = document.getElementById('goodsGrid');
+           const emptyState = document.querySelector('.empty-state');
+
+           // 加载动效
+           filterBtn.classList.add('loading');
+    
+           // 模拟筛选请求延迟
+           setTimeout(() => {
+               filterBtn.classList.remove('loading');
+               let hasMatch = false;
+               const goodsCards = document.querySelectorAll('.goods-card');
+        
+               goodsCards.forEach(card => {
+                   const isPriceMatch = priceSelect.value === 'all' || 
+                       (priceSelect.value === '0-50' && card.querySelector('.goods-price').innerText.includes('￥') && parseInt(card.querySelector('.goods-price').innerText.replace(/[^\d]/g, '')) <= 50) ||
+                       (priceSelect.value === '50-100' && card.querySelector('.goods-price').innerText.includes('￥') && parseInt(card.querySelector('.goods-price').innerText.replace(/[^\d]/g, '')) >= 50 && parseInt(card.querySelector('.goods-price').innerText.replace(/[^\d]/g, '')) <= 100) ||
+                       (priceSelect.value === '100-300' && card.querySelector('.goods-price').innerText.includes('￥') && parseInt(card.querySelector('.goods-price').innerText.replace(/[^\d]/g, '')) >= 100 && parseInt(card.querySelector('.goods-price').innerText.replace(/[^\d]/g, '')) <= 300) ||
+                       (priceSelect.value === '300+' && card.querySelector('.goods-price').innerText.includes('￥') && parseInt(card.querySelector('.goods-price').innerText.replace(/[^\d]/g, '')) >= 300);
+
+                   const isBrandMatch = brandSelect.value === 'all' ||
+                       (brandSelect.value === 'famous' && card.querySelector('.brand-tag')) ||
+                       (brandSelect.value === 'local' && card.querySelector('.goods-tag')?.innerText.includes('健康')) ||
+                       (brandSelect.value === 'design' && card.querySelector('.goods-tag')?.innerText.includes('创意'));
+
+                   if (isPriceMatch && isBrandMatch) {
+                       card.style.display = 'block';
+                       hasMatch = true;
+                   } else {
+                       card.style.display = 'none';
+                   }
+               });
+
+               // 显示/隐藏空状态
+               if (hasMatch) {
+                   cardGrid.style.display = 'grid';
+                   emptyState.style.display = 'none';
+               } else {
+                   cardGrid.style.display = 'none';
+                   emptyState.style.display = 'block';
+               }
+           }, 800);
+       }
+
+       // 3. 重置筛选条件
+       function resetFilter() {
+           const priceSelect = document.querySelectorAll('.range-select')[0];
+           const brandSelect = document.querySelectorAll('.range-select')[1];
+           const cardGrid = document.getElementById('goodsGrid');
+           const emptyState = document.querySelector('.empty-state');
+           const tags = document.querySelectorAll('.tag');
+    
+           // 重置筛选框
+           priceSelect.value = 'all';
+           brandSelect.value = 'all';
+    
+           // 重置标签选中状态
+           tags.forEach(tag => {
+               tag.classList.remove('active-tag');
+               if (tag.innerText.includes('节日限定')) {
+                   tag.classList.add('active-tag');
+               }
+           });
+    
+           // 显示所有商品
+           document.querySelectorAll('.goods-card').forEach(card => {
+               card.style.display = 'block';
+           });
+           cardGrid.style.display = 'grid';
+           emptyState.style.display = 'none';
+       }
+
+       // 4. 标签选择交互（含职场标签特殊处理）
+       function selectTag(el, isBusiness = false) {
+           const tags = document.querySelectorAll('.tag');
+           const goodsCards = document.querySelectorAll('.goods-card');
+    
+           // 移除所有标签选中状态
+           tags.forEach(tag => {
+               tag.classList.remove('active-tag');
+           });
+    
+           // 激活当前标签
+           el.classList.add('active-tag');
+    
+           // 职场标签特殊筛选
+           if (isBusiness) {
+               goodsCards.forEach(card => {
+                   if (card.classList.contains('business-goods')) {
+                       card.style.display = 'block';
+                   } else {
+                       card.style.display = 'none';
+                   }
+               });
+           } else {
+               // 其他标签：显示所有商品
+               goodsCards.forEach(card => {
+                   card.style.display = 'block';
+               });
+           }
+       }
+
+       // 5. 商品详情折叠/展开
+       function toggleDetail() {
+           const detailContent = document.querySelector('.detail-content');
+           const foldBtn = document.querySelector('.detail-fold');
+           if (detailContent.style.display === 'none' || !detailContent.style.display) {
+               detailContent.style.display = 'block';
+               foldBtn.innerHTML = '▲ 收起详情（用户评价/商品规格/售后保障）';
+           } else {
+               detailContent.style.display = 'none';
+               foldBtn.innerHTML = '▼ 展开详情（用户评价/商品规格/售后保障）';
+           }
+       }
+
+       // 6. 祝福语字数统计（限制50字）
+       function countWords() {
+           const msgInput = document.querySelector('.msg-input');
+           const msgCount = document.querySelector('.msg-count');
+           const maxLen = 50;
+           const currentLen = msgInput.value.length;
+    
+           if (currentLen > maxLen) {
+               // 超出字数截断
+               msgInput.value = msgInput.value.substring(0, maxLen);
+               msgCount.textContent = `${maxLen}/${maxLen}`;
+               msgCount.classList.add('error');
+           } else {
+               msgCount.textContent = `${currentLen}/${maxLen}`;
+               msgCount.classList.remove('error');
+           }
+       }
+
+       // 7. 祝福语模板切换（带淡入过渡）
+       const templateBtns = document.querySelectorAll('.template-btn');
+       templateBtns.forEach(btn => {
+           btn.addEventListener('click', () => {
+               templateBtns.forEach(b => b.classList.remove('active'));
+               btn.classList.add('active');
+               const textarea = document.querySelector('.msg-input');
+        
+               // 过渡动画
+               textarea.style.opacity = 0;
+               setTimeout(() => {
+                   switch(btn.textContent) {
+                       case '节日模板':
+                           textarea.value = '祝您节日愉快，万事顺意，喜乐常伴！';
+                           break;
+                       case '生日模板':
+                           textarea.value = '生日快乐，岁岁平安，愿所有美好如期而至！';
+                           break;
+                       case '商务模板':
+                           textarea.value = '祝您事业顺利，合作共赢，再创佳绩！';
+                           break;
+                       case '儿童模板':
+                           textarea.value = '愿宝贝健康成长，快乐无忧，聪明伶俐！';
+                           break;
+                   }
+                   textarea.style.opacity = 1;
+                   countWords(); // 同步字数统计
+               }, 100);
+           });
+       });
+
+       // 8. 开关切换提示（惊喜感/收货通知）
+       const surpriseSwitch = document.getElementById('surpriseSwitch');
+       const deliverySwitch = document.getElementById('deliverySwitch');
+       const switchTips = document.querySelector('.switch-tips');
+
+       surpriseSwitch.addEventListener('change', function() {
+           if (!this.checked) {
+               switchTips.textContent = '⚠️ 对方将直接看到礼物具体内容，惊喜感降低';
+               switchTips.style.display = 'block';
+               setTimeout(() => switchTips.style.display = 'none', 3000);
+           }
+       });
+
+       deliverySwitch.addEventListener('change', function() {
+           if (!this.checked) {
+               switchTips.textContent = '⚠️ 收礼人确认收货后你将不会收到通知，请谨慎关闭';
+               switchTips.style.display = 'block';
+               setTimeout(() => switchTips.style.display = 'none', 3000);
+           }
+       });
+
+       // 9. 订单管理展开/收起
+       function toggleOrderManager() {
+           const orderOperate = document.getElementById('orderOperate');
+           const managerArrow = document.getElementById('managerArrow');
+           if (orderOperate.style.display === 'none' || !orderOperate.style.display) {
+               orderOperate.style.display = 'flex';
+               managerArrow.innerHTML = '▲';
+           } else {
+               orderOperate.style.display = 'none';
+               managerArrow.innerHTML = '▼';
+           }
+       }
+
+       // 10. 收礼人地址校验
+       function checkDelivery() {
+           alert('✅ 配送范围校验成功！你的地址支持配送，预计3-5天送达～');
+       }
+
+       // 11. 物流弹窗关闭
+       function closeModal() {
+           document.getElementById('logisticsModal').style.display = 'none';
+       }
+
+       // 12. 物流节点点击弹窗
+       const timelineItems = document.querySelectorAll('.timeline-item.active');
+       timelineItems.forEach(item => {
+           item.addEventListener('click', () => {
+               document.getElementById('logisticsModal').style.display = 'flex';
+           });
+       });
+
+       // 13. 送礼成功后添加礼物消息并返回聊天页
+       function addGiftMsgAndReturn() {
+           const chatContainer = document.getElementById('chatContainer');
+           const now = new Date();
+           const timeStr = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+    
+           // 创建礼物消息元素
+           const giftMsg = document.createElement('div');
+           giftMsg.className = 'chat-message right';
+           giftMsg.innerHTML = `
+               <div class="msg-avatar"></div>
+               <div class="msg-content">
+                   <div class="gift-msg">
+                       <div class="gift-icon-small">🎁</div>
+                       <div class="gift-msg-text">
+                           <div class="gift-msg-title">你向张总赠送了一份礼物</div>
+                           <div class="gift-msg-desc">商务定制保温杯（品牌认证）</div>
+                       </div>
+                   </div>
+                   <div class="msg-time">${timeStr}</div>
+               </div>
+           `;
+    
+           // 添加到聊天容器
+           chatContainer.appendChild(giftMsg);
+           chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+           // 切换到聊天页
+           switchPage('page1');
+       }
+
+       // 14. 页面加载完成初始化
+       window.onload = function() {
+           // 初始化字数统计
+           countWords();
+    
+           // 给所有按钮添加移动端触摸反馈
+           const allBtns = document.querySelectorAll('.btn, .func-item, .media-btn, .operate-btn, .filter-btn');
+           allBtns.forEach(btn => {
+               btn.addEventListener('touchstart', () => {
+                   btn.style.transform = 'scale(0.95)';
+               });
+               btn.addEventListener('touchend', () => {
+                   btn.style.transform = 'scale(1)';
+               });
+           });
+    
+           // 初始化订单管理状态
+           document.getElementById('orderOperate').style.display = 'none';
+    
+           // 给商品卡片添加点击反馈
+           const goodsCards = document.querySelectorAll('.goods-card');
+           goodsCards.forEach(card => {
+               card.addEventListener('click', () => {
+                   card.style.transform = 'scale(0.98)';
+                   setTimeout(() => {
+                       card.style.transform = 'scale(1)';
+                   }, 100);
+               });
+           });
+       };
+    </script>
