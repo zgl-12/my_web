@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>影迹·流派 - 电影类型可视化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "SimSun", sans-serif;
+        }
+
+        body {
+            /* 电影氛围感渐变背景 + 轻微纹理 */
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background-image: url('https://picsum.photos/id/1048/2000/2000'); /* 电影光影抽象纹理 */
+            background-blend-mode: overlay;
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            padding: 30px 20px;
+            color: #f5f5f5;
+            overflow-x: hidden;
+            display: flex; /* 新增：主布局改为flex，容纳右侧配色面板 */
+            gap: 20px;
+            min-height: 100vh; /* 确保body占满视口高度 */
+        }
+
+        /* 新增：配色面板样式 */
+        .color-panel {
+            width: 280px;
+            background: rgba(25, 30, 50, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 12px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            height: fit-content;
+            margin-top: 30px;
+        }
+
+        .color-panel-title {
+            font-size: 18px;
+            color: #f07e50;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .color-panel-title::before {
+            content: '';
+            width: 6px;
+            height: 18px;
+            background: #5a9bd4;
+            border-radius: 3px;
+        }
+
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .color-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .color-block {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .color-info {
+            flex: 1;
+        }
+
+        .color-name {
+            font-size: 14px;
+            color: #f5f5f5;
+            margin-bottom: 3px;
+        }
+
+        .color-code {
+            font-size: 12px;
+            color: #aaa;
+            font-family: "Consolas", "Monaco", monospace;
+        }
+
+        /* 新增：电影名言板块样式 */
+        .quote-panel {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .quote-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #f5f5f5;
+            font-style: italic;
+            margin-bottom: 10px;
+            padding: 15px;
+            background: rgba(240, 126, 80, 0.08);
+            border-radius: 8px;
+            border-left: 3px solid #f07e50;
+        }
+
+        .quote-author {
+            font-size: 12px;
+            color: #aaa;
+            text-align: right;
+            margin-right: 10px;
+        }
+
+        /* 装饰背景元素 - 适配深色主题 */
+        .bg-decoration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.08;
+            background: radial-gradient(circle, #f07e50 0%, #5a9bd4 100%);
+            animation: float 15s ease-in-out infinite;
+        }
+        .bg-circle:nth-child(1) {
+            width: 200px;
+            height: 200px;
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+        .bg-circle:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: 8%;
+            animation-delay: 2s;
+        }
+        .bg-circle:nth-child(3) {
+            width: 180px;
+            height: 180px;
+            bottom: 15%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        /* 修复：花朵装饰样式 - 提高可见性 */
+        .flower-decoration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw; /* 使用vw确保宽度正确 */
+            height: 100vh; /* 使用vh确保高度正确 */
+            pointer-events: none;
+            z-index: 0; /* 提高层级，确保不被遮挡 */
+            opacity: 0.3; /* 提高透明度，更容易看到 */
+        }
+        .petal {
+            transition: all 0.5s ease;
+        }
+        .flower-center {
+            fill: #f07e50;
+            filter: drop-shadow(0 0 5px rgba(240, 126, 80, 0.8));
+        }
+
+        /* 核心容器 - 半透明磨砂玻璃效果 */
+        .container {
+            max-width: 1000px;
+            background: rgba(25, 30, 50, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 12px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex: 1; /* 新增：让主容器占满剩余宽度 */
+            z-index: 1; /* 确保主内容在花朵上层 */
+        }
+
+        /* 顶部装饰 - 适配深色主题 */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #f07e50, #5a9bd4, #f794b4, #96c93d);
+            background-size: 200% 100%;
+            animation: gradientFlow 8s ease infinite;
+        }
+
+        /* 顶部标题区 - 文字颜色适配 */
+        .header {
+            padding: 25px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 28px;
+            color: #f07e50;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .title::before {
+            content: '';
+            width: 8px;
+            height: 28px;
+            background: #5a9bd4;
+            border-radius: 4px;
+        }
+
+        .author-info {
+            font-size: 13px;
+            color: #ccc;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 核心内容区 - 移除右侧栏，全屏展示图表 */
+        .content {
+            padding: 30px 30px 20px;
+        }
+
+        /* 图表标题增强 - 文字颜色适配 */
+        .chart-header {
+            font-size: 16px;
+            color: #5a9bd4;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+            position: relative;
+            padding: 10px 0;
+        }
+        .chart-header::before, .chart-header::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 150px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #5a9bd4, transparent);
+        }
+        .chart-header::before { left: 100px; }
+        .chart-header::after { right: 100px; }
+
+        /* 图表容器增强 - 调亮背景，让整体背景纹理可见 */
+        .chart-area {
+            position: relative;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1); /* 调亮为浅透明白色 */
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        svg {
+            display: block;
+            margin: 0 auto;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2));
+        }
+
+        /* 底部版权 - 文字颜色适配，删除提示文字 */
+        .footer {
+            padding: 20px 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-size: 12px;
+            color: #aaa;
+            background: rgba(15, 20, 40, 0.5);
+        }
+
+        /* 交互提示 - 深色主题适配 */
+        .tooltip {
+            position: absolute;
+            background: rgba(15, 20, 40, 0.95);
+            padding: 8px 12px;
+            border-radius: 6px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            font-size: 12px;
+            color: #f5f5f5;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 100;
+            border-left: 3px solid #f07e50;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 极点径向图样式增强 - 深色主题适配 */
+        .node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .node:hover {
+            transform: scale(1.1);
+        }
+        .node circle {
+            fill: rgba(25, 30, 50, 0.9);
+            stroke-width: 2.5px;
+            transition: all 0.3s ease;
+        }
+        .node.root circle {
+            stroke: #f07e50;
+            r: 12;
+            fill: rgba(240, 126, 80, 0.15);
+        }
+        .node.category circle {
+            stroke: #5a9bd4;
+            r: 8;
+            fill: rgba(90, 155, 212, 0.15);
+        }
+        .node.leaf circle {
+            stroke: #f794b4;
+            r: 6;
+            fill: rgba(247, 148, 180, 0.15);
+        }
+        .node:hover circle {
+            stroke-width: 3px;
+            filter: drop-shadow(0 0 5px rgba(90, 155, 212, 0.5));
+        }
+
+        .node text {
+            font: 13px "Microsoft YaHei";
+            fill: #f5f5f5;
+            pointer-events: none;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            transition: all 0.3s ease;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .node:hover text {
+            font-weight: 500;
+            fill: #f07e50;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+        }
+
+        .link {
+            fill: none;
+            stroke-width: 1.8px;
+            stroke-linecap: round;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+        .link:hover {
+            opacity: 1;
+            stroke-width: 2.2px;
+        }
+
+        /* 动画定义 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        /* 修复：花朵呼吸动画 - 更明显 */
+        @keyframes flowerBreath {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.15); opacity: 0.45; }
+        }
+        .flower {
+            animation: flowerBreath 12s ease-in-out infinite;
+        }
+        .flower:nth-child(1) { animation-delay: 0s; }
+        .flower:nth-child(2) { animation-delay: 3s; }
+    </style>
+</head>
+<body>
+    <!-- 背景装饰元素 -->
+    <div class="bg-decoration">
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
+    </div>
+
+    <!-- 修复：花朵装饰容器 - 明确宽高 -->
+    <svg class="flower-decoration" width="100%" height="100%" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+        <!-- 花朵将通过D3.js动态生成 -->
+    </svg>
+
+    <!-- 主可视化容器 -->
+    <div class="container">
+        <!-- 顶部标题 -->
+        <div class="header">
+            <div class="title">影迹·流派</div>
+            <div class="author-info">23计传zgl · 数据可视化</div>
+        </div>
+
+        <!-- 核心内容 - 全屏展示图表 -->
+        <div class="content">
+            <div class="chart-area">
+                <div class="chart-header">电影类型·代表导演·经典作品（极点径向图）</div>
+                <svg id="movieTree" width="800" height="600"></svg>
+                <!-- 交互提示框 -->
+                <div class="tooltip" id="tooltip"></div>
+            </div>
+        </div>
+
+        <!-- 底部版权 - 删除点击提示文字 -->
+        <div class="footer">
+            ©2026 影迹·流派 · 23计传zgl 版权所有
+        </div>
+    </div>
+
+    <!-- 右侧个人配色版面板 -->
+    <div class="color-panel">
+        <div class="color-panel-title">个人配色体系</div>
+        
+        <!-- 主色调 -->
+        <div class="color-item">
+            <div class="color-block" style="background: #f07e50;"></div>
+            <div class="color-info">
+                <div class="color-name">主色调 - 暖橙</div>
+                <div class="color-code">#f07e50</div>
+            </div>
+        </div>
+        
+        <!-- 辅助色1 -->
+        <div class="color-item">
+            <div class="color-block" style="background: #5a9bd4;"></div>
+            <div class="color-info">
+                <div class="color-name">辅助色1 - 湖蓝</div>
+                <div class="color-code">#5a9bd4</div>
+            </div>
+        </div>
+        
+        <!-- 辅助色2 -->
+        <div class="color-item">
+            <div class="color-block" style="background: #f794b4;"></div>
+            <div class="color-info">
+                <div class="color-name">辅助色2 - 柔粉</div>
+                <div class="color-code">#f794b4</div>
+            </div>
+        </div>
+        
+        <!-- 辅助色3 -->
+        <div class="color-item">
+            <div class="color-block" style="background: #96c93d;"></div>
+            <div class="color-info">
+                <div class="color-name">辅助色3 - 草绿</div>
+                <div class="color-code">#96c93d</div>
+            </div>
+        </div>
+        
+        <!-- 背景主色 -->
+        <div class="color-item">
+            <div class="color-block" style="background: #1a1a2e;"></div>
+            <div class="color-info">
+                <div class="color-name">背景主色 - 深空紫</div>
+                <div class="color-code">#1a1a2e</div>
+            </div>
+        </div>
+        
+        <!-- 背景渐变 -->
+        <div class="color-item">
+            <div class="color-block" style="background: #0f3460;"></div>
+            <div class="color-info">
+                <div class="color-name">背景渐变 - 深海蓝</div>
+                <div class="color-code">#0f3460</div>
+            </div>
+        </div>
+        
+        <!-- 文本主色 -->
+        <div class="color-item">
+            <div class="color-block" style="background: #f5f5f5;"></div>
+            <div class="color-info">
+                <div class="color-name">文本主色 - 浅灰</div>
+                <div class="color-code">#f5f5f5</div>
+            </div>
+        </div>
+        
+        <!-- 文本次色 -->
+        <div class="color-item">
+            <div class="color-block" style="background: #aaa;"></div>
+            <div class="color-info">
+                <div class="color-name">文本次色 - 中灰</div>
+                <div class="color-code">#aaa</div>
+            </div>
+        </div>
+
+        <!-- 新增：电影名言板块 -->
+        <div class="quote-panel">
+            <div class="color-panel-title">
+                <span>电影名言</span>
+            </div>
+            <div class="quote-content">
+                电影是一场每秒24格的真理。
+            </div>
+            <div class="quote-author">—— 让-吕克·戈达尔</div>
+            
+            <div class="quote-content" style="margin-top: 15px;">
+                电影发明以后，人类的生命至少延长了三倍。
+            </div>
+            <div class="quote-author">—— 杨德昌</div>
+            
+            <div class="quote-content" style="margin-top: 15px;">
+                我们笑着说再见，却深知再见遥遥无期。
+            </div>
+            <div class="quote-author">—— 《海上钢琴师》</div>
+        </div>
+    </div>
+
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script>
+        // 电影数据（保留）
+        var movieData = {
+            "name": "经典电影",
+            "children": [
+                {
+                    "name": "悬疑片",
+                    "children": [
+                        { "name": "大卫·芬奇", "children": [{ "name": "《七宗罪》" }, { "name": "《搏击俱乐部》" }] },
+                        { "name": "克里斯托弗·诺兰", "children": [{ "name": "《盗梦空间》" }, { "name": "《记忆碎片》" }] },
+                        { "name": "阿尔弗雷德·希区柯克", "children": [{ "name": "《后窗》" }, { "name": "《迷魂记》" }] }
+                    ]
+                },
+                {
+                    "name": "爱情片",
+                    "children": [
+                        { "name": "卡梅隆·克罗", "children": [{ "name": "《甜心先生》" }] },
+                        { "name": "理查德·林克莱特", "children": [{ "name": "《爱在黎明破晓前》" }, { "name": "《爱在日落黄昏时》" }] },
+                        { "name": "岩井俊二", "children": [{ "name": "《情书》" }] }
+                    ]
+                },
+                {
+                    "name": "科幻片",
+                    "children": [
+                        { "name": "雷德利·斯科特", "children": [{ "name": "《银翼杀手》" }, { "name": "《火星救援》" }] },
+                        { "name": "史蒂文·斯皮尔伯格", "children": [{ "name": "《E.T.外星人》" }, { "name": "《少数派报告》" }] },
+                        { "name": "丹尼斯·维伦纽瓦", "children": [{ "name": "《降临》" }, { "name": "《沙丘》" }] }
+                    ]
+                },
+                {
+                    "name": "战争片",
+                    "children": [
+                        { "name": "史蒂文·斯皮尔伯格", "children": [{ "name": "《拯救大兵瑞恩》" }] },
+                        { "name": "克林特·伊斯特伍德", "children": [{ "name": "《父辈的旗帜》" }] },
+                        { "name": "昆汀·塔伦蒂诺", "children": [{ "name": "《无耻混蛋》" }] }
+                    ]
+                }
+            ]
+        };
+
+        // 构建个人色彩数组（可全局调用）
+        const personalColorPalette = {
+            // 主色调
+            primary: "#f07e50",
+            // 辅助色
+            secondary1: "#5a9bd4",
+            secondary2: "#f794b4",
+            secondary3: "#96c93d",
+            // 背景色
+            bgPrimary: "#1a1a2e",
+            bgSecondary: "#16213e",
+            bgGradient: "#0f3460",
+            // 文本色
+            textPrimary: "#f5f5f5",
+            textSecondary: "#ccc",
+            textTertiary: "#aaa",
+            // 边框/分割色
+            border: "rgba(255, 255, 255, 0.1)",
+            // 可视化节点配色数组
+            nodeColors: [
+                "#f07e50", "#5a9bd4", "#f794b4", 
+                "#96c93d", "#8e7cc3", "#f1c232",
+                "#d64045", "#45b798", "#7b66ff"
+            ]
+        };
+
+        // ===================== 修复：绘制花朵装饰 =====================
+        function drawFlowerDecorations() {
+            // 花朵配置 - 调整大小和位置，更容易看到
+            const flowerConfigs = [
+                { 
+                    x: 80, y: 20,  // 位置（百分比）
+                    petals: 8,     // 花瓣数量
+                    innerRadius: 25, // 花心半径（增大）
+                    outerRadius: 80, // 花瓣外半径（增大）
+                    colors: [personalColorPalette.primary, personalColorPalette.secondary1] // 花瓣颜色
+                },
+                { 
+                    x: 20, y: 70,  // 位置（百分比）
+                    petals: 10,    // 花瓣数量
+                    innerRadius: 20, // 花心半径（增大）
+                    outerRadius: 70, // 花瓣外半径（增大）
+                    colors: [personalColorPalette.secondary2, personalColorPalette.secondary3] // 花瓣颜色
+                }
+            ];
+
+            const svg = d3.select(".flower-decoration");
+            // 强制获取窗口尺寸
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            flowerConfigs.forEach((config, index) => {
+                // 创建花朵容器
+                const flower = svg.append("g")
+                    .attr("class", "flower")
+                    .attr("transform", `translate(${width * config.x / 100}, ${height * config.y / 100})`);
+
+                // 生成花瓣数据
+                const petalData = d3.range(config.petals).map(() => 1);
+                const pie = d3.layout.pie().sort(null)(petalData);
+
+                // 创建花瓣弧形生成器
+                const petalArc = d3.svg.arc()
+                    .innerRadius(config.innerRadius)
+                    .outerRadius(config.outerRadius)
+                    .startAngle(d => d.startAngle)
+                    .endAngle(d => d.endAngle)
+                    .padAngle(0.02) // 花瓣间距
+                    .padRadius(config.innerRadius + 10);
+
+                // 绘制花瓣 - 增加描边，更容易识别
+                flower.selectAll(".petal")
+                    .data(pie)
+                    .enter()
+                    .append("path")
+                    .attr("class", "petal")
+                    .attr("d", petalArc)
+                    .attr("fill", (d, i) => config.colors[i % config.colors.length])
+                    .attr("stroke", "rgba(255,255,255,0.3)") // 增强描边
+                    .attr("stroke-width", 2); // 加粗描边
+
+                // 绘制花心 - 增大尺寸
+                flower.append("circle")
+                    .attr("class", "flower-center")
+                    .attr("r", config.innerRadius)
+                    .attr("cx", 0)
+                    .attr("cy", 0)
+                    .attr("stroke", "rgba(255,255,255,0.5)")
+                    .attr("stroke-width", 1);
+            });
+
+            // 鼠标交互：hover时花朵更明显
+            svg.selectAll(".flower")
+                .on("mouseover", function() {
+                    d3.select(this).style("opacity", 0.7);
+                })
+                .on("mouseout", function() {
+                    d3.select(this).style("opacity", 0.45);
+                });
+        }
+
+        // 初始化花朵装饰 - 确保DOM加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            drawFlowerDecorations();
+        });
+        
+        // 窗口大小变化时重新绘制花朵
+        window.addEventListener("resize", function() {
+            d3.select(".flower-decoration").selectAll("*").remove();
+            drawFlowerDecorations();
+        });
+
+        // 增强配色方案（改用个人色彩数组）
+        const themeColors = personalColorPalette.nodeColors;
+        var nodeId = 0;
+
+        // 初始化增强版极点径向图
+        (function initMovieTree() {
+            // 扩大画布尺寸
+            var margin = {top: 30, right: 30, bottom: 30, left: 30},
+                width = 800 - margin.left - margin.right,
+                height = 600 - margin.top - margin.bottom,
+                radius = Math.min(width, height) / 2 - 40;
+
+            // 创建径向树布局（优化间距）
+            var tree = d3.layout.tree()
+                .size([2 * Math.PI, radius])
+                .separation(function(a, b) {
+                    return (a.parent === b.parent ? 1.5 : 2) / a.depth;
+                });
+
+            // 创建SVG容器
+            var svg = d3.select("#movieTree")
+                .append("g")
+                .attr("transform", "translate(" + (width/2 + margin.left) + "," + (height/2 + margin.top) + ")");
+
+            // 获取提示框元素
+            var tooltip = d3.select("#tooltip");
+
+            var root = movieData;
+            root.x0 = 0;
+            root.y0 = 0;
+
+            // 初始渲染
+            update(root);
+
+            // 更新径向图（增强交互）
+            function update(source) {
+                var duration = 400;
+                
+                // 生成节点和连线数据
+                var nodes = tree.nodes(root);
+                var links = tree.links(nodes);
+
+                // 节点处理
+                var node = svg.selectAll(".node")
+                    .data(nodes, d => d.id || (d.id = ++nodeId));
+
+                // 新增节点（增强动画）
+                var nodeEnter = node.enter().append("g")
+                    .attr("class", function(d) {
+                        if (d.depth === 0) return "node root";
+                        else if (d.depth <= 2) return "node category";
+                        else return "node leaf";
+                    })
+                    .attr("transform", function(d) {
+                        return "translate(" + source.y0 * Math.cos(source.x0 - Math.PI/2) + "," + 
+                               source.y0 * Math.sin(source.x0 - Math.PI/2) + ")";
+                    })
+                    .on("click", click)
+                    .on("mouseover", function(d) {
+                        // 显示提示框
+                        tooltip.style("opacity", 1)
+                               .html("<strong>" + d.name + "</strong><br>层级：" + getDepthName(d.depth))
+                               .style("left", (d3.event.pageX + 10) + "px")
+                               .style("top", (d3.event.pageY - 20) + "px");
+                        // 高亮当前节点和连线（改用个人主色调）
+                        d3.select(this).select("circle").style("stroke", personalColorPalette.primary);
+                        svg.selectAll(".link").style("opacity", 0.2);
+                        svg.selectAll(".link").filter(function(l) {
+                            return l.source.id === d.id || l.target.id === d.id;
+                        }).style("opacity", 1).style("stroke", personalColorPalette.primary);
+                    })
+                    .on("mouseout", function(d) {
+                        // 隐藏提示框
+                        tooltip.style("opacity", 0);
+                        // 恢复样式
+                        d3.select(this).select("circle").style("stroke", (d,i) => themeColors[i % themeColors.length]);
+                        svg.selectAll(".link")
+                           .style("opacity", 0.7)
+                           .style("stroke", (d,i) => themeColors[i % themeColors.length]);
+                    });
+
+                // 节点圆圈（增强样式）
+                nodeEnter.append("circle")
+                    .attr("r", 1e-6)
+                    .attr("stroke", (d,i) => themeColors[i % themeColors.length])
+                    .attr("stroke-linecap", "round");
+
+                // 节点文字（增强样式）
+                nodeEnter.append("text")
+                    .attr("dy", function(d) {
+                        if (d.depth === 0) return 0;
+                        else if (d.depth === 1) return 18;
+                        else if (d.depth === 2) return 12;
+                        else return 10;
+                    })
+                    .text(function(d) { return d.name; })
+                    .style("opacity", 1e-6)
+                    .style("text-shadow", "0 1px 3px rgba(0,0,0,0.8)");
+
+                // 节点过渡动画（更流畅）
+                var nodeUpdate = node.transition()
+                    .duration(duration)
+                    .ease("elastic")
+                    .attr("transform", function(d) {
+                        var x = d.y * Math.cos(d.x - Math.PI/2);
+                        var y = d.y * Math.sin(d.x - Math.PI/2);
+                        return "translate(" + x + "," + y + ")";
+                    });
+
+                nodeUpdate.select("circle")
+                    .attr("r", function(d) {
+                        if (d.depth === 0) return 12;
+                        else if (d.depth <= 2) return 8;
+                        else return 6;
+                    });
+
+                nodeUpdate.select("text")
+                    .style("opacity", 1);
+
+                // 移除节点
+                var nodeExit = node.exit().transition()
+                    .duration(duration)
+                    .ease("back")
+                    .attr("transform", function(d) {
+                        var x = source.y * Math.cos(source.x - Math.PI/2);
+                        var y = source.y * Math.sin(source.x - Math.PI/2);
+                        return "translate(" + x + "," + y + ")";
+                    })
+                    .remove();
+
+                nodeExit.select("circle").attr("r", 1e-6);
+                nodeExit.select("text").style("opacity", 1e-6);
+
+                // 连线处理（增强样式）
+                var link = svg.selectAll(".link")
+                    .data(links, d => d.target.id);
+
+                // 新增连线
+                link.enter().insert("path", "g")
+                    .attr("class", "link")
+                    .attr("stroke", (d,i) => themeColors[i % themeColors.length])
+                    .attr("d", function(d) {
+                        var o = {x: source.x0, y: source.y0};
+                        var sourcePos = {
+                            x: o.y * Math.cos(o.x - Math.PI/2),
+                            y: o.y * Math.sin(o.x - Math.PI/2)
+                        };
+                        return "M" + sourcePos.x + "," + sourcePos.y + 
+                               " L" + sourcePos.x + "," + sourcePos.y;
+                    });
+
+                // 连线过渡动画（曲线更优美）
+                link.transition()
+                    .duration(duration)
+                    .ease("quad")
+                    .attr("d", function(d) {
+                        var source = {
+                            x: d.source.y * Math.cos(d.source.x - Math.PI/2),
+                            y: d.source.y * Math.sin(d.source.x - Math.PI/2)
+                        };
+                        var target = {
+                            x: d.target.y * Math.cos(d.target.x - Math.PI/2),
+                            y: d.target.y * Math.sin(d.target.x - Math.PI/2)
+                        };
+                        // 贝塞尔曲线连接，更生动
+                        return "M" + source.x + "," + source.y + 
+                               " Q" + ((source.x + target.x)/2 + 20) + "," + ((source.y + target.y)/2 + 10) + 
+                               " " + target.x + "," + target.y;
+                    });
+
+                // 移除连线
+                link.exit().transition()
+                    .duration(duration)
+                    .attr("d", function(d) {
+                        var o = {x: source.x, y: source.y};
+                        var sourcePos = {
+                            x: o.y * Math.cos(o.x - Math.PI/2),
+                            y: o.y * Math.sin(o.x - Math.PI/2)
+                        };
+                        return "M" + sourcePos.x + "," + sourcePos.y + 
+                               " L" + sourcePos.x + "," + sourcePos.y;
+                    })
+                    .remove();
+
+                // 保存节点位置
+                nodes.forEach(function(d) {
+                    d.x0 = d.x;
+                    d.y0 = d.y;
+                });
+            }
+
+            // 点击交互（保留）
+            function click(d) {
+                if (d.children) {
+                    d._children = d.children;
+                    d.children = null;
+                } else {
+                    d.children = d._children;
+                    d._children = null;
+                }
+                update(d);
+            }
+
+            // 辅助函数：获取层级名称
+            function getDepthName(depth) {
+                switch(depth) {
+                    case 0: return "核心分类";
+                    case 1: return "电影类型";
+                    case 2: return "代表导演";
+                    case 3: return "经典作品";
+                    default: return "未知层级";
+                }
+            }
+        })();
+    </script>
+</body>
+</html>
