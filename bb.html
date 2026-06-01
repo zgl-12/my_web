@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>致我最喜欢的人</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            width:100vw;height:100vh;
+            background:#ffecec;
+            overflow:hidden;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            font-family:"微软雅黑",sans-serif;
+        }
+        .title{
+            font-size:28px;
+            color:#ff4757;
+            margin-bottom:30px;
+            text-align:center;
+            padding:0 15px;
+        }
+        .msg-box{
+            background:#fff;
+            padding:30px 20px;
+            border-radius:18px;
+            box-shadow:0 8px 30px rgba(255,71,87,0.2);
+            max-width:85%;
+        }
+        .love-text{
+            font-size:18px;
+            color:#333;
+            line-height:1.8;
+            min-height:80px;
+        }
+        .btn{
+            margin-top:25px;
+            padding:12px 35px;
+            border:none;
+            background:#ff4757;
+            color:#fff;
+            border-radius:50px;
+            font-size:17px;
+            cursor:pointer;
+            transition:0.3s;
+        }
+        .btn:hover{background:#ff2e42}
+        /* 爱心样式 */
+        .heart{
+            position:fixed;
+            color:#ff4757;
+            font-size:24px;
+            animation:fall linear infinite;
+            pointer-events:none;
+        }
+        @keyframes fall{
+            0%{transform:translateY(-10px) rotate(0deg);opacity:1}
+            100%{transform:translateY(100vh) rotate(360deg);opacity:0}
+        }
+    </style>
+</head>
+<body>
+    <div class="title">💌 一封告白信</div>
+    <div class="msg-box">
+        <div class="love-text" id="text">点开按钮，查收我的心意</div>
+        <button class="btn" onclick="changeWord()">查看告白</button>
+    </div>
+
+    <script>
+        // 告白文案库，可自行修改增减
+        const loveArr = [
+            "从遇见你的那天，风都变得温柔。",
+            "我喜欢你，不是一时兴起，是深思熟虑。",
+            "往后四季，想和你三餐四季，岁岁年年。",
+            "世界很大，但我的目光永远偏向你。",
+            "要不要做我的心上人，一辈子不分开？",
+            "满心欢喜，万般偏爱，全都给你。"
+        ];
+        let index = 0;
+        function changeWord(){
+            const dom = document.getElementById('text');
+            index = (index+1)%loveArr.length;
+            dom.innerText = loveArr[index];
+            createHeart();
+        }
+
+        // 生成飘落爱心
+        function createHeart(){
+            for(let i=0;i<15;i++){
+                let h = document.createElement('div');
+                h.className = 'heart';
+                h.innerText = '♥';
+                h.style.left = Math.random()*100+'vw';
+                h.style.animationDuration = (3+Math.random()*4)+'s';
+                document.body.appendChild(h);
+                // 下落结束删除
+                setTimeout(()=>h.remove(),7000);
+            }
+        }
+        // 页面打开自动落爱心
+        setInterval(createHeart,2500);
+    </script>
+</body>
+</html>
