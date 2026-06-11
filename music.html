@@ -1,0 +1,60 @@
+
+<!DOCTYPE HTML>
+<html>
+  <head>
+	<title>新闻学院《立春》合唱音乐可视化</title>
+  </head>
+  <body>		
+		<div align="right">
+			<audio id="audioElement" src="sing spring.mp3" controls="controls">
+		</div>
+		<svg id="wcSvg" width="1000" height="500" version="1.1" xmlns="http://www.w3.org/2000/svg"></svg>
+		<script>
+			var audioElement = document.getElementById('audioElement');
+			var audioCtx;
+			var audioSrc;
+			var analyser;
+
+			audioElement.onplay = function() {
+				if (!audioCtx) {
+					audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+					audioSrc = audioCtx.createMediaElementSource(audioElement);
+					analyser = audioCtx.createAnalyser();
+					audioSrc.connect(analyser);
+					audioSrc.connect(audioCtx.destination);
+				}
+				
+				var frequencyData = new Uint8Array(100);
+				var myhist = document.getElementsByTagName("rect");
+
+				function everyViz() {
+					analyser.getByteFrequencyData(frequencyData);
+					for (var idx in myhist) {
+						if (myhist[idx].getAttribute && frequencyData[idx]) {
+							myhist[idx].setAttribute("y", 500 - frequencyData[idx]);
+							myhist[idx].setAttribute("height", frequencyData[idx]);
+						}
+					}
+				}
+				window.setInterval(everyViz, 20);
+			};
+
+		
+			var svgWidth = window.innerWidth * 0.98;
+			document.getElementById('wcSvg').setAttribute("width", svgWidth);
+			for (var i = 0; i < 100; i++) {
+				var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+				rect.setAttribute("x", i * svgWidth / 100);
+				rect.setAttribute("width", svgWidth * 0.9 / 100);
+				rect.setAttribute("y", 500);
+				rect.setAttribute("height", 0);
+				
+
+				var hue = i * 3.6; 
+				rect.style.fill = `hsla(${hue}, 80%, 60%, 0.7)`;
+
+				document.getElementById('wcSvg').appendChild(rect);
+			}
+		</script>
+  <!-- Cloudflare Pages Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d912c94599ab449bbf0813bd77f413e8"}'></script><!-- Cloudflare Pages Analytics --></body>
+</html>
