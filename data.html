@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>D3 多维数据动态直方图</title>
+<title>D3多维数据动态直方图</title>
 <style>
 body {
     background-color: #2b2b2b;
@@ -13,10 +13,9 @@ body {
 <body>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
-    var width=(window.innerWidth||document.documentElement.clientWidth||document.body.clientHeight)*0.96;
+    var width=(window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth)*0.96;
     var height=(window.innerHeight||document.documentElement.clientHeight||document.body.clientHeight)*0.9;	
 
-    // 多维数据集
 	const data = [
 		{year: 2020,  entities: [{name:"甲", value: 88}, {name:"乙", value: 65}, {name:"丙", value: 92}, {name:"丁", value: 43} , {name:"戊", value: 27}]},
 		{year: 2021,  entities: [{name:"甲", value: 95}, {name:"乙", value: 72}, {name:"丙", value: 81}, {name:"丁", value: 51}, {name:"戊", value: 33}]},
@@ -34,6 +33,7 @@ body {
 				.attr("height",height)
                 .style("background-color", "#383838");
                   
+
 	var scale = d3.scaleLinear()
                     .domain([0, 120])
                     .range([70, width*0.9]);
@@ -50,7 +50,6 @@ body {
                      .attr("font-size", "40")
                      .text(dataEntry.year);
     
-
     var color=d3.schemeSet2; 
 	var rects= svg.selectAll("rect")
                     .data(dataValue)
@@ -66,21 +65,20 @@ body {
         .enter()
         .append("text")
         .attr("class", "name-text")
-        .attr("x", 60)
+        .attr("x", 60) 
         .attr("text-anchor", "end")
-        .attr("dominant-baseline", "middle") // 垂直居中对齐
+        .attr("dominant-baseline", "middle")
         .attr("fill", "#ffffff")
         .attr("font-size", "16px")
         .text(d => d.name);
 
- 
     var valueTexts = svg.selectAll(".value-text")
         .data(dataValue)
         .enter()
         .append("text")
         .attr("class", "value-text")
         .attr("text-anchor", "start")
-        .attr("dominant-baseline", "middle") // 垂直居中对齐
+        .attr("dominant-baseline", "middle")
         .attr("fill", "#ffffff")
         .attr("font-size", "16px")
         .text(d => d.value);
@@ -94,22 +92,20 @@ body {
              .duration(900)
              .ease(d3.easeBounce)
 			 .attr("y", (_, i) => rect.height*i)
-			 .attr("width", d => scale(d.value))
-
+			 .attr("width", d => scale(d.value)-70) 
 
         nameTexts.data(dataValue, d=>d.name)
             .transition()
             .duration(900)
             .ease(d3.easeBounce)
-            .attr("y", (_, i) => rect.height * i + rect.height / 2); // 关键修复
+            .attr("y", (_, i) => rect.height * i + rect.height / 2);
 
-  
         valueTexts.data(dataValue, d=>d.name)
             .transition()
             .duration(900)
             .ease(d3.easeBounce)
             .attr("x", d => scale(d.value)+5)
-            .attr("y", (_, i) => rect.height * i + rect.height / 2) // 关键修复
+            .attr("y", (_, i) => rect.height * i + rect.height / 2)
             .text(d => d.value);
 	}
 	
@@ -122,7 +118,6 @@ body {
 	    updateElements()
 	}
 	
-
 	setInterval(()=> update((++index) % data.length), 1000);
 </script>
 </body>
