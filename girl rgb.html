@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>RGB</title>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+
+<style>
+body{
+    margin:0;
+    overflow:hidden;
+}
+
+#controls{
+    position:fixed;
+    left:20px;
+    top:20px;
+    z-index:1000;
+
+    background:rgba(255,255,255,.85);
+    padding:10px 15px;
+    border-radius:8px;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.25);
+    font-family:sans-serif;
+}
+</style>
+
+</head>
+<body>
+
+<div id="controls">
+    <input type="range" id="stepRange" min="0.5" max="20" value="5">
+    <span id="stepValue">5</span>
+</div>
+
+<script>
+
+const width = window.innerWidth;
+const height = window.innerHeight;
+
+const svg = d3.select("body")
+    .append("svg")
+    .attr("width",width)
+    .attr("height",height);
+
+const stepRange = document.getElementById("stepRange");
+const stepValue = document.getElementById("stepValue");
+
+let circlesData=[];
+
+const img = new Image();
+img.src="girl.jpg";
+
+img.onload=function(){
+
+    const scale=Math.min(
+        width/img.naturalWidth,
+        height/img.naturalHeight
+    );
+
+    const imgWidth=Math.floor(img.naturalWidth*scale);
+    const imgHeight=Math.floor(img.naturalHeight*scale);
+
+    const canvas=document.createElement("canvas");
+    canvas.width=imgWidth;
+    canvas.height=imgHeight;
+
+    const ctx=canvas.getContext("2d");
+    ctx.drawImage(img,0,0,imgWidth,imgHeight);
+
+    const pixels=ctx.getImageData(
+        0,
+        0,
+        imgWidth,
+        imgHeight
+    ).data;
+
+    const third=imgWidth/3;
+
+    circlesData=[];
+
+    for(let y=0;y<imgHeight;y++){
+
+        for(let x=0;x<imgWidth;x++){
+
+            const idx=(y*imgWidth+x)*4;
+
+            let r=pixels[idx];
+            let g=pixels[idx+1];
+            let b=pixels[idx+2];
+            let a=pixels[idx+3]/255;
+
+            if(a===0) continue;
+
+            let color;
+
+            // 左侧 blue
+            if(x<third){
+                color=`rgba(0,0,${b},${a})`;
+            }
+            // 中间 Green
+            else if(x<2*third){
+                color=`rgba(0,${g},0,${a})`;
+            }
+            // 右侧 red
+            else{
+                color=`rgba(${r},0,0,${a})`;
+            }
+
+            circlesData.push({
+                cx:x,
+                cy:y,
+                fill:color
+            });
+        }
+    }
+
+    draw(+stepRange.value);
+};
+
+function draw(step){
+
+    stepValue.innerHTML=step;
+
+    const filtered=circlesData.filter(
+        d=>d.cx%step===0 && d.cy%step===0
+    );
+
+    svg.selectAll("circle")
+        .data(filtered)
+        .join("circle")
+        .attr("cx",d=>d.cx)
+        .attr("cy",d=>d.cy)
+        .attr("r",2)
+        .attr("fill",d=>d.fill);
+}
+
+stepRange.addEventListener("input",()=>{
+    draw(+stepRange.value);
+});
+
+</script>
+
+<!-- Cloudflare Pages Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d912c94599ab449bbf0813bd77f413e8"}'></script><!-- Cloudflare Pages Analytics --></body>
+</html>
