@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>D3像素圆点</title>
+  <script src="https://d3js.org/d3.v7.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    #controls {
+      position: fixed;
+      left: 20px;
+      top: 20px;
+      background: rgba(255,255,255,0.85);
+      padding: 10px 14px;
+      border-radius: 8px;
+      z-index: 10;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="controls">
+    <input type="range" id="radiusRange" min="0.5" max="10" step="0.5" value="2">
+    <span id="radiusValue">2</span>
+  </div>
+
+  <script>
+    const width = window.innerWidth * 0.98;
+    const height = window.innerHeight * 0.96;
+
+    const svg = d3.select("body")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .style("background", "white");
+
+    const STEP = 10;
+    const radiusRange = document.getElementById("radiusRange");
+    const radiusValue = document.getElementById("radiusValue");
+
+    const img = new Image();
+    img.src = "girl.jpg";
+
+    let circlesData = [];
+
+    img.onload = function () {
+      const scale = Math.min(width / img.naturalWidth, height / img.naturalHeight);
+
+      const imgWidth = Math.floor(img.naturalWidth * scale);
+      const imgHeight = Math.floor(img.naturalHeight * scale);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = imgWidth;
+      canvas.height = imgHeight;
+
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+
+      const imageData = ctx.getImageData(0, 0, imgWidth, imgHeight);
+      const data = imageData.data;
+
+      circlesData = [];
+
+      for (let y = 0; y < imgHeight; y += STEP) {
+        for (let x = 0; x < imgWidth; x += STEP) {
+          const px = Math.floor(x);
+          const py = Math.floor(y);
+          const index = (py * imgWidth + px) * 4;
+
+          const r = data[index];
+          const g = data[index + 1];
+          const b = data[index + 2];
+          const a = data[index + 3] / 255;
+
+          if (a > 0) {
+            circlesData.push({
+              x: px,
+              y: py,
+              color: `rgba(${r}, ${g}, ${b}, ${a})`
+            });
+          }
+        }
+      }
+
+      drawCircles(+radiusRange.value);
+    };
+
+    function drawCircles(radius) {
+      radiusValue.textContent = radius;
+
+      svg.selectAll("circle")
+        .data(circlesData)
+        .join("circle")
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y)
+        .attr("r", radius)
+        .attr("fill", d => d.color);
+    }
+
+    radiusRange.addEventListener("input", function () {
+      drawCircles(+this.value);
+    });
+  </script>
+<!-- Cloudflare Pages Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d912c94599ab449bbf0813bd77f413e8"}'></script><!-- Cloudflare Pages Analytics --></body>
+</html>
