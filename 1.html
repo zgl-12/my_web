@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频展示页</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            background: #0a0a0a;
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .video-box {
+            width: 95%;
+            max-width: 1200px;
+        }
+        video {
+            width: 100%;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="video-box">
+            <video controls>
+                <source src=1.mp4" type="video/mp4">
+                浏览器不支持播放MP4视频
+            </video>
+        </div>
+    </div>
+</body>
+</html>
